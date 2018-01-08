@@ -1,0 +1,89 @@
+<?php
+    use Cake\Routing\Router; 
+?>
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="page-header">
+            <h2>Búsqueda alfabética de pacientes</h2>
+        </div>
+        <div class="row panel panel-default">
+            <div class="col-md-12">
+                <br />
+                <label for="patient">Por favor escriba el primer apellido del paciente</label>
+                <br />
+                <input type="text" class="form-control" id="patient">
+                <br />
+                <p id="header-messages"></p>
+                <br />
+                <div class="panel panel-default pre-scrollable" style="height:220px;">
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <tbody id="response-container"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+// Declaración de variables
+    var selectPatient = -1;
+    
+// Funciones
+
+    function log(message) 
+    {
+        cleanPager();
+        $("#response-container").html(message);
+    }
+
+    function cleanPager()
+    {
+        $('#patient').val(" ");
+        $("#response-container").html("");
+    }
+    
+// Funciones Jquery
+
+    var patient = "";
+
+    $(document).ready(function() 
+    {
+        $('#patient').autocomplete(
+        {
+            source:'<?php echo Router::url(array("controller" => "Users", "action" => "findPatient")); ?>',
+            minLength: 3,
+            select: function( event, ui ) {
+                log("<tr id=pa" + ui.item.id + " class='patients'><td>" + ui.item.value + "</td></tr>");
+                patient = ui.item.value;
+              }
+        });
+
+        $("#response-container").on("click", ".patients", function()
+        {
+            idPatient = $(this).attr('id').substring(2);
+
+            if (selectPatient > -1)
+            {
+                $('#pa' + selectPatient).css('background-color', 'white');
+            }
+            
+            selectPatient = idPatient;
+            
+            $('#pa' + selectPatient).css('background-color', '#c2c2d6');  
+    
+            cleanPager();
+            
+            $("#header-messages").html("Por favor espere...");
+                       
+            $.redirect('/Users/viewBasic', {idUser : idPatient, controller: 'Patients', action : 'previousPatient'}); 
+
+        });
+
+// Final funciones Jquery
+    });    
+
+</script>

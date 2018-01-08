@@ -1,0 +1,27 @@
+body
+{
+    font-size: 30px;
+}
+.alignRight
+{
+	text-align: right;
+}
+hr
+{
+	color: #47476b;
+}
+#payments
+{
+	width: 25%;
+	float: left;
+}
+#emptyColumn
+{
+	width: 50%;
+	float: left;
+}
+#total
+{
+	width: 25%;
+	float: left;
+}
