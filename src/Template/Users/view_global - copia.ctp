@@ -217,7 +217,7 @@
                                                 <tr>
                                                     <td><?= h($budgets->application_date->format('d-m-Y')) ?></td>
                                                     <td><?= h($budgets->surgery) ?></td>
-                                                    <!-- <td><?= $this->Html->link(__(''), ['controller' => 'budgets', 'action' => 'edit', $budgets->id, 'Users', 'viewGlobal', $user->id], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar']) ?></td> -->
+                                                    <td><?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $budgets->id, 'Users', 'viewGlobal', $user->id, $user->patients[0]['id'], $user->parent_user], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-danger', 'title' => 'Modificar presupuesto']) ?></td> 
                                                     <td><?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $budgets->id, 'Users', 'viewGlobal', $user->id], ['confirm' => __('Está seguro de que desea eliminar el presupuesto?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar']) ?></td>
                                                 </tr>
                                             <?php endif; ?>

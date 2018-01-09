@@ -96,7 +96,7 @@ class BudgetsController extends AppController
      * @return \Cake\Network\Response|null
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null, $namePatient = null, $namePromoter = null, $cellPromoter = null, $emailPromoter = null, $controller = null, $action = null)
+    public function view($id = null, $namePatient = null, $namePromoter = null, $cellPromoter = null, $emailPromoter = null, $controller = null, $action = null, $idUser = null, $idPromoter = null)
     {
         $budgetI = $this->Budgets->get($id, [
             'contain' => ['Itemes']
@@ -126,7 +126,7 @@ class BudgetsController extends AppController
 
         $this->set('budget', $budget);
         $this->set('_serialize', ['budget']);
-        $this->set(compact('namePatient', 'namePromoter', 'cellPromoter', 'emailPromoter', 'controller', 'action', 'itemes'));
+        $this->set(compact('namePatient', 'namePromoter', 'cellPromoter', 'emailPromoter', 'controller', 'action', 'itemes', 'idUser', 'idPromoter'));
     }
 
     /**

@@ -590,6 +590,14 @@ class UsersController extends AppController
 	
     public function mailPromoter($email = null, $firstName = null, $username = null, $password = null, $resultPromoter = null)
     {
+		if ($resultPromoter == 0 || $resultPromoter == 2)
+		{
+			$subject = 'Registro de promotor satisfactorio';
+		}
+		else
+		{
+			$subject = 'Registro de promotor';
+		}
         $correo = new Email(); 
         $correo
           ->transport('donWeb')
@@ -597,7 +605,7 @@ class UsersController extends AppController
           ->emailFormat('html') 
           ->to($email) 
           ->from(['noresponder@cirugiaslanacional.com' => 'Cirugías La Nacional']) 
-          ->subject('Registro de promotor satisfactorio') 
+          ->subject($subject) 
           ->viewVars([ 
             'varResultPromoter' => $resultPromoter,
             'varPromoter' => $firstName,
@@ -609,14 +617,16 @@ class UsersController extends AppController
 		
 		$file2 = new file( WWW_ROOT.'files/annexes/manualdenegocios.pdf');
 		
+		if ($resultPromoter == 0 || $resultPromoter == 2)
+		{
+			$correo->attachments([
+				$file1->name => [
+					'file' => $file1->path],
+				$file2->name => [
+					'file' => $file2->path],
+				]);
+		}
 		
-		$correo->attachments([
-			$file1->name => [
-				'file' => $file1->path],
-			$file2->name => [
-				'file' => $file2->path],
-			]);
-          
         $correo->SMTPAuth = true;
         $correo->CharSet = "utf-8";     
 
@@ -1635,21 +1645,14 @@ class UsersController extends AppController
 					$user->surname = $surname;
 					$user->second_surname = $secondSurname;
 					$user->email = $email;
-					
-					if ($userPrevious->email != $email)
-					{
-						$password = substr($firstName, 0, 1) . substr($surname, 0, 1) . $currentDate->second . $currentDate->minute . '$';
-
-						$user->password = $password;
-					}
-					
+									
 					if ($this->Users->save($user)) 
 					{
 						if ($userPrevious->email != $email)
 						{
-							$resultPromoter = 2;
+							$resultPromoter = 3;
 							
-							$result = $this->mailPromoter($email, $firstName, $user->username, $password, $resultPromoter);
+							$result = $this->mailPromoter($email, $firstName, $user->username, $user->password, $resultPromoter);
 						}
 					
 						if ($user->employees)
@@ -1659,6 +1662,7 @@ class UsersController extends AppController
 						else
 						{
 							$this->Flash->success(__('Los datos se modificaron correctamente'));
+							return $this->redirect(['controller' => 'Users', 'action' => 'wait']);
 						}
 					}
 					else

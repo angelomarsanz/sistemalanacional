@@ -407,9 +407,16 @@ class BudgetsController extends AppController
 			{ 
 				return $this->redirect(['controller' => 'Budgets', 'action' => 'budget', $idUser, $idPatient, $idPromoter, $controller, $action]);
 			}
-			else
-			{
+			elseif ($controller == 'Users' && $action == 'viewGlobal')
+			{ 
+				if (isset($idPatient))
+				{
+					return $this->redirect(['controller' => 'Budgets', 'action' => 'budget', $idUser, $idPatient, $idPromoter, $controller, $action]);
+				}
+				else
+				{
 				return $this->redirect(['controller' => $controller, 'action' => $action, $idUser]);	
+				}
 			}
         }
         return $result;
@@ -540,7 +547,7 @@ class BudgetsController extends AppController
 				{
 					if ($this->Auth->user('username'))
 					{
-						$this->Flash->success(__('El paciente se creo exitosamente'));
+						$this->Flash->success(__('El presupuesto se creo exitosamente'));
 					}
 					else
 					{
@@ -567,7 +574,7 @@ class BudgetsController extends AppController
 			{
 				return $this->redirect(['controller' => $controller, 'action' => $action, $_POST['idUser'], 'Users', 'indexPatientUser']);
 			}
-			elseif ($controller == 'DiaryPatients' && $action == 'index')  
+			elseif ($controller == 'Diarypatients' && $action == 'index')  
 			{
 				return $this->redirect(['controller' => $controller, 'action' => $action]);
 			}
