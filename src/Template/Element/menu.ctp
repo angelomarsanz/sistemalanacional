@@ -97,6 +97,13 @@
                                     </div>
                                 </form>
                             <?php endif; ?>
+							<?php if ($currentView == 'DiarypatientsIndex'): ?>
+                                <form class="navbar-form navbar-left" role="search">
+                                    <div class="form-group">
+                                        <input type="text" id="diary-promoter" class="form-control" placeholder="Promotor..." title="Escriba el nombre del promotor"/>
+                                    </div>
+                                </form>
+                            <?php endif; ?>
                         <?php endif; ?>
 
                     <?php elseif ($current_user['role'] == 'Administrador del sistema' ||
@@ -160,6 +167,13 @@
                                     </div>
                                 </form>
                             <?php endif; ?>
+							<?php if ($currentView == 'DiarypatientsIndex'): ?>
+                                <form class="navbar-form navbar-left" role="search">
+                                    <div class="form-group">
+                                        <input type="text" id="diary-promoter" class="form-control" placeholder="Promotor..." title="Escriba el nombre del promotor"/>
+                                    </div>
+                                </form>
+                            <?php endif; ?>
 
                         <?php endif; ?>
 
@@ -211,6 +225,13 @@
                                     </div>
                                 </form>
                             <?php endif; ?>
+							<?php if ($currentView == 'DiarypatientsIndex'): ?>
+                                <form class="navbar-form navbar-left" role="search">
+                                    <div class="form-group">
+                                        <input type="text" id="diary-promoter" class="form-control" placeholder="Promotor..." title="Escriba el nombre del promotor"/>
+                                    </div>
+                                </form>
+                            <?php endif; ?>
 
                         <?php endif; ?>
 
@@ -241,4 +262,4 @@
             <?php endif; ?>
         </div>
     </div>
-</nav>            
+</nav>                        

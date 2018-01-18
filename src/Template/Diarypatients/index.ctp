@@ -1,7 +1,19 @@
+<?php
+    use Cake\Routing\Router; 
+?>
+<style>
+    .ui-autocomplete 
+    {
+        z-index: 2000;
+    }
+</style>
 <div class="row">
     <div class="col-md-12">
     	<div class="page-header">
      	    <h2>Agenda del día: <?= $currentDate->format('d-m-Y') ?></h2>
+			<?php if ($namePromoter != 'General'): ?>
+				<h3>Promotor: <?= $namePromoter ?></h3>
+			<?php endif; ?>
     	</div>
     	<div class="table-responsive">
     		<table class="table table-striped table-hover">
@@ -126,3 +138,19 @@
         </div>
     </div>
 </div>
+<script>
+    function diaryPromoter(idPromoter, namePromoter) 
+    {
+        $.redirect('/sln/Diarypatients/index', { idPromoter : idPromoter, namePromoter : namePromoter }); 
+    }
+    $(document).ready(function(){
+        $('#diary-promoter').autocomplete(
+        {
+            source:'<?php echo Router::url(array("controller" => "Users", "action" => "findPromoter")); ?>',
+            minLength: 3,             
+            select: function( event, ui ) {
+                diaryPromoter(ui.item.id, ui.item.value);
+              }
+        });
+	});
+</script>

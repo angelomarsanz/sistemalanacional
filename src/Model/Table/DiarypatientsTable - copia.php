@@ -107,40 +107,4 @@ class DiarypatientsTable extends Table
 
         return $rules;
     }
-    public function findDiary(Query $query, array $options)
-    {
-        $arrayResult = [];
-	
-        $query->select(
-            ['Diarypatients.id',
-            'Diarypatients.activity_date', 
-            'Diarypatients.short_description_activity', 
-            'Budgets.id', 
-			'Budgets.patient_id',
-            'Budgets.surgery', 
-            'Budgets.initial_budget', 
-            'Budgets.initial_budget_dir', 
-            'Patients.landline',
-            'Users.id',
-            'Users.parent_user', 
-            'Users.first_name', 
-            'Users.second_name', 
-            'Users.surname', 
-            'Users.second_surname',
-            'Users.cell_phone',
-            'Users.email'])
-            ->contain(['Budgets' => ['Patients' => ['Users']]])
-            ->order(['Diarypatients.activity_date' => 'DESC']);
-    
-        if ($query)
-        {
-            $arrayResult['indicator'] = 0;
-            $arrayResult['searchRequired'] = $query;
-        }
-        else
-        {
-            $arrayResult['indicator'] = 1;
-        }
-        return $arrayResult;
-    }	
 }

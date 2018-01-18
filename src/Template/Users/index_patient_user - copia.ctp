@@ -27,13 +27,13 @@
 			<h2><?= $promoter ?></h2>
 			<h4>No tiene pacientes asociados</h4>
 		<?php else: ?>
-			<h2>Pacientes asociados a:&nbsp;<?= $promoter ?></h2>
+			<h3>Pacientes asociados a:</h3>
+			<h3><?= $promoter ?></h3>
 			<div class="table-responsive">
 				<table class="table table-striped table-hover">
 					<thead>
 						<tr>
-							<th scope="col"><?= $this->Paginator->sort('full_name', ['Nombre del paciente']) ?></th>
-							<th scope="col"><?= $this->Paginator->sort('username', ['Usuario']) ?></th>
+							<th scope="col">Nombre del paciente</th>
 							<th scope="col" class="actions"></th>
 						</tr>
 					</thead>
@@ -41,7 +41,6 @@
 						<?php foreach ($users as $user): ?>
 						<tr>
 							<td><?= h($user->full_name) ?></td>
-							<td><?= h($user->username) ?></td>
 							<td class="actions">
 								<?= $this->Html->link('', ['controller' => 'Users', 'action' => 'viewGlobal', $user->id, 'Users', 'indexPatientUser', $user->parent_user], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver']) ?>
 								<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'editBasic', $user->id, 'Users', 'indexPatientUser', $user->parent_user, $promoter], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar']) ?>
@@ -51,14 +50,6 @@
 						<?php endforeach; ?>
 					</tbody>
 				</table>
-			</div>
-			<div class="paginator">
-				<ul class="pagination">
-					<?= $this->Paginator->prev('< Anterior') ?>
-					<?= $this->Paginator->numbers(['before' => '', 'after' => '']) ?>
-					<?= $this->Paginator->next('Siguiente >') ?>
-				</ul>
-				<p><?= $this->Paginator->counter() ?></p>
 			</div>
 		<?php endif; ?> 
     </div>

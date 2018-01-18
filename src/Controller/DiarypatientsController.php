@@ -67,62 +67,67 @@ class DiarypatientsController extends AppController
         $currentDate->hour(23)
             ->minute(59)
             ->second(59);
-            
-        $diary = $diarypatients->find()
-            ->select(
-            ['Diarypatients.id',
-            'Diarypatients.activity_date', 
-            'Diarypatients.short_description_activity', 
-            'Budgets.id', 
-			'Budgets.patient_id',
-            'Budgets.surgery', 
-            'Budgets.initial_budget', 
-            'Budgets.initial_budget_dir', 
-            'Patients.landline',
-            'Users.id',
-            'Users.parent_user', 
-            'Users.first_name', 
-            'Users.second_name', 
-            'Users.surname', 
-            'Users.second_surname',
-            'Users.cell_phone',
-            'Users.email'])
-            ->contain(['Budgets' => ['Patients' => ['Users']]])
-            ->where([['Diarypatients.activity_date <=' => $currentDate],
-            ['Diarypatients.id >' => 1],
-            ['OR' => ['Diarypatients.status IS NULL', 'Diarypatients.status' => false]],
-            ['OR' => ['Diarypatients.deleted_record IS NULL', 'Diarypatients.deleted_record' => false]]])
-            ->order(['Diarypatients.activity_date' => 'DESC']);
 
-        $promoter = [];
+        if ($this->request->is('post'))
+		{
+			$arrayResult = $diarypatients->find('diary', ['conditions' => 
+				[['Diarypatients.activity_date <=' => $currentDate],
+				['Diarypatients.id >' => 1],
+				['OR' => ['Diarypatients.status IS NULL', 'Diarypatients.status' => false]],
+				['OR' => ['Diarypatients.deleted_record IS NULL', 'Diarypatients.deleted_record' => false]],
+				['Users.parent_user' => $_POST['idPromoter']]]]);
+			$namePromoter = $_POST['namePromoter'];
+		}
+		else
+		{	
+			$arrayResult = $diarypatients->find('diary', ['conditions' => 
+				[['Diarypatients.activity_date <=' => $currentDate],
+				['Diarypatients.id >' => 1],
+				['OR' => ['Diarypatients.status IS NULL', 'Diarypatients.status' => false]],
+				['OR' => ['Diarypatients.deleted_record IS NULL', 'Diarypatients.deleted_record' => false]]]]);	
+			$namePromoter = 'General';
+		}
+				
+		if ($arrayResult['indicator'] == 0)
+		{
+			$diary = $arrayResult['searchRequired'];
+			
+			$promoter = [];
 
-        foreach ($diary as $diarys)
-        {
-            $idPromoter = $diarys->budget->patient->user->parent_user;
-            
-            $userPromoter = $this->Diarypatients->Budgets->Patients->Users->get($idPromoter);
-            
-            $promoter[$diarys->id]['namePromoter'] = $userPromoter->full_name;
+			foreach ($diary as $diarys)
+			{
+				$idPromoter = $diarys->budget->patient->user->parent_user;
+				
+				$userPromoter = $this->Diarypatients->Budgets->Patients->Users->get($idPromoter);
+				
+				$promoter[$diarys->id]['namePromoter'] = $userPromoter->full_name;
 
-            $promoter[$diarys->id]['cellPromoter'] = $userPromoter->cell_phone;
+				$promoter[$diarys->id]['cellPromoter'] = $userPromoter->cell_phone;
 
-            $promoter[$diarys->id]['emailPromoter'] = $userPromoter->email;
+				$promoter[$diarys->id]['emailPromoter'] = $userPromoter->email;
 
-            $diferent = $diarys->activity_date->diff($currentDate)->d;
- 
-            if ($diferent > 0)
-            {
-                $promoter[$diarys->id]['observationPromoter'] = "Atraso";
-            }
-            else
-            {
-                $promoter[$diarys->id]['observationPromoter'] = "Pendiente";
-            }
-
-        }
+				$diferent = $diarys->activity_date->diff($currentDate)->d;
+	 
+				if ($diferent > 0)
+				{
+					$promoter[$diarys->id]['observationPromoter'] = "Atraso";
+				}
+				else
+				{
+					$promoter[$diarys->id]['observationPromoter'] = "Pendiente";
+				}
+			}						
+		}
+		else
+		{
+			$this->Flash->error(__('No se encontraron actividades'));
+			return $this->redirect(['controller' => 'Users', 'action' => 'wait']);
+		}
 		       
-        $this->set(compact('diary', 'currentDate', 'promoter'));
-        $this->set('_serialize', ['diary', 'currentDate', 'promoter']);
+		$currentView = 'DiarypatientsIndex';
+		       
+        $this->set(compact('diary', 'currentDate', 'promoter', 'currentView', 'namePromoter'));
+        $this->set('_serialize', ['diary', 'currentDate', 'promoter', 'currentView', 'namePromoter']);
     }
     public function indexMonth()
     {
