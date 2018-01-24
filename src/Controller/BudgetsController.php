@@ -178,7 +178,7 @@ class BudgetsController extends AppController
 		
 		$expirationDate = Time::now();
 		
-		$budget->expiration_date = $expirationDate->addDays(7);
+		$budget->expiration_date = $expirationDate->addDays(3);
 		
 		$budget->amount_budget = $cost;
 	
@@ -288,7 +288,7 @@ class BudgetsController extends AppController
             
             $expirationDate = Time::now();
             
-            $budget->expiration_date = $expirationDate->addDays(7);
+            $budget->expiration_date = $expirationDate->addDays(3);
             
             $budget->amount_budget = $cost;
         
