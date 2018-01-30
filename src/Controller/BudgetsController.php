@@ -247,7 +247,7 @@ class BudgetsController extends AppController
                 
             $diferent = $row->application_date->diff($currentDate)->d;
  
-            if ($diferent > 6)
+            if ($diferent > 3)
             {
                 $toRegister = 1;
             }
