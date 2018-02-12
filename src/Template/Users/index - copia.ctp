@@ -71,7 +71,7 @@
 <script>
     function log(id) 
     {
-        $.redirect('/sln/users/view', { id : id, controller : 'Users', action : 'index' }); 
+        $.redirect('/users/view', { id : id, controller : 'Users', action : 'index' }); 
     }
     $(document).ready(function(){ 
         $('#user').autocomplete(

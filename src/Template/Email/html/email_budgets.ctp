@@ -17,9 +17,15 @@
 <p>Service requested / Servicio requerido: <?= $varSurgery ?></p>
 <h3>--------------- DETAILS / DETALLES ---------------------------------</h3>
 <?= $varItemes ?>
-<BR />
+<br />
 <h3>TOTAL GENERAL Bs. <?= number_format($varTotal, 2, ",", ".") ?></h3>
 <br />
 <p>Al aprobar el presente presupuesto y completar el proceso de compra y pago
-del mismo, usted confirma que leyó y aceptó los Términos y Condiciones de 
-nuestros servicios</p>
+del mismo, usted confirma que leyó y aceptó los Términos y Condiciones de nuestros servicios</p>
+<br />
+<p>Por favor no responder a este email, cualquier información comunicarse con:</p>
+<?php if ($varNamePromoter == 'Sitio web'): ?>
+<p>Nuestro Call Center al +58-0241-835-2284</p>
+<?php else: ?>
+<p>El promotor(a): <?= $varNamePromoter . ' teléfono ' . $varPhonePromoter . ' email ' . $varMailPromoter ?></p>
+<?php endif; ?>

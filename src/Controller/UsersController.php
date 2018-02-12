@@ -1010,7 +1010,9 @@ class UsersController extends AppController
 						$arrayMail['codeBudget'] = $arrayResult['codeBudget']; 
 						$arrayMail['dateBudget'] = $arrayResult['dateBudget'];
 						$arrayMail['expirationDate'] = $arrayResult['expirationDate'];
+						$arrayMail['namePromoter'] = $this->Auth->user('first_name') . ' ' . $this->Auth->user('surname');
 						$arrayMail['mailPromoter'] = $this->Auth->user('email');
+						$arrayMail['phonePromoter'] = $this->Auth->user('cell_phone');
 						
 						$idBudget = $arrayResult['id'];
 						
@@ -1242,8 +1244,10 @@ class UsersController extends AppController
                             $arrayMail['country'] = $country;
                             $arrayMail['codeBudget'] = $arrayResult['codeBudget']; 
                             $arrayMail['dateBudget'] = $arrayResult['dateBudget'];
-                            $arrayMail['expirationDate'] = $arrayResult['expirationDate'];
+                            $arrayMail['expirationDate'] = $arrayResult['expirationDate'];						
+							$arrayMail['namePromoter'] = 'Sitio web';
 							$arrayMail['mailPromoter'] = 'angelomarsanz@gmail.com';
+							$arrayMail['phonePromoter'] = '+58-0241-835-2284';
                             
                             $idBudget = $arrayResult['id'];
                             
@@ -1312,6 +1316,9 @@ class UsersController extends AppController
             'varSurgery' => $arrayMail['surgery'],
             'varItemes' => $arrayMail['itemes'],
             'varTotal' => $arrayMail['costBolivars'],
+			'varNamePromoter' => $arrayMail['namePromoter'],
+			'varPhonePromoter' => $arrayMail['phonePromoter'],
+			'varMailPromoter' => $arrayMail['mailPromoter']
           ]);
   
         $correo->SMTPAuth = true;
@@ -1502,7 +1509,10 @@ class UsersController extends AppController
                             $arrayMail['country'] = $country;
                             $arrayMail['codeBudget'] = $arrayResult['codeBudget']; 
                             $arrayMail['dateBudget'] = $arrayResult['dateBudget'];
-                            $arrayMail['expirationDate'] = $arrayResult['expirationDate'];
+							$arrayMail['expirationDate'] = $arrayResult['expirationDate'];
+                            $arrayMail['namePromoter'] = 'Sitio web';
+							$arrayMail['mailPromoter'] = 'angelomarsanz@gmail.com';
+							$arrayMail['phonePromoter'] = '+58-0241-835-2284';
                             
                             $idBudget = $arrayResult['id'];
                             
