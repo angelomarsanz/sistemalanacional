@@ -120,6 +120,8 @@ class DiarypatientsTable extends Table
             'Budgets.surgery', 
             'Budgets.initial_budget', 
             'Budgets.initial_budget_dir', 
+			'Budgets.activity_result',
+			'Budgets.deleted_record',
             'Patients.landline',
             'Users.id',
             'Users.parent_user', 

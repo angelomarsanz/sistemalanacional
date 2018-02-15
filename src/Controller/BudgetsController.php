@@ -533,7 +533,9 @@ class BudgetsController extends AppController
 				$arrayMail['codeBudget'] = $arrayResult['codeBudget']; 
 				$arrayMail['dateBudget'] = $arrayResult['dateBudget'];
 				$arrayMail['expirationDate'] = $arrayResult['expirationDate'];
-				$arrayMail['mailPromoter'] = $_POST['emailPromoter'];
+				$arrayMail['mailPromoter'] = $_POST['emailPromoter'];			
+				$arrayMail['namePromoter'] = $_POST['namePromoter'] . ' ' . $_POST['namePromoter'];
+				$arrayMail['phonePromoter'] = $_POST['cellPromoter'];
 				
 				$idBudget = $arrayResult['id'];
 				

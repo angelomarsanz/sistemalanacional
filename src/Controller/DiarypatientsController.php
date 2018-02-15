@@ -75,6 +75,8 @@ class DiarypatientsController extends AppController
 				['Diarypatients.id >' => 1],
 				['OR' => ['Diarypatients.status IS NULL', 'Diarypatients.status' => false]],
 				['OR' => ['Diarypatients.deleted_record IS NULL', 'Diarypatients.deleted_record' => false]],
+				['OR' => ['Budgets.deleted_record IS NULL', 'Budgets.deleted_record' => false]],
+				['Budgets.activity_result !=' => 'Cerrado'],
 				['Users.parent_user' => $_POST['idPromoter']]]]);
 			$namePromoter = $_POST['namePromoter'];
 		}
@@ -84,7 +86,9 @@ class DiarypatientsController extends AppController
 				[['Diarypatients.activity_date <=' => $currentDate],
 				['Diarypatients.id >' => 1],
 				['OR' => ['Diarypatients.status IS NULL', 'Diarypatients.status' => false]],
-				['OR' => ['Diarypatients.deleted_record IS NULL', 'Diarypatients.deleted_record' => false]]]]);	
+				['OR' => ['Diarypatients.deleted_record IS NULL', 'Diarypatients.deleted_record' => false]],
+				['OR' => ['Budgets.deleted_record IS NULL', 'Budgets.deleted_record' => false]],
+				['Budgets.activity_result !=' => 'Cerrado']]]);	
 			$namePromoter = 'General';
 		}
 				
@@ -148,6 +152,8 @@ class DiarypatientsController extends AppController
             'Diarypatients.activity_date', 
             'Diarypatients.short_description_activity', 
             'Budgets.surgery', 
+			'Budgets.activity_result',
+			'Budgets.deleted_record',
             'Patients.landline',
             'Users.id',
             'Users.parent_user', 
@@ -159,9 +165,11 @@ class DiarypatientsController extends AppController
             'Users.email'])
             ->contain(['Budgets' => ['Patients' => ['Users']]])
             ->where([['Diarypatients.activity_date >' => $currentDate],
-            ['Diarypatients.id >' => 1],
-            ['OR' => ['Diarypatients.status IS NULL', 'Diarypatients.status' => false]],
-            ['OR' => ['Diarypatients.deleted_record IS NULL', 'Diarypatients.deleted_record' => false]]])
+				['Diarypatients.id >' => 1],
+				['OR' => ['Diarypatients.status IS NULL', 'Diarypatients.status' => false]],
+				['OR' => ['Diarypatients.deleted_record IS NULL', 'Diarypatients.deleted_record' => false]],
+				['OR' => ['Budgets.deleted_record IS NULL', 'Budgets.deleted_record' => false]],
+				['Budgets.activity_result !=' => 'Cerrado']])
             ->order(['Diarypatients.activity_date' => 'DESC']);
 
         $promoter = [];
@@ -476,43 +484,70 @@ class DiarypatientsController extends AppController
             
             if ($this->Diarypatients->save($diarypatient)) 
             {
-                $diarypatientProx = $this->Diarypatients->newEntity();
-                
-                $diarypatientProx->budget_id = $diarypatient->budget_id; 
+				if ($diarypatient->activity_next == 'Cerrar (el paciente ya no está interesado)' ||
+					$diarypatient->activity_next == 'Cerrar (ya se practicó la cirugía o se ejecutó el servicio)')
+				{
+					$budget = $this->Diarypatients->Budgets->get($diarypatient->budget_id);
+					
+					$budget->activity_result = 'Cerrado';
 
-                $diarypatientProx->activity_date = $diarypatient->activity_date_next;
-                
-                $diarypatientProx->short_description_activity = $diarypatient->activity_next;
-                
-                $diarypatientProx->detailed_activity_description = $diarypatient->detail_next_activity;
-                
-                $diarypatientProx->activity_comments = "";
-                
-                setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
-                date_default_timezone_set('America/Caracas');
-        
-                $currentDate = Time::now();
-                
-                $currentDate->hour(23)
-                    ->minute(59)
-                    ->second(59);
-                    
-                $currentDateProx = $currentDate;
-                
-                $diarypatientProx->activity_date_next = $currentDateProx;  
-                
-                $diarypatientProx->activity_next = "";
-                
-                $diarypatientProx->detailed_next_activity = "";                 
-                
-                if ($this->Diarypatients->save($diarypatientProx)) 
-                {
-                    $this->Flash->success(__('La actividad se cerró exitosamente'));
-                }
-                else
-                {
-                    $this->Flash->error(__('No se pudo cerrar la actividad'));
-                }
+					if ($diarypatient->activity_next == 'Cerrar (el paciente ya no está interesado)')
+					{
+						$budget->detailed_result_activity = 'El paciente ya no está interesado';
+					}
+					else
+					{
+						$budget->detailed_result_activity = 'Ya se practicó la cirugía o se ejecutó el servicio';
+					} 
+					if ($this->Diarypatients->Budgets->save($budget))
+					{
+						$this->Flash->success(__('La actividad se cerró exitosamente'));
+					}
+					else
+					{
+						$this->Flash->error(__('No se pudo cerrar la actividad'));
+					}
+				}
+				else
+				{
+					$diarypatientProx = $this->Diarypatients->newEntity();
+					
+					$diarypatientProx->budget_id = $diarypatient->budget_id; 
+
+					$diarypatientProx->activity_date = $diarypatient->activity_date_next;
+					
+					$diarypatientProx->short_description_activity = $diarypatient->activity_next;
+					
+					$diarypatientProx->detailed_activity_description = $diarypatient->detail_next_activity;
+					
+					$diarypatientProx->activity_comments = "";
+					
+					setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+					date_default_timezone_set('America/Caracas');
+			
+					$currentDate = Time::now();
+					
+					$currentDate->hour(23)
+						->minute(59)
+						->second(59);
+						
+					$currentDateProx = $currentDate;
+					
+					$diarypatientProx->activity_date_next = $currentDateProx;  
+					
+					$diarypatientProx->activity_next = "";
+					
+					$diarypatientProx->detailed_next_activity = "";                 
+					
+					if ($this->Diarypatients->save($diarypatientProx)) 
+					{
+						$this->Flash->success(__('La actividad se cerró exitosamente'));
+					}
+					else
+					{
+						$this->Flash->error(__('No se pudo cerrar la actividad'));
+					}
+				}
             }
             else
             {
