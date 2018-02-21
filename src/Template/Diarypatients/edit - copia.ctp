@@ -40,9 +40,7 @@ use Cake\I18n\Time;
                     'Enviar recibo provisional de pago' => 'Enviar recibo provisional de pago',
                     'Planificar la fecha de la cirugía' => 'Planificar la fecha de la cirugía',
                     'Hacer la cirugía al paciente' => 'Hacer la cirugía al paciente',
-                    'Enviar factura al paciente' => 'Enviar factura al paciente',
-					'Cerrar (el paciente ya no está interesado)' => 'Cerrar (el paciente ya no está interesado)',
-					'Cerrar (ya se practicó la cirugía o se ejecutó el servicio)' => 'Cerrar (ya se practicó la cirugía o se ejecutó el servicio)']]);
+                    'Enviar factura al paciente' => 'Enviar factura al paciente']]);
                 echo $this->Form->input('detailed_next_activity', ['label' => 'Detalles de la actividad a realizar: ']);
                 ?>
             </fieldset>

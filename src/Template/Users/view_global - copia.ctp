@@ -217,7 +217,38 @@
                                                 <tr>
                                                     <td><?= h($budgets->application_date->format('d-m-Y')) ?></td>
                                                     <td><?= h($budgets->surgery) ?></td>
-                                                    <td><?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $budgets->id, 'Users', 'viewGlobal', $user->id, $user->patients[0]['id'], $user->parent_user], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-danger', 'title' => 'Modificar presupuesto']) ?></td> 
+													<td>
+														<?php 
+															if ($budgets->initial_budget == null):
+																echo $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'view',
+																	$budgets->id, 
+																	$user->full_name,
+																	$promoter->full_name, 
+																	$promoter->cell_phone, 
+																	$promoter->email, 'Users', 'viewGlobal', $user->id, $promoter->id], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto']);
+															else: 
+																$pdf = ".pdf";
+																$pos = strpos($budgets->initial_budget, $pdf);
+																if ($pos):
+																	echo $this->Html->link(__(''), '/files/budgets/initial_budget/' . $diarys->budget->initial_budget_dir . '/'. $diarys->budget->initial_budget, ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto', 'target' => '_blank']);
+																else:    
+																	$txt = ".txt";   
+																	$pos = strpos($budgets->initial_budget, $txt);
+																	if ($pos):
+																		echo $this->Html->link(__(''), '/files/budgets/initial_budget/' . $diarys->budget->initial_budget_dir . '/'. $diarys->budget->initial_budget, ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto', 'target' => '_blank']);
+																	else:      
+																		echo $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'view',
+																		$budgets->id, 
+																		$user->full_name,
+																		$promoter->full_name, 
+																		$promoter->cell_phone, 
+																		$promoter->email, 'Users', 'viewGlobal', $user->id, $promoter->id], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto']);
+																   endif;
+																endif;
+															endif;
+														?>													
+													</td>
+                                                    <td><?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $budgets->id, 'Users', 'viewGlobal', $user->id, $user->patients[0]['id'], $user->parent_user], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar presupuesto']) ?></td> 
                                                     <td><?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $budgets->id, 'Users', 'viewGlobal', $user->id], ['confirm' => __('Está seguro de que desea eliminar el presupuesto?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar']) ?></td>
                                                 </tr>
                                             <?php endif; ?>

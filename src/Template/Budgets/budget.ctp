@@ -18,7 +18,8 @@
 			<input id="country-patient" type="hidden" value=<?= $patient->country ?>>
 			<input id="email-patient" type="hidden" value=<?= $user->email ?>>
 			<input id="id-patient" type="hidden" value=<?= $patient->id ?>>
-			<input id="name-promoter" type="hidden" value=<?= $promoter->surname . ' ' . $promoter->first_name ?>>
+			<input id="surname-promoter" type="hidden" value=<?= $promoter->surname ?>>
+			<input id="name-promoter" type="hidden" value=<?= $promoter->first_name ?>>
 			<input id="cell-promoter" type="hidden" value=<?= $promoter->cell_phone ?>>
 			<input id="email-promoter" type="hidden" value=<?= $promoter->email ?>>
 			<input id="controller" type="hidden" value=<?= $controller ?>>
@@ -45,7 +46,7 @@
 			$.redirect('/sln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
 				firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
 				emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
-				namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
+				surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
 				coin : $('#coin').val(), controller : $('#controller').val(), action : $('#action').val() }); 
 		});		
     });
