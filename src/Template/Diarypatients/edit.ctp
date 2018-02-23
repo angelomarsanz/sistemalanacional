@@ -19,12 +19,47 @@ use Cake\I18n\Time;
                 <?php
                 setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
                 date_default_timezone_set('America/Caracas');
-                echo $this->Form->input('activity_date', ['label' => 'Fecha: ', 'disabled' => 'disabled']);
+				
+				$currentDate = time::now();
+											
+                echo $this->Form->input('activity_date', ['label' => 'Fecha: ', 'disabled' => 'disabled', 
+					'type' => 'date',
+					'monthNames' =>
+					['01' => 'Enero',
+					'02' => 'Febrero',
+					'03' => 'Marzo',
+					'04' => 'Abril',
+					'05' => 'Mayo',
+					'06' => 'Junio',
+					'07' => 'Julio',
+					'08' => 'Agosto',
+					'09' => 'Septiembre',
+					'10' => 'Octubre',
+					'11' => 'Noviembre',
+					'12' => 'Diciembre'],
+					'templates' => ['dateWidget' => '<ul class="list-inline"><li class="day">Día{{day}}</li><li class="month">Mes{{month}}</li><li class="year">Año{{year}}</li></ul>']]);				
                 echo $this->Form->input('short_description_activity', ['label' => 'Actividad: ', 'disabled' => 'disabled']);
                 echo $this->Form->input('detailed_activity_description', ['label' => 'Detalle: ', 'disabled' => 'disabled']);
-                echo $this->Form->input('activity_comments', ['label' => 'Comentarios del cierre de la actividad: ']);
-                echo $this->Form->input('activity_date_next', ['label' => 'Fecha próxima actividad: ']);
-                echo $this->Form->input('activity_next', ['label' => 'Actividad: ', 'options' => 
+                echo $this->Form->input('activity_comments', ['label' => 'Comentarios del cierre de la actividad: ']); 
+				echo $this->Form->input('activity_date_next', ['label' => 'Por favor seleccione la fecha en que se debe ejecutar la próxima actividad: ', 
+					'type' => 'date',
+					'value' => $currentDate,
+					'monthNames' =>
+					['01' => 'Enero',
+					'02' => 'Febrero',
+					'03' => 'Marzo',
+					'04' => 'Abril',
+					'05' => 'Mayo',
+					'06' => 'Junio',
+					'07' => 'Julio',
+					'08' => 'Agosto',
+					'09' => 'Septiembre',
+					'10' => 'Octubre',
+					'11' => 'Noviembre',
+					'12' => 'Diciembre'],
+					'templates' => ['dateWidget' => '<ul class="list-inline"><li class="day">Día{{day}}</li><li class="month">Mes{{month}}</li><li class="year">Año{{year}}</li></ul>']]);
+			
+				echo $this->Form->input('activity_next', ['label' => 'Actividad: ', 'options' => 
                     [null => '',
                     'Enviar presupuesto al paciente' => 'Enviar presupuesto al paciente',
                     'Completar datos del paciente' => 'Completar datos del paciente',
