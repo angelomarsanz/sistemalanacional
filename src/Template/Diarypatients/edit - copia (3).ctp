@@ -21,12 +21,15 @@ use Cake\I18n\Time;
                 date_default_timezone_set('America/Caracas');
 				
 				$currentDate = time::now();
-							
+											
                 echo $this->Form->input('activity_date', ['label' => 'Fecha: ', 'disabled' => 'disabled']);
                 echo $this->Form->input('short_description_activity', ['label' => 'Actividad: ', 'disabled' => 'disabled']);
                 echo $this->Form->input('detailed_activity_description', ['label' => 'Detalle: ', 'disabled' => 'disabled']);
                 echo $this->Form->input('activity_comments', ['label' => 'Comentarios del cierre de la actividad: ']); 
-				echo $this->Form->input('activity_date_next', ['label' => 'Por favor seleccione la fecha en que se debe ejecutar la próxima actividad: ']);		
+				/* echo $this->Form->input('activity_date_next', ['label' => 'Por favor seleccione la fecha en que se debe ejecutar la próxima actividad: ']); */
+				echo $this->Form->input('activity_date_next', ['label' => 'Por favor seleccione la fecha en que se debe ejecutar la próxima actividad: ', 
+					'value' => $currentDate]);
+			
 				echo $this->Form->input('activity_next', ['label' => 'Actividad: ', 'options' => 
                     [null => '',
                     'Enviar presupuesto al paciente' => 'Enviar presupuesto al paciente',

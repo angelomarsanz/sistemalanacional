@@ -21,12 +21,33 @@ use Cake\I18n\Time;
                 date_default_timezone_set('America/Caracas');
 				
 				$currentDate = time::now();
-							
+				
                 echo $this->Form->input('activity_date', ['label' => 'Fecha: ', 'disabled' => 'disabled']);
                 echo $this->Form->input('short_description_activity', ['label' => 'Actividad: ', 'disabled' => 'disabled']);
                 echo $this->Form->input('detailed_activity_description', ['label' => 'Detalle: ', 'disabled' => 'disabled']);
                 echo $this->Form->input('activity_comments', ['label' => 'Comentarios del cierre de la actividad: ']); 
-				echo $this->Form->input('activity_date_next', ['label' => 'Por favor seleccione la fecha en que se debe ejecutar la próxima actividad: ']);		
+				/* echo $this->Form->input('activity_date_next', ['label' => 'Por favor seleccione la fecha en que se debe ejecutar la próxima actividad: ']); */
+				echo $this->Form->input('activity_date_next', ['label' => 'Por favor seleccione la fecha en que se debe ejecutar la próxima actividad: ', 
+					'value' => $currentDate,
+					'monthNames' => 
+					['01' => 'Enero',
+					'02' => 'Febrero',
+					'03' => 'Marzo',
+					'04' => 'Abril',
+					'05' => 'Mayo',
+					'06' => 'Junio',
+					'07' => 'Julio',
+					'08' => 'Agosto',
+					'09' => 'Septiembre',
+					'10' => 'Octubre',
+					'11' => 'Noviembre',
+					'12' => 'Diciembre'],
+					'hour' => false,
+					'minute' => false,
+					'second' => false,
+					'meridian' => false,
+					'templates' => ['dateWidget' => '<ul class="list-inline"><li class="day">Día{{day}}</li><li class="month">Mes{{month}}</li><li class="year">Año{{year}}</li></ul>']]); 
+				
 				echo $this->Form->input('activity_next', ['label' => 'Actividad: ', 'options' => 
                     [null => '',
                     'Enviar presupuesto al paciente' => 'Enviar presupuesto al paciente',
