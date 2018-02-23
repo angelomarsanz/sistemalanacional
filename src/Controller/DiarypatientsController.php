@@ -499,14 +499,8 @@ class DiarypatientsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) 
         {
             $diarypatient = $this->Diarypatients->patchEntity($diarypatient, $this->request->data);
-											
-			print('<br />');
-					
-			debug($diarypatient->activity_date_next);
-			
+													
 			$tmpTime = new Time();
-			
-			debug($tmpTime);
 			
 			$tmpTime
 				->year($diarypatient->activity_date_next->year)
@@ -515,12 +509,8 @@ class DiarypatientsController extends AppController
 				->hour(23)
 				->minute(59)
 				->second(59);
-				
-			debug($tmpTime);
-			
+							
 			$diarypatient->activity_date_next = $tmpTime;
-			
-			debug($diarypatient->activity_date_next);
 			
             $diarypatient->status = true;
 			
@@ -593,7 +583,7 @@ class DiarypatientsController extends AppController
 				$this->Flash->error(__('El último mensaje'));
                 $this->Flash->error(__('No se pudo cerrar la actividad'));    
             }
-//            return $this->redirect(['action' => $origin]); 
+            return $this->redirect(['action' => $origin]); 
         }
         $this->set(compact('diarypatient', 'origin', 'promoter'));
         $this->set('_serialize', ['diarypatient', 'origin', 'promoter']);
