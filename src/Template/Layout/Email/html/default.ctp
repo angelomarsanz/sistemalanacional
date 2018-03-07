@@ -16,6 +16,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $this->fetch('title') ?></title>
 </head>
 <body>

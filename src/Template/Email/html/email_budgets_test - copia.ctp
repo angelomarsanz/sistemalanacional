@@ -1,16 +1,49 @@
-<h2>Cirugías La Nacional, C.A.</h2>
-<p>Rif: J-40024519-2</p>
-<p>Avenida Bolívar Sur, Valencia 2001, Carabobo, Venezuela</p>
-<p>+58-0241-835-2284</p>
+<style>
+    .iconoMenu
+    {
+        padding-left: 10px;
+        color: #9494b8;
+        font-size: 150%;
+    }
+    .logo
+    {
+        padding: 5px;
+        margin: 5px;
+        border: 0;
+        background-color: #00ffcc;
+     }
+
+</style>
+<div style="width: 100%; float: left;"> 
+	<img src='http://cirugiaslanacional.com/sln/webroot/img/logo.png' width = 200 height = 75 class="logo"/>
+</div>
+<div style="width: 100%; float: left;">
+	<p>Rif: J-40024519-2</p>
+	<p>Avenida Bolívar Sur, Valencia 2001, Carabobo, Venezuela</p>
+	<p>+58-0241-835-2284</p>
+</div>
 <br />
-<h3>---------------- CLIENT DATA / DATOS DEL CLIENTE -----------------</h3>
+<div style="width: 100%; float: left;">
+	<img src='http://cirugiaslanacional.com/sln/webroot/img/iconcirculod.png' width = 50 height = 50 />
+</div>
+<div style="width: 100%; float: left;">
+	<h3>CLIENT DATA / DATOS DEL CLIENTE</h3>
+</div>
+<div>
 <p>Name / Nombre / Razón social: <?= $varPatient ?></p>
 <p>ID / Documento de identidad: <?= $varIdentidy ?></p>
 <p>Phone / Teléfono: <?= $varPhone ?></p>
 <p>Address / Dirección: <?= $varAddress ?></p>
 <p>Country / país: <?= $varCountry ?></p>
+</div>
 <br />
-<h3>--------------- BUDGET / PRESUPUESTO ------------------------------</h3>
+<div style="width: 100%; float: left;">
+	<img src='http://cirugiaslanacional.com/sln/webroot/img/icon2.png' width = 50 height = 50 />
+</div>
+<div style="width: 100%; float: left;">
+	<h3>BUDGET / PRESUPUESTO</h3>
+</div>
+<div>
 <p>Budget / Presupuesto Nro. <?= $varId ?> </p>
 <p>Start Date / Fecha de emisión: <?= $varStartDate->format('d-m-Y') ?></p>
 <p>Expiration date / Fecha de vencimiento: <?= $varExpirationDate->format('d-m-Y') ?></p>
@@ -29,3 +62,4 @@ del mismo, usted confirma que leyó y aceptó los Términos y Condiciones de nue
 <?php else: ?>
 <p>El promotor(a): <?= $varNamePromoter . ' teléfono ' . $varPhonePromoter . ' email ' . $varMailPromoter ?></p>
 <?php endif; ?>
+</div>
