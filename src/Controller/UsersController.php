@@ -74,26 +74,53 @@ class UsersController extends AppController
 
     public function testFunction()
     {
-        $correo = new Email(); 
-        $correo
-			->transport('donWeb')
-			->template('email_prueba') 
-			->emailFormat('html') 
-			->to('angelomarsanz@gmail.com') 
-			->from(['noresponder@cirugiaslanacional.com' => 'Cirugías La Nacional']) 
-			->subject('prueba'); 
-		  
-        $correo->SMTPAuth = true;
-        $correo->CharSet = "utf-8";     
+		setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+		date_default_timezone_set('America/Caracas');
 
-        if($correo->send())
+		$currentDate = time::now();
+		
+		$service = new ServicesController;
+	
+		$arrayMail = [];
+
+        $arrayResult = $service->searchService('MASTOPEXIA DE AUMENTO');
+
+        if ($arrayResult['indicator'] == 0)
         {
-            $result = 0;
-        }
-        else
-        {
-            $result = 1;
-        }
+			$arrayMail['mail'] = 'angelomarsanz@gmail.com';
+			$arrayMail['surgery'] = 'MASTOPEXIA DE AUMENTO';
+			$arrayMail['costBolivars'] = $arrayResult['costBolivars'];
+			$arrayMail['costDollars'] = $arrayResult['costDollars'];
+			$arrayMail['itemes'] = nl2br(htmlentities($arrayResult['itemes']));				
+			$arrayMail['subject'] = 'Presupuesto APP-99999'; 
+			$arrayMail['firstName'] = 'PEDRO';
+			$arrayMail['surname'] = 'PÉREZ';
+			$arrayMail['identidy'] = 'V-10349999';
+			$arrayMail['phone'] = '0426-5450888';
+			$arrayMail['address'] = 'VALENCIA';
+			$arrayMail['country'] = 'VENEZUELA';
+			$arrayMail['codeBudget'] = 'APP-99999'; 
+			$arrayMail['dateBudget'] = $currentDate;
+			$arrayMail['expirationDate'] = $currentDate->addDays(3);
+			$arrayMail['namePromoter'] = 'CARLOS GARCÍA';
+			$arrayMail['mailPromoter'] = 'transemainc@gmail.com';
+			$arrayMail['phonePromoter'] = '0426-3453311';
+			
+			$result = $this->mailBudgetTest($arrayMail);
+			
+			if ($result == 0)
+			{
+				$this->Flash->success(__('Presupuesto enviado exitosamente'));
+			}
+			else
+			{
+				$this->Flash->error(__('No se pudo enviar el presupuesto'));
+			}
+		}
+		else
+		{
+			$this->Flash->error(__('No se encontró el servicio'));
+		}
     }
 
     public function testComunicationSend()
@@ -2292,6 +2319,49 @@ class UsersController extends AppController
             $result = 1;
         }
         
+        return $result;
+    }
+    public function mailBudgetTest($arrayMail = null)
+    {
+        $correo = new Email(); 
+        $correo
+		  ->transport('donWeb')
+          ->template('email_budgets_test') 
+          ->emailFormat('html') 
+          ->to($arrayMail['mail']) 
+		  ->cc($arrayMail['mailPromoter'])
+//		  ->bcc('publicidad.cirugiaslanacional@gmail.com')
+          ->from(['noresponder@cirugiaslanacional.com' => 'Cirugías La Nacional']) 
+          ->subject($arrayMail['subject'])
+          ->viewVars([ 
+            'varPatient' => $arrayMail['firstName'] . ' ' . $arrayMail['surname'],
+            'varIdentidy' => $arrayMail['identidy'],
+            'varPhone' => $arrayMail['phone'],
+            'varAddress' => $arrayMail['address'],
+            'varCountry' => $arrayMail['country'],
+            'varId' => $arrayMail['codeBudget'],
+            'varStartDate' => $arrayMail['dateBudget'],
+            'varExpirationDate' => $arrayMail['expirationDate'],
+            'varSurgery' => $arrayMail['surgery'],
+            'varItemes' => $arrayMail['itemes'],
+            'varTotal' => $arrayMail['costBolivars'],
+			'varNamePromoter' => $arrayMail['namePromoter'],
+			'varPhonePromoter' => $arrayMail['phonePromoter'],
+			'varMailPromoter' => $arrayMail['mailPromoter']
+          ]);
+  
+        $correo->SMTPAuth = true;
+        $correo->CharSet = "utf-8";     
+
+        if($correo->send())
+        {
+            $result = 0;
+        }
+        else
+        {
+            $result = 1;
+        }
+
         return $result;
     }
 }
