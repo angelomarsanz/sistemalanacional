@@ -48,7 +48,24 @@ class DiarypatientsController extends AppController
 
         }
         return parent::isAuthorized($user);
-    }        
+    }  
+
+	public function testFunction()
+	{
+		$pruebaHora = new Time();
+		
+		debug($pruebaHora);
+		
+		$pruebaHora
+			->year(1971)
+			->month(03)
+			->day(27)
+			->hour(23)
+			->minute(59)
+			->second(59);
+			
+		debug($pruebaHora);
+	}
     
     /**
      * Index method
@@ -473,17 +490,30 @@ class DiarypatientsController extends AppController
      */
     public function edit($id = null, $promoter = null, $origin = null)
     {
+		setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+		date_default_timezone_set('America/Caracas');
+					
         $diarypatient = $this->Diarypatients->get($id, [
             'contain' => ['Budgets' => ['Patients' => ['Users']]]
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) 
         {
             $diarypatient = $this->Diarypatients->patchEntity($diarypatient, $this->request->data);
-            
+													
+			$tmpTime = new Time();
+			
+			$tmpTime
+				->year($diarypatient->activity_date_next->year)
+				->month($diarypatient->activity_date_next->month)
+				->day($diarypatient->activity_date_next->day)
+				->hour(23)
+				->minute(59)
+				->second(59);
+							
+			$diarypatient->activity_date_next = $tmpTime;
+			
             $diarypatient->status = true;
-						
-			$this->Flash->success(__('$diarypatient->activity_date_next: ' . $diarypatient->activity_date_next));
-				
+			
             if ($this->Diarypatients->save($diarypatient)) 
             {
 				if ($diarypatient->activity_next == 'Cerrar (el paciente ya no está interesado)' ||
@@ -523,10 +553,7 @@ class DiarypatientsController extends AppController
 					$diarypatientProx->detailed_activity_description = $diarypatient->detail_next_activity;
 					
 					$diarypatientProx->activity_comments = "";
-					
-					setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
-					date_default_timezone_set('America/Caracas');
-			
+							
 					$currentDate = Time::now();
 					
 					$currentDate->hour(23)
@@ -556,7 +583,7 @@ class DiarypatientsController extends AppController
 				$this->Flash->error(__('El último mensaje'));
                 $this->Flash->error(__('No se pudo cerrar la actividad'));    
             }
-//            return $this->redirect(['action' => $origin]); 
+            return $this->redirect(['action' => $origin]); 
         }
         $this->set(compact('diarypatient', 'origin', 'promoter'));
         $this->set('_serialize', ['diarypatient', 'origin', 'promoter']);

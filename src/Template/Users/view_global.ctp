@@ -201,6 +201,7 @@
                             <?php
 								echo $this->Form->input('surgery', ['label' => 'Servicio médico: *', 'required' => 'true', 'options' => $services]); 
 							?>
+							<button id="aceptar" type="button" class="btn btn-success">Aceptar</button>
                         </div>
                         <?php foreach ($user->patients as $patients): ?>
                             <div class="table-responsive">
@@ -433,7 +434,7 @@ $(document).ready(function(){
         $('#agregar-presupuesto-paciente').toggle('slow');
     });
 
-    $('#surgery').change(function(e)
+    $('#aceptar').click(function(e)
     {
         e.preventDefault();
 

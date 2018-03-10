@@ -1282,6 +1282,15 @@ class UsersController extends AppController
     
     public function mailBudget($arrayMail = null)
     {
+		if (strtoupper($arrayMail['country']) == 'VENEZUELA') 
+		{
+			$varTotal = $arrayMail['costBolivars'];
+		}
+		else
+		{
+			$varTotal = $arrayMail['costDollars'];
+		}
+		
         $correo = new Email(); 
         $correo
 		  ->transport('donWeb')
@@ -1303,7 +1312,7 @@ class UsersController extends AppController
             'varExpirationDate' => $arrayMail['expirationDate'],
             'varSurgery' => $arrayMail['surgery'],
             'varItemes' => $arrayMail['itemes'],
-            'varTotal' => $arrayMail['costBolivars'],
+            'varTotal' => $varTotal,
 			'varNamePromoter' => $arrayMail['namePromoter'],
 			'varPhonePromoter' => $arrayMail['phonePromoter'],
 			'varMailPromoter' => $arrayMail['mailPromoter']
@@ -1329,7 +1338,219 @@ class UsersController extends AppController
 
     public function addWebBasicF()
     {
+        $patient = new PatientsController;
         
+        $budget = new BudgetsController;
+        
+        $diarypatient = new DiarypatientsController;
+        
+        $service = new ServicesController;
+        
+        $iteme = new ItemesController;
+
+        if ($this->request->is('post')) 
+        {
+            setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+            date_default_timezone_set('America/Caracas');
+
+            $currentDate = time::now();
+
+            $jsondata = [];
+            
+            $firstNameTrim = trim($_POST['firstName']);
+            
+            $firstName = strtoupper($firstNameTrim);
+
+            $surnameTrim = trim($_POST['surname']);
+            
+            $surname = strtoupper($surnameTrim);
+            
+            $firstNameSurname = strtolower($firstName) . strtolower($surname);
+            
+            $users = TableRegistry::get('Users');
+            
+            $arrayResult = $users->find('username', ['firstname_surname' => $firstNameSurname]);
+            
+            if ($arrayResult['indicator'] == 0)
+            {
+                $consecutive = $arrayResult['searchRequired'] + 1;  
+                
+                $username = $firstNameSurname . $consecutive;
+            }
+            else 
+            {
+                $username = $firstNameSurname . '1';
+            }
+            
+            $password = substr($firstName, 0, 1) . substr($surname, 0, 1) . $currentDate->second . $currentDate->minute . '$';
+            
+            $birthdate = $_POST['birthdate'];
+            
+            $countryTrim = trim($_POST['country']);
+            
+            $country = strtoupper($countryTrim);
+    
+            $addressTrim = trim($_POST['address']);
+            
+            $address = strtoupper($addressTrim);
+            
+            $surgeryTrim = trim($_POST['surgery']);
+            
+            $surgery = strtoupper($surgeryTrim);
+            
+            $emailTrim = trim($_POST['email']);
+            
+            $email = strtolower($emailTrim);
+		    
+            $lastRecord = $this->Users->find('all', ['conditions' => [['Users.role' => 'Paciente'], ['Users.email' => $email]], 
+                'order' => ['Users.created' => 'DESC']]);
+            
+            $row = $lastRecord->first();
+                
+            if ($row)
+            {
+                $idUser = $row->id;
+                
+                if ($row->user_status != 'ACTIVO' || $row->deleted_record == true)
+                {
+                    $this->restore($idUser, 'Users', 'addWebBasic');                                            
+                }
+                                
+                $jsondata['success'] = false;
+                $jsondata['data'] = 'El usuario ya existe con el id: ' . $row->id;
+            }
+            else
+            {
+                $user = $this->Users->newEntity();
+            
+                $user->parent_user = 1;
+                $user->username = $username;
+                $user->password = $password;
+                $user->type_of_identification = $_POST['typeOfIdentification'];
+                $user->identidy_card = $_POST['identidyCard'];
+                $user->role = 'Paciente';
+                $user->first_name = $firstName;
+                $user->second_name = '';
+                $user->surname = $surname;
+                $user->second_surname = '';
+                $user->sex = $_POST['sex'];
+                $user->email = $email;
+                $user->cell_phone = $_POST['cellPhone'];
+                $user->responsible_user = 'clnacional2017';
+                
+                if ($this->Users->save($user)) 
+                {
+                    $lastRecord = $this->Users->find('all', ['conditions' => ['Users.username' => $username], 
+                        'order' => ['Users.created' => 'DESC']]);
+            
+                    $row = $lastRecord->first();
+                
+                    if ($row)
+                    {
+                        $idUser = $row->id;
+                        $jsondata['success'] = false;
+                        $jsondata['data'] = 'El usuario se creó con el id: ' . $row->id;
+                    }
+                }
+                else
+                {
+                    $jsondata['success'] = false;
+                    $jsondata['data'] = 'No se pudo crear el usuario';
+                }
+
+            }
+        
+            if (isset($idUser))
+            {
+                $idPatient = $patient->addWebPatient($idUser, $birthdate, $country, $address);
+
+                if ($idPatient > 0)
+                {
+                    $jsondata['success'] = true;
+                    $jsondata['data'] = 'El usuario y el paciente se crearon exitosamente';
+                    
+                    $arrayMail = [];
+
+                    $arrayResult = $service->searchService($surgery);
+
+                    if ($arrayResult['indicator'] == 0)
+                    {
+                        $arrayMail['mail'] = $email;
+						$arrayMail['surgery'] = $surgery;
+                        $arrayMail['costBolivars'] = $arrayResult['costBolivars'];
+                        $arrayMail['costDollars'] = $arrayResult['costDollars'];
+                        $arrayMail['itemes'] = nl2br(htmlentities($arrayResult['itemes']));
+                        $itemesBudget = $arrayResult['itemes'];
+
+                        if ($country == 'VENEZUELA')
+                        {
+                            $arrayResult = $budget->addWebBudget($idPatient, $surgery, 'BOLIVAR', $arrayMail['costBolivars']);                            
+                        }
+                        else
+                        {
+                            $arrayResult = $budget->addWebBudget($idPatient, $surgery, 'DOLLAR', $arrayMail['costDollars']);                            
+                        }
+
+                        if($arrayResult['indicator'] == 0)
+                        {
+                            $jsondata['success'] = true;
+                            $jsondata['data'] = 'El usuario, el paciente y el presupuesto se crearon exitosamente';
+                        
+                            $arrayMail['subject'] = 'Presupuesto ' . $arrayResult['codeBudget']; 
+                            $arrayMail['firstName'] = $firstName;
+                            $arrayMail['surname'] = $surname;
+                            $arrayMail['identidy'] = $_POST['typeOfIdentification'] . '-' . $_POST['identidyCard'];
+                            $arrayMail['phone'] = $_POST['cellPhone'];
+                            $arrayMail['address'] = $address;
+                            $arrayMail['country'] = $country;
+                            $arrayMail['codeBudget'] = $arrayResult['codeBudget']; 
+                            $arrayMail['dateBudget'] = $arrayResult['dateBudget'];
+                            $arrayMail['expirationDate'] = $arrayResult['expirationDate'];						
+							$arrayMail['namePromoter'] = 'Sitio web';
+							$arrayMail['mailPromoter'] = 'angelomarsanz@gmail.com';
+							$arrayMail['phonePromoter'] = '+58-0241-835-2284';
+                            
+                            $idBudget = $arrayResult['id'];
+                            
+                            $result = $iteme->add($idBudget, $itemesBudget);
+
+                            $result = $this->mailBudget($arrayMail);
+
+                            $result = $diarypatient->addWebDiary($idBudget);
+    
+                            if ($result > 0)
+                            {
+                                $jsondata['success'] = true;
+                                $jsondata['data'] = 'El usuario, el paciente, presupuesto y agenda fueron creados exitosamente';
+                            }
+                            else
+                            {
+                                $jsondata['success'] = false;
+                                $jsondata['data'] = 'No se pudo crear la agenda del paciente';
+                            }
+                        }
+                        else
+                        {
+                            $jsondata['success'] = false;
+                            $jsondata['data'] = 'No se pudo crear el presupuesto';
+                            
+                        }
+                    }
+                    else
+                    {
+                        $jsondata['success'] = false;
+                        $jsondata['data'] = 'No se pudo crear el presupuesto';
+                    }
+                }
+                else
+                {
+                    $jsondata['success'] = false;
+                    $jsondata['data'] = 'No se pudo crear el paciente';
+                }
+            }
+        
+            exit(json_encode($jsondata, JSON_FORCE_OBJECT));	
+		}
     }
 
     /**

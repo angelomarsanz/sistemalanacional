@@ -34,10 +34,10 @@
 	<h3>DETAILS / DETALLES</h3>
 	<?= $varItemes ?>
 	<br />
-	<?php if (strtoupper($varCountry) == 'VENEZUELA'; ?>
-		<h3>TOTAL GENERAL / GRAND TOTAL Bs. <?= number_format($varTotal, 2, ",", ".") ?></h3>
+	<?php if (strtoupper($varCountry) == 'VENEZUELA'): ?>
+		<h3>GRAND TOTAL / TOTAL GENERAL Bs. <?= number_format($varTotal, 2, ",", ".") ?></h3>
 	<?php else: ?>
-		<h3>TOTAL GENERAL / GRAND TOTAL $ <?= number_format($varTotal, 2, ".", ",") ?></h3>		
+		<h3>GRAND TOTAL / TOTAL GENERAL $ (USD) <?= number_format($varTotal, 2, ".", ",") ?></h3>		
 	<?php endif; ?>
 	<br />
 </div>

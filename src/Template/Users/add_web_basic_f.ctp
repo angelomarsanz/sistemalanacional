@@ -40,13 +40,13 @@
                         <p><input id="email" name="email" type='text' class='form-control' value='pruebasistema@gmail.com'><p>
 
                         <label class="control-label" for="country">País: </label>
-                        <p><input id="country" name="country" type='text' class='form-control' value='VENEZUELA'><p>
+                        <p><input id="country" name="country" type='text' class='form-control' value='Venezuela'><p>
 
                         <label class="control-label" for="address">Dirección: </label>
                         <p><input id="address" name="address" type='text' class='form-control' value='LOS CERRITOS'><p>
 
                         <label class="control-label" for="surgery">Servicio: </label>
-                        <p><input id="surgery" name="surgery" type='text' class='form-control' value='APENDICECTOMIA'><p>
+                        <p><input id="surgery" name="surgery" type='text' class='form-control' value='DERMOLIPECTOMIA + LIPOTRANSFERENCIA O LIPOFILLING'><p>
 
                         <label class="control-label" for="coin">Moneda: </label>
                         <p><input id="coin" name="coin" type='text' class='form-control' value='BOLIVAR'><p>

@@ -285,42 +285,8 @@ class DiarypatientsController extends AppController
 
         if ($this->Diarypatients->save($diarypatient)) 
         {
-            $diarypatient = $this->Diarypatients->newEntity();
-            
-            $diarypatient->budget_id = $idBudget;
-            
-            $todayDate = $currentDate;
-            
-            $todayDate->modify('+1 days');
-    
-            $diarypatient->activity_date = $todayDate;
-            
-            $diarypatient->short_description_activity = "Completar datos del paciente";
-            
-            $diarypatient->detailed_activity_description = "Sin detalles";
-            
-            $diarypatient->activity_comments = "";
-
-            $diarypatient->activity_date_next = $currentDateProx;  
-            
-            $diarypatient->activity_next = "";
-            
-            $diarypatient->detailed_next_activity = ""; 
-            
-            if ($this->Auth->user('username'))
-            {
-                $diarypatient->responsible_user = $this->Auth->user('username');
-            }
-
-            if ($this->Diarypatients->save($diarypatient)) 
-            {
-                $result = 0;    
-            }       
-            else
-            {
-                $result = 1;
-            }
-        }
+            $result = 0;    
+        }       
         else
         {
             $result = 1;
@@ -366,38 +332,7 @@ class DiarypatientsController extends AppController
 
         if ($this->Diarypatients->save($diarypatient)) 
         {
-            $diarypatient = $this->Diarypatients->newEntity();
-            
-            $diarypatient->budget_id = $idBudget;
-            
-            $todayDate = $currentDate;
-            
-            $todayDate->modify('+1 days');
-    
-            $diarypatient->activity_date = $todayDate;
-            
-            $diarypatient->short_description_activity = "Completar datos del paciente";
-            
-            $diarypatient->detailed_activity_description = "Sin detalles";
-            
-            $diarypatient->activity_comments = "";
-
-            $diarypatient->activity_date_next = $currentDateProx;  
-            
-            $diarypatient->activity_next = "";
-            
-            $diarypatient->detailed_next_activity = ""; 
-            
-            $diarypatient->responsible_user = 'clnacional2017';
-
-            if ($this->Diarypatients->save($diarypatient)) 
-            {
-                $result = 1;    
-            }       
-            else
-            {
-                $result = 0;
-            }
+            $result = 1;    
         }
         else
         {

@@ -249,11 +249,6 @@
                     echo $this->Form->input('address', ['required' => 'true', 'label' => 'Dirección completa (urbanización o barrio, calle o avenida, Nro. de casa, edificio, piso, Nro. de apartamento, sector y punto de referencia): *']); 
                     echo $this->Form->input('profession', ['label' => 'Profesión u oficio: *', 'required' => 'true']);					
                     echo $this->Form->input('surgery', ['label' => 'Servicio médico: *', 'required' => 'true', 'options' => $services]); 
-                    echo $this->Form->input('coin', 
-                        ['label' => 'Moneda en que se emitirá el presupuesto: ', 'required' => 'true', 'options' => 
-                        [null => ' ',
-                        'BOLIVAR' => 'BOLIVAR',
-                        'DOLLAR' => 'DOLLAR']]);
                     echo $this->Form->input('sponsor_type', 
                         ['required' => 'true', 'options' => 
                         [null => ' ',

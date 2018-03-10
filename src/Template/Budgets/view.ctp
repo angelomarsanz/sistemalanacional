@@ -41,7 +41,7 @@
 					<?php if (strtoupper($budget->patient->country) == 'VENEZUELA'): ?>
 						<h4>GRAND TOTAL / TOTAL GENERAL Bs. <?= number_format($budget->amount_budget, 2, ",", ".") ?></h4>
 					<?php else: ?>
-						<h4>GRAND TOTAL / TOTAL GENERAL $ <?= number_format($budget->amount_budget, 2, ".", ",") ?></h4>			
+						<h4>GRAND TOTAL / TOTAL GENERAL $ (USD) <?= number_format($budget->amount_budget, 2, ".", ",") ?></h4>			
 					<?php endif; ?>
 					<br />
 					<p>Al aprobar el presente presupuesto y completar el proceso de compra y pago

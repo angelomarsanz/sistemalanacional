@@ -32,6 +32,7 @@
 			<?php
 				echo $this->Form->input('surgery', ['label' => 'Servicio médico: *', 'required' => 'true', 'options' => $services]);
 			?>
+			<button id="aceptar" type="button" class="btn btn-success">Aceptar</button>
 		</div>
     </div>
 </div>
@@ -40,7 +41,7 @@
     { 
         $(".decimal-2-places").numeric({ decimalPlaces: 2 });
 		
-		$('#surgery').change(function(e)
+		$('#aceptar').click(function(e)
 		{
 			e.preventDefault();
 			$.redirect('/sln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
