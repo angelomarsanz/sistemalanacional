@@ -3,6 +3,8 @@
     use Cake\Routing\Router; 
 ?>
 
+<!-- Esta formulario es solo para pruebas de comunicación -->
+
 <div class='container'>
     <div class="row">
         <div class="col-md-6">

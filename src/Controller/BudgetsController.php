@@ -512,13 +512,13 @@ class BudgetsController extends AppController
 			$arrayMail['itemes'] = nl2br(htmlentities($arrayResult['itemes']));
 			$itemesBudget = $arrayResult['itemes'];
 		      
-			if ($_POST['coin'] == 'BOLIVAR')
+			if (strtoupper($_POST['countryPatient']) == 'VENEZUELA')
 			{
-				$arrayResult = $this->addAutomatic($_POST['idPatient'], $arrayResult['serviceDescription'], $_POST['coin'], $arrayMail['costBolivars']);                            
+				$arrayResult = $this->addAutomatic($_POST['idPatient'], $arrayResult['serviceDescription'], 'BOLIVAR', $arrayMail['costBolivars']);                            
 			}
 			else
 			{
-				$arrayResult = $this->addAutomatic($_POST['idPatient'], $arrayResult['serviceDescription'], $_POST['coin'], $arrayMail['costDollars']);                            
+				$arrayResult = $this->addAutomatic($_POST['idPatient'], $arrayResult['serviceDescription'], 'DOLLAR', $arrayMail['costDollars']);                            
 			}
 
 			if($arrayResult['indicator'] == 0)

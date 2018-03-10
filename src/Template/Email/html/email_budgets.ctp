@@ -34,7 +34,11 @@
 	<h3>DETAILS / DETALLES</h3>
 	<?= $varItemes ?>
 	<br />
-	<h3>TOTAL GENERAL / GRAND TOTAL Bs. <?= number_format($varTotal, 2, ",", ".") ?></h3>
+	<?php if (strtoupper($varCountry) == 'VENEZUELA'; ?>
+		<h3>TOTAL GENERAL / GRAND TOTAL Bs. <?= number_format($varTotal, 2, ",", ".") ?></h3>
+	<?php else: ?>
+		<h3>TOTAL GENERAL / GRAND TOTAL $ <?= number_format($varTotal, 2, ".", ",") ?></h3>		
+	<?php endif; ?>
 	<br />
 </div>
 <p>Al aprobar el presente presupuesto y completar el proceso de compra y pago

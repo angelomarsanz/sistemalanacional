@@ -69,6 +69,9 @@ class UsersTable extends Table
         $this->hasMany('Employees', [
             'foreignKey' => 'user_id'
         ]);
+        $this->hasMany('Commissions', [
+            'foreignKey' => 'user_id'
+        ]);
     }
 
     /**

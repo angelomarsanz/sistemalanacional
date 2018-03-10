@@ -178,7 +178,7 @@ class BudgetsController extends AppController
 		
 		$expirationDate = Time::now();
 		
-		$budget->expiration_date = $expirationDate->addDays(7);
+		$budget->expiration_date = $expirationDate->addDays(3);
 		
 		$budget->amount_budget = $cost;
 	
@@ -247,7 +247,7 @@ class BudgetsController extends AppController
                 
             $diferent = $row->application_date->diff($currentDate)->d;
  
-            if ($diferent > 6)
+            if ($diferent > 3)
             {
                 $toRegister = 1;
             }
@@ -288,7 +288,7 @@ class BudgetsController extends AppController
             
             $expirationDate = Time::now();
             
-            $budget->expiration_date = $expirationDate->addDays(7);
+            $budget->expiration_date = $expirationDate->addDays(3);
             
             $budget->amount_budget = $cost;
         
@@ -533,7 +533,9 @@ class BudgetsController extends AppController
 				$arrayMail['codeBudget'] = $arrayResult['codeBudget']; 
 				$arrayMail['dateBudget'] = $arrayResult['dateBudget'];
 				$arrayMail['expirationDate'] = $arrayResult['expirationDate'];
-				$arrayMail['mailPromoter'] = $_POST['emailPromoter'];
+				$arrayMail['mailPromoter'] = $_POST['emailPromoter'];			
+				$arrayMail['namePromoter'] = $_POST['namePromoter'] . ' ' . $_POST['namePromoter'];
+				$arrayMail['phonePromoter'] = $_POST['cellPromoter'];
 				
 				$idBudget = $arrayResult['id'];
 				

@@ -22,15 +22,15 @@
 			<input id="name-promoter" type="hidden" value=<?= $promoter->first_name ?>>
 			<input id="cell-promoter" type="hidden" value=<?= $promoter->cell_phone ?>>
 			<input id="email-promoter" type="hidden" value=<?= $promoter->email ?>>
+			<?php if (strtoupper($patient->country) == 'VENEZUELA'): ?>
+				<input id="coin" type="hidden" value="BOLIVAR">
+			<?php else: ?>
+				<input id="coin" type="hidden" value="DOLLAR">
+			<?php endif; ?>
 			<input id="controller" type="hidden" value=<?= $controller ?>>
 			<input id="action" type="hidden" value=<?= $action ?>>
 			<?php
 				echo $this->Form->input('surgery', ['label' => 'Servicio médico: *', 'required' => 'true', 'options' => $services]);
-				echo $this->Form->input('coin', 
-					['label' => 'Moneda en que se emitirá el presupuesto: ', 'required' => 'true', 'options' => 
-					[null => ' ',
-					'BOLIVAR' => 'BOLIVAR',
-					'DOLLAR' => 'DOLLAR']]);
 			?>
 		</div>
     </div>
@@ -40,7 +40,7 @@
     { 
         $(".decimal-2-places").numeric({ decimalPlaces: 2 });
 		
-		$('#coin').change(function(e)
+		$('#surgery').change(function(e)
 		{
 			e.preventDefault();
 			$.redirect('/sln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 

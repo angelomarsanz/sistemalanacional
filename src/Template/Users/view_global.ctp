@@ -61,6 +61,11 @@
 		<input id="name-promoter" type="hidden" value=<?= $promoter->first_name ?>>
 		<input id="cell-promoter" type="hidden" value=<?= $promoter->cell_phone ?>>
 		<input id="email-promoter" type="hidden" value=<?= $promoter->email ?>>
+		<?php if (strtoupper($user->patients[0]['country']) == 'VENEZUELA'): ?>
+			<input id="coin" type="hidden" value="BOLIVAR">
+		<?php else: ?>
+			<input id="coin" type="hidden" value="DOLLAR">
+		<?php endif; ?>
     </div>
     <div class="row">
         <div class="col col-sm-4">
@@ -195,11 +200,6 @@
                         <div id="agregar-presupuesto-paciente" style="display:none">   
                             <?php
 								echo $this->Form->input('surgery', ['label' => 'Servicio médico: *', 'required' => 'true', 'options' => $services]); 
-								echo $this->Form->input('coin', 
-									['label' => 'Moneda en que se emitirá el presupuesto: ', 'required' => 'true', 'options' => 
-									[null => ' ',
-									'BOLIVAR' => 'BOLIVAR',
-									'DOLLAR' => 'DOLLAR']]);
 							?>
                         </div>
                         <?php foreach ($user->patients as $patients): ?>
@@ -433,7 +433,7 @@ $(document).ready(function(){
         $('#agregar-presupuesto-paciente').toggle('slow');
     });
 
-    $('#coin').change(function(e)
+    $('#surgery').change(function(e)
     {
         e.preventDefault();
 

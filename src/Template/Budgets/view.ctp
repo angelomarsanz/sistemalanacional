@@ -38,7 +38,7 @@
 					<h5>--------------- DETAILS / DETALLES ---------------------------------</h5>
 					<?= $itemes ?>
 					<BR />
-					<?php if ($budget->coin == 'BOLIVAR'): ?>
+					<?php if (strtoupper($budget->patient->country) == 'VENEZUELA'): ?>
 						<h4>GRAND TOTAL / TOTAL GENERAL Bs. <?= number_format($budget->amount_budget, 2, ",", ".") ?></h4>
 					<?php else: ?>
 						<h4>GRAND TOTAL / TOTAL GENERAL $ <?= number_format($budget->amount_budget, 2, ".", ",") ?></h4>			

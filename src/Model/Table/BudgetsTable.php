@@ -86,6 +86,9 @@ class BudgetsTable extends Table
         $this->hasMany('Patienthistories', [
             'foreignKey' => 'budget_id'
         ]);
+        $this->hasMany('Commissions', [
+            'foreignKey' => 'budget_id'
+        ]);
     }
 
     /**
