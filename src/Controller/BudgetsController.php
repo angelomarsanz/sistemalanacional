@@ -11,6 +11,8 @@ use App\Controller\ItemesController;
 
 use App\Controller\DiarypatientsController;
 
+use App\Controller\CommissionsController;
+
 use Cake\I18n\Time;
 
 use Cake\Mailer\Email;
@@ -53,6 +55,13 @@ class BudgetsController extends AppController
             elseif ($user['role'] === 'Call center')
             {
                 if(in_array($this->request->action, ['edit', 'view', 'budget', 'multilevel', 'addBudget', 'restore']))
+                {
+                    return true;
+                }                
+            }
+            elseif ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Administrador(a) de la clínica')
+            {
+                if(in_array($this->request->action, ['bill']))
                 {
                     return true;
                 }                
@@ -658,19 +667,26 @@ class BudgetsController extends AppController
     }
     public function bill($idBudget = null, $surgery = null)
     {
-        if ($this->request->is('post')) 
+		$commissions = new CommissionsController;
+	
+		if ($this->request->is(['patch', 'post', 'put']))
         {      
             if (isset($_POST['idBudget']))
-            {		
+            {					
 				$idBudget = $_POST['idBudget'];
 				
 				$surgery = $_POST['surgery']; 
             }
             else
-            {
+            {			
                 $budget = $this->Budgets->get($_POST['id']);
 
                 $budget = $this->Budgets->patchEntity($budget, $this->request->data);
+				
+				$result = $commissions->add($budget->extra_column1, $budget->id, $budget->amount, $budget->coin);
+							
+				$budget->extra_column1 = null;
+				
                 if ($this->Budgets->save($budget)) 
                 {
                     $this->Flash->success(__('La factura fue guardada exitosamente'));
@@ -708,7 +724,7 @@ class BudgetsController extends AppController
 			$this->set('_serialize', ['currentView', 'surgery', 'budget', 'budgetQuery', 'promoter']);	
 		}
 		else
-		{		
+		{
             $currentView = 'bill';
 
             $this->set(compact('currentView'));

@@ -22,7 +22,7 @@
             <?php endif; ?>
         </div>
         <?php if (isset($budget)): ?>
-			<?php 
+			<?php 	
 				if ($budget->initial_budget == null):
 					echo $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'view',
 						$budget->id, 
@@ -34,31 +34,23 @@
 					$pdf = ".pdf";
 					$pos = strpos($budget->initial_budget, $pdf);
 					if ($pos):
-						echo $this->Html->link(__(''), '/files/budgets/initial_budget/' . $budget->initial_budget_dir . '/'. $budget->initial_budget, ['class' => 'glyphicon glyphicon-th-list btn btn-primary', 'title' => 'Ver presupuesto']);
-						else:    
+						echo $this->Html->link(__(''), '/files/budgets/initial_budget/' . $budget->initial_budget_dir . '/'. $budget->initial_budget, ['class' => 'glyphicon glyphicon-th-list btn btn-primary', 'title' => 'Ver presupuesto', 'target' => '_blank']);
+					else:    
 						$txt = ".txt";   
 						$pos = strpos($budget->initial_budget, $txt);
 						if ($pos):
-							$file = fopen('../sln/webroot/files/budgets/initial_budget/' . $budget->initial_budget_dir . '/'. $budget->initial_budget, "r") or exit("Unable to open file!");
-							//Output a line of the file until the end is reached
-							while(!feof($file))
-							{
-							echo fgets($file). "<br />";
-							}
-							fclose($file);
-						
-//							echo $this->Html->link(__(''), '/files/budgets/initial_budget/' . $budget->initial_budget_dir . '/'. $budget->initial_budget, ['class' => 'glyphicon glyphicon-th-list btn btn-primary', 'title' => 'Ver presupuesto']);
+							echo $this->Html->link(__(''), '/files/budgets/initial_budget/' . $budget->initial_budget_dir . '/'. $budget->initial_budget, ['class' => 'glyphicon glyphicon-th-list btn btn-primary', 'title' => 'Ver presupuesto', 'target' => '_blank']);
 						else:      
 							echo $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'view',
 								$budget->id, 
 								$budgetQuery->patient->user->full_name,
 								$promoter->full_name, 
 								$promoter->cell_phone, 
-								$promoter->email, 'Budgets', 'bill'], ['class' => 'glyphicon glyphicon-search', 'title' => 'Ver presupuesto']);
+								$promoter->email, 'Budgets', 'bill'], ['class' => 'glyphicon glyphicon-th-list btn btn-primary', 'title' => 'Ver presupuesto']);
 					   endif;
 					endif;
 				endif;
-			?>
+			?>			
 			<br />
 			<br />
 		<?php endif; ?>		
