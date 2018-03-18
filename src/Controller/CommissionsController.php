@@ -7,6 +7,8 @@ use App\Controller\EmployeesController;
 
 use App\Controller\BinnaclesController;
 
+use Cake\I18n\Time;
+
 /**
  * Commissions Controller
  *
@@ -18,7 +20,7 @@ class CommissionsController extends AppController
     {
         if(isset($user['role']))
         {
-            if ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Administrador(a) de la clínica')
+            if ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Administrador(a) de la clÃ­nica')
             {
                 if(in_array($this->request->action, ['add', 'addCommission']))
                 {
@@ -28,6 +30,11 @@ class CommissionsController extends AppController
         }
         return parent::isAuthorized($user);
     }
+	
+	public function testFunction()
+	{
+
+	}
 
     /**
      * Index method
@@ -67,91 +74,96 @@ class CommissionsController extends AppController
      *
      * @return \Cake\Network\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add($idPromoter = null, $idbudget = null, $amount = null, $coin = null)
+    public function add($idPromoter = null, $idBudget = null, $amount = null, $coin = null, $swDelete = null)
     {
 		$this->autoRender = false;
-		
+			
 		$binnacles = new BinnaclesController;
 		
 		$employee = new EmployeesController;
 		
 		$swError = 0;
 		
-		$novelty = '';
-	
-		$arrayResult = $employee->searchEmployee($idPromoter);
+		$employeePromoter = $this->Commissions->Users->get($idPromoter, [
+            'contain' => ['Employees']
+            ]);
 		
-		if ($arrayResult['indicator'] == 0)
-		{
-            $employeePromoter = $arrayResult['searchRequired'];
-			
-			if ($employeePromoter->user->role == 'Coordinador(a)' || $employeePromoter->user->role == 'Promotor(a)' || $employeePromoter->user->role == 'Promotor(a) independiente')
+		if ($employeePromoter->employees)
+		{			
+			if ($employeePromoter->deleted_record == null)
 			{			
-				$idFather = $employeePromoter->parent_user;
-
-				$arrayResult = $this->addCommission($employeePromoter, 'PROMOTOR', $idBudget, $amount, $coin);
-				
-				if ($arrayResult['indicator'] == 0)
-				{
-					$arrayResult = $employee->searchEmployee($idFather);
-			
+				if ($employeePromoter->role == 'Coordinador(a)' || $employeePromoter->role == 'Promotor(a)' || $employeePromoter->role == 'Promotor(a) independiente')
+				{			
+					$idFather = $employeePromoter->parent_user;
+					
+					$arrayResult = $this->addCommission($employeePromoter, 'PROMOTOR', $idBudget, $amount, $coin, $swDelete);
+					
 					if ($arrayResult['indicator'] == 0)
 					{
-						$employeeFather = $arrayResult['searchRequired'];
-
-						if ($employeePromoter->user->role == 'Promotor(a)' || $employeePromoter->user->role == 'Promotor(a) independiente')
-						{						
-							$idGrandfather = $employeeFather->parent_user;
-							
-							$arrayResult = $this->addCommission($employeeFather, 'FATHER', $idBudget, $amount, $coin);
-							
-							if ($arrayResult['indicator'] == 0)
+						$employeeFather = $this->Commissions->Users->get($idFather, [
+							'contain' => ['Employees']]);
+				
+						if ($employeeFather->employees)
+						{
+							if ($employeeFather->deleted_record == null)
 							{
-								$arrayResult = $employee->searchEmployee($idGrandfather);
+								if ($employeeFather->role == 'Promotor(a)' || $employeeFather->role == 'Promotor(a) independiente')
+								{						
+									$idGrandfather = $employeeFather->parent_user;
+									
+									$arrayResult = $this->addCommission($employeeFather, 'FATHER', $idBudget, $amount, $coin, $swDelete);
+									
+									if ($arrayResult['indicator'] == 0)
+									{
+										$employeeGrandfather = $this->Commissions->Users->get($idGrandfather, [
+											'contain' => ['Employees']]);
+								
+										if ($employeeGrandfather->employees)
+										{										
+											if ($employeeGrandfather->deleted_record == null)
+											{
+												if ($employeeGrandfather->role == 'Promotor(a)' || $employeeGrandfather->role == 'Promotor(a) independiente')
+												{																
+													$arrayResult = $this->addCommission($employeeGrandfather, 'GRANDFATHER', $idBudget, $amount, $coin, $swDelete);
+													
+													if ($arrayResult['indicator'] != 0)
+													{
+														$swError = 1;
 						
-								if ($arrayResult['indicator'] == 0)
-								{
-									$employeeGrandfather = $arrayResult['searchRequired'];
-
-									if ($employeePromoter->user->role == 'Promotor(a)' || $employeePromoter->user->role == 'Promotor(a) independiente')
-									{																
-										$arrayResult = $this->addCommission($employeeGrandfather, 'GRANDFATHER', $idBudget, $amount, $coin);
-										
-										if ($arrayResult['indicator'] != 0)
+														$novelty = $arraResult['arrayError'];
+													}
+												}
+											}
+										}
+										else
 										{
 											$swError = 1;
-			
-											$novelty = 'No se pudo registrar la comisión del promotor-abuelo';
+											
+											$novelty = ['No se encontraron los datos bÃ¡sicos del promotor-abuelo'];
 										}
 									}
-								}
-								else
-								{
-									$swError = 1;
-									
-									$novelty = 'No se pudo registar la comisión del promotor-abuelo';
+									else
+									{
+										$swError = 1;
+										
+										$novelty = $arraResult['arrayError'];
+									}
 								}
 							}
-							else
-							{
-								$swError = 1;
-								
-								$novelty = 'No se pudo registrar la comisión del promotor-padre';
-							}
+						}
+						else
+						{
+							$swError = 1;
+							
+							$novelty = ['No se encontraron los datos bÃ¡sicos del promotor-padre'];
 						}
 					}
 					else
 					{
 						$swError = 1;
-						
-						$novelty = 'No se encontraron los datos básicos del promotor-padre';
+				
+						$novelty = $arrayResult['arrayError'];
 					}
-				}
-				else
-				{
-					$swError = 1;
-			
-					$novelty = 'No se pudo registrar la comisión del promotor';
 				}
 			}
 		}
@@ -159,31 +171,66 @@ class CommissionsController extends AppController
 		{
 			$swError = 1;
 			
-			$novelty = 'No se encontraron los datos básicos del promotor';
+			$novelty = ['No se encontraron los datos bÃ¡sicos del promotor'];
 		}
+		
+		$arrayResult = [];
+	
 		if ($swError == 0)
-		{
-			$this->Flash->success(__('Las comisiones se registraron exitosamente'));
+		{	
+			$arrayResult['indicator'] = 0;
 		}
 		else
 		{
-			$this->Flash->error(__($novelty));
-			
-			$binnacles->add('controller', 'Commissions', 'add', $novelty);
+			$arrayResult['indicator'] = 1;
+			$arrayResult['arrayError'] = $novelty;
 		}
+		return $arrayResult;
     }
 	
-	public function addCommission($employeePromoter = null, $typeBeneficiary = null, $idBudget = null, $amount = null, $coin)
+	public function addCommission($employeePromoter = null, $typeBeneficiary = null, $idBudget = null, $amount = null, $coin, $swDelete = null)
 	{
 		$this->autoRender = false;
 		
 		$arrayResult = [];
-	
-        $commission = $this->Commissions->newEntity();
 		
-		$commission->user_id = $employee->user_id;
+        setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+        date_default_timezone_set('America/Caracas');
+
+        $currentDate = time::now();
 		
-		$commission->budget_id = $idbudget;
+		$lastRecord = $this->Commissions->find('all', ['conditions' => [['user_id' => $employeePromoter->id], ['budget_id' => $idBudget]], 
+			'order' => ['Commissions.created' => 'DESC'] ]);
+
+		$row = $lastRecord->first();
+		
+		if ($row)
+		{
+			$commission = $this->Commissions->get($row->id);
+			
+			if ($swDelete == 1)
+			{
+				$commission->registration_status = 'ELIMINADO';
+				$commission->date_status = $currentDate;
+				return $arrayResult;
+			}
+		}
+		else
+		{
+			if ($swDelete == 0)
+			{
+				$commission = $this->Commissions->newEntity();
+			}
+			else
+			{
+				$arrayResult['indicator'] = 0;
+				return $arrayResult;
+			}
+		}
+		
+		$commission->user_id = $employeePromoter->id;
+		
+		$commission->budget_id = $idBudget;
 
 		$commission->type_beneficiary = $typeBeneficiary;
 		
@@ -202,19 +249,23 @@ class CommissionsController extends AppController
 		
 		$commission->coin = $coin;
 			
-		$commission->payment_method = $employeePromoter->payment_method;
+		$commission->payment_method = $employeePromoter->employees[0]['payment_method'];
 	
-		$commission->account = $employeePromoter->account_bank;
+		$commission->account = $employeePromoter->employees[0]['account_bank'];
 
-		$commission->account_type = $employeePromoter->account_type;
+		$commission->account_type = $employeePromoter->employees[0]['account_type'];
 		
-		$commission->bank = $employeePromoter->bank;
+		$commission->bank = $employeePromoter->employees[0]['bank'];
 		
-		$commission->bank_address = $employeePromoter->bank_address;
+		$commission->bank_address = $employeePromoter->employees[0]['bank_address'];
 		
-		$commission->swif_bank = $employeePromoter->swif_bank;
+		$commission->swif_bank = $employeePromoter->employees[0]['swif_bank'];
 		
-		$commission->aba_bank = $employeePromoter->aba_bank;
+		$commission->aba_bank = $employeePromoter->employees[0]['aba_bank'];
+		
+		$commission->registration_status = 'ACTIVO';
+		
+		$commission->date_status = $currentDate;
 		
 		$commission->responsible_user = $this->Auth->user('username');
 		
@@ -225,10 +276,22 @@ class CommissionsController extends AppController
 		else
 		{
 			$arrayResult['indicator'] = 1;
+			
+			if($commission->errors())
+			{
+                $error_msg = $this->arrayErrors($commission->errors());
+			}
+			else
+			{
+				$error_msg = ['Error desconocido']
+			}
+			
+			$arrayResult['arrayError'] = $error_msg;
+
 		}
+			
 		return $arrayResult;
 	}
-
 
     /**
      * Edit method
@@ -276,4 +339,32 @@ class CommissionsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+	public function arrayErrors($arrayCake = null)
+	{
+		$error_msg = [];
+		
+		foreach($arrayCake as $errors)
+		{
+			if(is_array($errors))
+			{
+				foreach($errors as $error)
+				{
+					
+					$error_msg[] = $error;
+				}
+			}
+			else
+			{
+				$error_msg[] = $errors;
+			}
+		}
+
+		if(empty($error_msg))
+		{
+			$error_msg[] = 'Error desconocido';
+		}
+
+		return $error_msg;
+	}
 }
