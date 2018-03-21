@@ -3,6 +3,7 @@ namespace App\Model\Table;
 
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
+use Cake\ORM\Rule\IsUnique;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -40,23 +41,6 @@ class CommissionsTable extends Table
         $this->primaryKey('id');
 
         $this->addBehavior('Timestamp');
-		
-        $this->addBehavior('Proffer.Proffer', [
-            'voucher' => [    // The name of your upload field
-                'root' => WWW_ROOT . 'files', // Customise the root upload folder here, or omit to use the default
-                'dir' => 'voucher_dir',   // The name of the field to store the folder
-                'thumbnailSizes' => [ // Declare your thumbnails
-                    'thumb' => [   // Define the prefix of your thumbnail
-                        'w' => 500, // Width
-                        'h' => 500, // Height
-                        'crop' => true,  // Crop will crop the image as well as resize it
-                        'jpeg_quality'  => 100,
-                        'png_compression_level' => 9
-                    ],
-                ],
-                'thumbnailMethod' => 'php'  // Options are Imagick, Gd or Gmagick
-            ]
-        ]);
 
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
@@ -89,7 +73,7 @@ class CommissionsTable extends Table
 
         $validator
             ->allowEmpty('coin');
-			
+
         $validator
             ->allowEmpty('payment_method');
 
@@ -167,9 +151,11 @@ class CommissionsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['user_id'], 'Users'));
-        $rules->add($rules->existsIn(['budget_id'], 'Budgets'));
-
-        return $rules;
+		
+		$rules->add($rules->isUnique(
+			['user_id', 'budget_id'],
+			)); 
+									
+		return $rules;
     }
 }
