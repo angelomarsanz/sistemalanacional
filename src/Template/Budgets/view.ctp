@@ -4,8 +4,10 @@
      	    <p><?= $this->Html->link(__('Volver'), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'btn btn-sm btn-default']) ?></p>
         <?php elseif ($controller == 'Users' && $action == 'viewGlobal'): ?>
 			<p><?= $this->Html->link(__('Volver'), ['controller' => $controller, 'action' => $action, $idUser, 'Users', 'indexPatientUser', $idPromoter], ['class' => 'btn btn-sm btn-default']) ?></p>
+		<?php elseif ($controller == 'Budgets' && $action == 'bill'): ?>
+ 	       <p><?= $this->Html->link(__('Volver'), ['controller' => $controller, 'action' => $action, $budget->id, $budget->surgery], ['class' => 'btn btn-sm btn-default']) ?></p>
 		<?php else: ?>
- 	       <p><?= $this->Html->link(__('Volver'), ['controller' => $controller, 'action' => $action], ['class' => 'btn btn-sm btn-default']) ?></p>
+			<p><?= $this->Html->link(__('Volver'), ['controller' => $controller, 'action' => $action], ['class' => 'btn btn-sm btn-default']) ?></p>
         <?php endif; ?>
         <h2>Presupuesto enviado al paciente: <?= $namePatient ?></h2>
     </div>

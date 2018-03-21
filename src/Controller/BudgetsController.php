@@ -11,6 +11,8 @@ use App\Controller\ItemesController;
 
 use App\Controller\DiarypatientsController;
 
+use App\Controller\CommissionsController;
+
 use Cake\I18n\Time;
 
 use Cake\Mailer\Email;
@@ -53,6 +55,13 @@ class BudgetsController extends AppController
             elseif ($user['role'] === 'Call center')
             {
                 if(in_array($this->request->action, ['edit', 'view', 'budget', 'multilevel', 'addBudget', 'restore']))
+                {
+                    return true;
+                }                
+            }
+            elseif ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Administrador(a) de la clínica')
+            {
+                if(in_array($this->request->action, ['bill']))
                 {
                     return true;
                 }                
@@ -658,29 +667,87 @@ class BudgetsController extends AppController
     }
     public function bill($idBudget = null, $surgery = null)
     {
-        if ($this->request->is('post')) 
+		$commissions = new CommissionsController;
+	
+		if ($this->request->is(['patch', 'post', 'put']))
         {      
             if (isset($_POST['idBudget']))
-            {		
+            {					
 				$idBudget = $_POST['idBudget'];
 				
 				$surgery = $_POST['surgery']; 
+				
+				if (isset($_POST['swDelete']))
+				{
+					$budget = $this->Budgets->get($idBudget);
+
+					$budget->date_bill = null;
+					$budget->number_bill = null;				
+					$budget->amount_bill = null;
+					$budget->coin_bill = null;
+					$budget->bill = null;
+					$budget->bill_dir = null;
+
+					$arrayResult = $commissions->add($_POST['promoter'], $budget->id, $budget->amount_bill, $budget->coin_bill, 1);
+					
+					if ($arrayResult['indicator'] == 0)
+					{
+						if ($this->Budgets->save($budget)) 
+						{
+							$this->Flash->success(__('La factura fue eliminada exitosamente'));
+							return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budget->surgery]);
+						}
+						else
+						{
+							$this->Flash->error(__('La factura no pudo ser eliminada'));
+							return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budget->surgery]);
+						}
+					}
+					else
+					{
+					    $this->Flash->error(__("La comisión no pudo ser eliminada debido a: " . implode(" - ", $arrayResult['arrayError'])));
+
+						foreach($arrayResult['arrayError'] as $noveltys)
+						{
+							$binnacles->add('controller', 'Commissions', 'add', $noveltys);
+						}
+						return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budget->surgery]);
+					}
+				}
             }
             else
-            {
+            {			
                 $budget = $this->Budgets->get($_POST['id']);
 
                 $budget = $this->Budgets->patchEntity($budget, $this->request->data);
-                if ($this->Budgets->save($budget)) 
-                {
-                    $this->Flash->success(__('La factura fue guardada exitosamente'));
-                    return $this->redirect(['controller' => 'budgets', 'action' => 'bill']);
-                }
-                else
-                {
-                    $this->Flash->error(__('La factura no pudo ser guardada'));
-					return $this->redirect(['controller' => 'budgets', 'action' => 'bill'], $budget->id, $budget->surgery);
-                }
+							
+				$arrayResult = $commissions->add($budget->extra_column1, $budget->id, $budget->amount_bill, $budget->coin_bill, 0);
+				
+				if ($arrayResult['indicator'] == 0)
+				{
+					$budget->extra_column1 = null;
+				
+					if ($this->Budgets->save($budget)) 
+					{
+						$this->Flash->success(__('La factura fue guardada exitosamente'));
+						return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budget->surgery]);
+					}
+					else
+					{
+						$this->Flash->error(__('La factura no pudo ser guardada'));
+						return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budget->surgery]);
+					}
+				}
+				else
+				{
+					$this->Flash->error(__("La comisión no pudo ser grabada debido a: " . implode(" - ", $arrayResult['arrayError'])));
+
+					foreach($arrayResult['arrayError'] as $noveltys)
+					{
+						$binnacles->add('controller', 'Commissions', 'add', $noveltys);
+					}
+					return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budget->surgery]);
+				}
             }
         }
 		if (isset($idBudget))
@@ -708,7 +775,7 @@ class BudgetsController extends AppController
 			$this->set('_serialize', ['currentView', 'surgery', 'budget', 'budgetQuery', 'promoter']);	
 		}
 		else
-		{		
+		{
             $currentView = 'bill';
 
             $this->set(compact('currentView'));

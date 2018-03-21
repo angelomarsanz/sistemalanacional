@@ -66,8 +66,12 @@
                         echo $this->Form->input('date_bill', ['type' => 'date', 'required' => 'true', 'label' => 'Fecha de la factura: *']);
                         echo $this->Form->input('number_bill', ['type' => 'number', 'required' => 'true', 'label' => 'Número de la factura: *']);
                         echo $this->Form->input('amount_bill', ['class' => 'decimal-2-places', 'required' => 'true', 'label' => 'Monto de la factura: *']);
-
-                        echo $this->Form->input('bill', array('type' => 'file', 'label' => 'Factura:', 'required' => 'true'));
+						echo $this->Form->input('coin_bill', ['label' => 'Moneda en que se emitió la factura: *', 'required' => 'true', 'options' => 
+                        [null => " ",
+                         'BOLIVAR' => 'BOLIVAR',
+                         'DOLAR' => 'DOLAR']]);
+                        echo $this->Form->input('bill', array('type' => 'file', 'label' => 'Factura:'));
+						echo $this->Form->input('extra_column1', ['type' => 'hidden', 'value' => $promoter->id]);
                     ?>
                 </fieldset>
                 <?= $this->Form->button(__('Guardar'), ['id' => 'save-user', 'class' =>'btn btn-success']) ?>

@@ -30,6 +30,13 @@ class EmployeesController extends AppController
                     return true;
                 }
             }  
+            if ($user['role'] === 'Promotor(a)' || $user['role'] === 'Promotor(a) independiente')
+            {
+                if(in_array($this->request->action, ['addAutomatic', 'edit', 'restore']))
+                {
+                    return true;
+                }
+            }  
         }
         return parent::isAuthorized($user);
     }     
@@ -63,6 +70,30 @@ class EmployeesController extends AppController
         $this->set('employee', $employee);
         $this->set('_serialize', ['employee']);
     }
+
+	public function SearchEmployee($idUser = null)
+	{
+		$this->autoRender = false;
+	
+		$arrayResult = [];
+			
+		$lastRecord = $this->Employees->find('all', ['contain' => ['Users'], 'conditions' => ['user_id' => $idUser], 
+				'order' => ['Employees.created' => 'DESC'] ]);
+
+		$row = $lastRecord->first();
+			
+        if ($row)
+        {
+            $arrayResult['indicator'] = 0;
+            $arrayResult['searchRequired'] = $row;
+        }
+        else
+        {
+            $arrayResult['indicator'] = 1;
+        }
+        return $arrayResult;
+			
+	}
 
     /**
      * Add method
