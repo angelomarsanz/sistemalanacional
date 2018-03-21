@@ -672,13 +672,13 @@ class BudgetsController extends AppController
 		if ($this->request->is(['patch', 'post', 'put']))
         {      
             if (isset($_POST['idBudget']))
-            {					
+            {			
 				$idBudget = $_POST['idBudget'];
 				
 				$surgery = $_POST['surgery']; 
 				
 				if (isset($_POST['swDelete']))
-				{
+				{				
 					$budget = $this->Budgets->get($idBudget);
 
 					$budget->date_bill = null;

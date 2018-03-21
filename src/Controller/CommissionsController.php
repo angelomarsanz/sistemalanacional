@@ -206,14 +206,7 @@ class CommissionsController extends AppController
 		
 		if ($row)
 		{
-			$commission = $this->Commissions->get($row->id);
-			
-			if ($swDelete == 1)
-			{
-				$commission->registration_status = 'ELIMINADO';
-				$commission->date_status = $currentDate;
-				return $arrayResult;
-			}
+			$commission = $this->Commissions->get($row->id);		
 		}
 		else
 		{
@@ -227,43 +220,50 @@ class CommissionsController extends AppController
 				return $arrayResult;
 			}
 		}
-		
-		$commission->user_id = $employeePromoter->id;
-		
-		$commission->budget_id = $idBudget;
 
-		$commission->type_beneficiary = $typeBeneficiary;
-		
-		if ($typeBeneficiary == 'PROMOTOR')
+		if ($swDelete == 1)
 		{
-			$commission->amount = $amount * 0.03;
-		}
-		elseif ($typeBeneficiary == 'FATHER')
-		{
-			$commission->amount = $amount * 0.015;
+			$commission->registration_status = 'ELIMINADO';
 		}
 		else
 		{
-			$commission->amount = $amount * 0.005;
-		}
-		
-		$commission->coin = $coin;
+			$commission->user_id = $employeePromoter->id;
 			
-		$commission->payment_method = $employeePromoter->employees[0]['payment_method'];
-	
-		$commission->account = $employeePromoter->employees[0]['account_bank'];
+			$commission->budget_id = $idBudget;
 
-		$commission->account_type = $employeePromoter->employees[0]['account_type'];
+			$commission->type_beneficiary = $typeBeneficiary;
+			
+			if ($typeBeneficiary == 'PROMOTOR')
+			{
+				$commission->amount = $amount * 0.03;
+			}
+			elseif ($typeBeneficiary == 'FATHER')
+			{
+				$commission->amount = $amount * 0.015;
+			}
+			else
+			{
+				$commission->amount = $amount * 0.005;
+			}
+			
+			$commission->coin = $coin;
+				
+			$commission->payment_method = $employeePromoter->employees[0]['payment_method'];
 		
-		$commission->bank = $employeePromoter->employees[0]['bank'];
-		
-		$commission->bank_address = $employeePromoter->employees[0]['bank_address'];
-		
-		$commission->swif_bank = $employeePromoter->employees[0]['swif_bank'];
-		
-		$commission->aba_bank = $employeePromoter->employees[0]['aba_bank'];
-		
-		$commission->registration_status = 'ACTIVO';
+			$commission->account = $employeePromoter->employees[0]['account_bank'];
+
+			$commission->account_type = $employeePromoter->employees[0]['account_type'];
+			
+			$commission->bank = $employeePromoter->employees[0]['bank'];
+			
+			$commission->bank_address = $employeePromoter->employees[0]['bank_address'];
+			
+			$commission->swif_bank = $employeePromoter->employees[0]['swif_bank'];
+			
+			$commission->aba_bank = $employeePromoter->employees[0]['aba_bank'];
+			
+			$commission->registration_status = 'ACTIVO';
+		}
 		
 		$commission->date_status = $currentDate;
 		

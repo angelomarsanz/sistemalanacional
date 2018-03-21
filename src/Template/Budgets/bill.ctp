@@ -75,7 +75,8 @@
                          'BOLIVAR' => 'BOLIVAR',
                          'DOLAR' => 'DOLAR']]);
                         echo $this->Form->input('bill', array('type' => 'file', 'label' => 'Factura:'));
-						echo $this->Form->input('extra_column1', ['type' => 'hidden', 'class' => 'promoter', 'value' => $promoter->id]);
+						echo $this->Form->input('extra_column1', ['type' => 'hidden', 'id' => 'promoter', 'value' => $promoter->id]);
+						echo $this->Form->input('surgery', ['type' => 'hidden']);
                     ?>
                 </fieldset>
                 <?= $this->Form->button(__('Guardar'), ['id' => 'save-user', 'class' =>'btn btn-success']) ?>
@@ -134,9 +135,12 @@ $(document).ready(function()
         $('#modificar-factura').toggle('slow');
     });
 	
-    $('#eliminar-factura').on('click',function(){
-		alert('promoter ' + $('.promoter').val());
-		$.redirect('/sln/budgets/bill', { idBudget : id, surgery : surgery, swDelete : 1, promoter : $('.promoter').val() }); 
+    $('#eliminar-factura').on('click',function(e){
+	
+		e.preventDefault();
+	
+		alert('Eliminar promotor Nro. ' + $('#promoter').val());
+		$.redirect('/sln/budgets/bill', { idBudget : $('#id').val(), surgery : $('#surgery').val(), swDelete : 1, promoter : $('#promoter').val() }); 
     });
 });
 </script>
