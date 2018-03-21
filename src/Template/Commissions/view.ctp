@@ -10,18 +10,26 @@
         <li><?= $this->Form->postLink(__('Delete Commission'), ['action' => 'delete', $commission->id], ['confirm' => __('Are you sure you want to delete # {0}?', $commission->id)]) ?> </li>
         <li><?= $this->Html->link(__('List Commissions'), ['action' => 'index']) ?> </li>
         <li><?= $this->Html->link(__('New Commission'), ['action' => 'add']) ?> </li>
+        <li><?= $this->Html->link(__('List Users'), ['controller' => 'Users', 'action' => 'index']) ?> </li>
+        <li><?= $this->Html->link(__('New User'), ['controller' => 'Users', 'action' => 'add']) ?> </li>
+        <li><?= $this->Html->link(__('List Budgets'), ['controller' => 'Budgets', 'action' => 'index']) ?> </li>
+        <li><?= $this->Html->link(__('New Budget'), ['controller' => 'Budgets', 'action' => 'add']) ?> </li>
     </ul>
 </nav>
 <div class="commissions view large-9 medium-8 columns content">
     <h3><?= h($commission->id) ?></h3>
     <table class="vertical-table">
         <tr>
-            <th scope="row"><?= __('Type Beneficiary') ?></th>
-            <td><?= h($commission->type_beneficiary) ?></td>
+            <th scope="row"><?= __('User') ?></th>
+            <td><?= $commission->has('user') ? $this->Html->link($commission->user->full_name, ['controller' => 'Users', 'action' => 'view', $commission->user->id]) : '' ?></td>
         </tr>
         <tr>
-            <th scope="row"><?= __('Coin') ?></th>
-            <td><?= h($commission->coin) ?></td>
+            <th scope="row"><?= __('Budget') ?></th>
+            <td><?= $commission->has('budget') ? $this->Html->link($commission->budget->id, ['controller' => 'Budgets', 'action' => 'view', $commission->budget->id]) : '' ?></td>
+        </tr>
+        <tr>
+            <th scope="row"><?= __('Type Beneficiary') ?></th>
+            <td><?= h($commission->type_beneficiary) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Payment Method') ?></th>
@@ -102,14 +110,6 @@
         <tr>
             <th scope="row"><?= __('Id') ?></th>
             <td><?= $this->Number->format($commission->id) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('User Id') ?></th>
-            <td><?= $this->Number->format($commission->user_id) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Budget Id') ?></th>
-            <td><?= $this->Number->format($commission->budget_id) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Amount') ?></th>

@@ -22,7 +22,6 @@ class CommissionsFixture extends TestFixture
         'budget_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'type_beneficiary' => ['type' => 'string', 'length' => 100, 'null' => true, 'default' => null, 'collate' => 'utf8_spanish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'amount' => ['type' => 'float', 'length' => 10, 'precision' => 2, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => ''],
-        'coin' => ['type' => 'string', 'length' => 100, 'null' => true, 'default' => null, 'collate' => 'utf8_spanish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'payment_method' => ['type' => 'string', 'length' => 100, 'null' => true, 'default' => null, 'collate' => 'utf8_spanish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'bank' => ['type' => 'string', 'length' => 100, 'null' => true, 'default' => null, 'collate' => 'utf8_spanish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'account' => ['type' => 'string', 'length' => 100, 'null' => true, 'default' => null, 'collate' => 'utf8_spanish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
@@ -74,12 +73,11 @@ class CommissionsFixture extends TestFixture
             'budget_id' => 1,
             'type_beneficiary' => 'Lorem ipsum dolor sit amet',
             'amount' => 1,
-            'coin' => 'Lorem ipsum dolor sit amet',
             'payment_method' => 'Lorem ipsum dolor sit amet',
             'bank' => 'Lorem ipsum dolor sit amet',
             'account' => 'Lorem ipsum dolor sit amet',
             'reference' => 'Lorem ipsum dolor sit amet',
-            'pay_day' => '2018-03-13 13:31:49',
+            'pay_day' => '2018-03-08 11:34:54',
             'voucher' => 'Lorem ipsum dolor sit amet',
             'voucher_dir' => 'Lorem ipsum dolor sit amet',
             'extra_column1' => 'Lorem ipsum dolor sit amet',
@@ -94,10 +92,10 @@ class CommissionsFixture extends TestFixture
             'extra_column10' => 'Lorem ipsum dolor sit amet',
             'registration_status' => 'Lorem ipsum dolor sit amet',
             'reason_status' => 'Lorem ipsum dolor sit amet',
-            'date_status' => '2018-03-13 13:31:49',
+            'date_status' => '2018-03-08 11:34:54',
             'responsible_user' => 'Lorem ipsum dolor sit amet',
-            'created' => '2018-03-13 13:31:49',
-            'modified' => '2018-03-13 13:31:49'
+            'created' => '2018-03-08 11:34:54',
+            'modified' => '2018-03-08 11:34:54'
         ],
     ];
 }

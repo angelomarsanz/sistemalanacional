@@ -7,6 +7,10 @@
     <ul class="side-nav">
         <li class="heading"><?= __('Actions') ?></li>
         <li><?= $this->Html->link(__('New Commission'), ['action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Users'), ['controller' => 'Users', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New User'), ['controller' => 'Users', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Budgets'), ['controller' => 'Budgets', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Budget'), ['controller' => 'Budgets', 'action' => 'add']) ?></li>
     </ul>
 </nav>
 <div class="commissions index large-9 medium-8 columns content">
@@ -19,7 +23,6 @@
                 <th scope="col"><?= $this->Paginator->sort('budget_id') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('type_beneficiary') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('amount') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('coin') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('payment_method') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('bank') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('account') ?></th>
@@ -50,11 +53,10 @@
             <?php foreach ($commissions as $commission): ?>
             <tr>
                 <td><?= $this->Number->format($commission->id) ?></td>
-                <td><?= $this->Number->format($commission->user_id) ?></td>
-                <td><?= $this->Number->format($commission->budget_id) ?></td>
+                <td><?= $commission->has('user') ? $this->Html->link($commission->user->full_name, ['controller' => 'Users', 'action' => 'view', $commission->user->id]) : '' ?></td>
+                <td><?= $commission->has('budget') ? $this->Html->link($commission->budget->id, ['controller' => 'Budgets', 'action' => 'view', $commission->budget->id]) : '' ?></td>
                 <td><?= h($commission->type_beneficiary) ?></td>
                 <td><?= $this->Number->format($commission->amount) ?></td>
-                <td><?= h($commission->coin) ?></td>
                 <td><?= h($commission->payment_method) ?></td>
                 <td><?= h($commission->bank) ?></td>
                 <td><?= h($commission->account) ?></td>

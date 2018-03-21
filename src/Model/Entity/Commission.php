@@ -11,7 +11,6 @@ use Cake\ORM\Entity;
  * @property int $budget_id
  * @property string $type_beneficiary
  * @property float $amount
- * @property string $coin
  * @property string $payment_method
  * @property string $bank
  * @property string $account
