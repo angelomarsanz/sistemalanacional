@@ -20,6 +20,7 @@ class CommissionsController extends AppController
     {
         if(isset($user['role']))
         {
+            if ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Administrador(a) de la clínica')
             {
                 if(in_array($this->request->action, ['add', 'addCommission']))
                 {
@@ -138,6 +139,7 @@ class CommissionsController extends AppController
 										{
 											$swError = 1;
 											
+											$novelty = ['No se encontraron los datos básicos del promotor-abuelo'];
 										}
 									}
 									else
@@ -153,6 +155,7 @@ class CommissionsController extends AppController
 						{
 							$swError = 1;
 							
+							$novelty = ['No se encontraron los datos básicos del promotor-padre'];
 						}
 					}
 					else
@@ -168,6 +171,7 @@ class CommissionsController extends AppController
 		{
 			$swError = 1;
 			
+			$novelty = ['No se encontraron los datos básicos del promotor'];
 		}
 		
 		$arrayResult = [];
@@ -279,7 +283,7 @@ class CommissionsController extends AppController
 			}
 			else
 			{
-				$error_msg = ['Error desconocido']
+				$error_msg = ['Error desconocido'];
 			}
 			
 			$arrayResult['arrayError'] = $error_msg;

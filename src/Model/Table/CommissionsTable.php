@@ -151,9 +151,12 @@ class CommissionsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
+        $rules->add($rules->existsIn(['user_id'], 'Users', 'El promotor no está registrado en la tabla users'));
+        $rules->add($rules->existsIn(['budget_id'], 'Budgets', 'El promotor no está registrado en la tabla users'));
 		
 		$rules->add($rules->isUnique(
 			['user_id', 'budget_id'],
+			'La comisión ya se había registrado anteriormente'
 			)); 
 									
 		return $rules;
