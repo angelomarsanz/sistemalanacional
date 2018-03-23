@@ -7,6 +7,8 @@ use App\Controller\EmployeesController;
 
 use App\Controller\BinnaclesController;
 
+use Cake\ORM\TableRegistry;
+
 use Cake\I18n\Time;
 
 /**
@@ -111,7 +113,7 @@ class CommissionsController extends AppController
 								{						
 									$idGrandfather = $employeeFather->parent_user;
 									
-									$arrayResult = $this->addCommission($employeeFather, 'FATHER', $idBudget, $amount, $coin, $swDelete);
+									$arrayResult = $this->addCommission($employeeFather, 'PROMOTOR-PADRE', $idBudget, $amount, $coin, $swDelete);
 									
 									if ($arrayResult['indicator'] == 0)
 									{
@@ -124,7 +126,7 @@ class CommissionsController extends AppController
 											{
 												if ($employeeGrandfather->role == 'Promotor(a)' || $employeeGrandfather->role == 'Promotor(a) independiente')
 												{																
-													$arrayResult = $this->addCommission($employeeGrandfather, 'GRANDFATHER', $idBudget, $amount, $coin, $swDelete);
+													$arrayResult = $this->addCommission($employeeGrandfather, 'PROMOTOR-ABUELO', $idBudget, $amount, $coin, $swDelete);
 													
 													if ($arrayResult['indicator'] != 0)
 													{
@@ -237,7 +239,7 @@ class CommissionsController extends AppController
 			{
 				$commission->amount = $amount * 0.03;
 			}
-			elseif ($typeBeneficiary == 'FATHER')
+			elseif ($typeBeneficiary == 'PROMOTOR-PADRE')
 			{
 				$commission->amount = $amount * 0.015;
 			}
@@ -247,20 +249,8 @@ class CommissionsController extends AppController
 			}
 			
 			$commission->coin = $coin;
-				
-			$commission->payment_method = $employeePromoter->employees[0]['payment_method'];
-		
-			$commission->account = $employeePromoter->employees[0]['account_bank'];
-
-			$commission->account_type = $employeePromoter->employees[0]['account_type'];
-			
-			$commission->bank = $employeePromoter->employees[0]['bank'];
-			
-			$commission->bank_address = $employeePromoter->employees[0]['bank_address'];
-			
-			$commission->swif_bank = $employeePromoter->employees[0]['swif_bank'];
-			
-			$commission->aba_bank = $employeePromoter->employees[0]['aba_bank'];
+						
+			$commission->status_commission = 'PENDIENTE DE PAGO';
 			
 			$commission->registration_status = 'ACTIVO';
 		}
@@ -367,4 +357,88 @@ class CommissionsController extends AppController
 
 		return $error_msg;
 	}
+
+	public function reportCommissions()
+	{	
+        setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+        date_default_timezone_set('America/Caracas');
+		
+        $currentDate = Time::now();
+		
+		$binnacles = new BinnaclesController;
+
+	    if ($this->request->is('post')) 
+        {					
+			if (isset($_POST['columnsReport']))
+			{
+				$columnsReport = $_POST['columnsReport'];
+			}
+			else
+			{
+				$columnsReport = [];
+			}
+			
+			$arrayMark = $this->markColumns($columnsReport);
+						
+			$commissions = TableRegistry::get('Commissions');
+
+			$arrayResult = $commissions->find('commissions');
+			
+			if ($arrayResult['indicator'] == 1)
+			{
+				$this->Flash->error(___('No se encontraron comisiones'));
+				$binnacles->add('controller', 'Commissions', 'reportCommissions', 'No se encontraron comisiones');
+				
+				return $this->redirect(['controller' => 'Users', 'action' => 'wait']);
+			}
+			else
+			{
+				$commissions = $arrayResult['searchRequired'];
+			}
+	
+			$swImpresion = 1;
+						
+			$this->set(compact('swImpresion', 'commissions', 'arrayMark', 'currentDate'));
+			$this->set('_serialize', ['swImpresion', 'commissions', 'arrayMark', 'currenDate']); 
+		
+		}
+		else
+		{
+			$swImpresion = 0;
+			$this->set(compact('swImpresion'));
+			$this->set('_serialize', ['swImpresion']);
+		}
+	}
+	public function markColumns($columnsReport = null)
+	{
+		$arrayMark = [];
+		
+		isset($columnsReport['Commissions.type_beneficiary']) ? $arrayMark['Commissions.type_beneficiary'] = 'siExl' : $arrayMark['Commissions.type_beneficiary'] = 'noExl';
+				
+		isset($columnsReport['Commissions.amount']) ? $arrayMark['Commissions.amount'] = 'siExl' : $arrayMark['Commissions.amount'] = 'noExl';
+		
+		isset($columnsReport['Commissions.coin']) ? $arrayMark['Commissions.coin'] = 'siExl' : $arrayMark['Commissions.coin'] = 'noExl';
+		
+		isset($columnsReport['Commissions.payment_method']) ? $arrayMark['Commissions.payment_method'] = 'siExl' : $arrayMark['Commissions.payment_method'] = 'noExl';
+		
+		isset($columnsReport['Commissions.account']) ? $arrayMark['Commissions.account'] = 'siExl' : $arrayMark['Commissions.account'] = 'noExl';
+		
+		isset($columnsReport['Commissions.account_type']) ? $arrayMark['Commissions.account_type'] = 'siExl' : $arrayMark['Commissions.account_type'] = 'noExl';
+		
+		isset($columnsReport['Commissions.bank']) ? $arrayMark['Commissions.bank'] = 'siExl' : $arrayMark['Commissions.bank'] = 'noExl';
+		
+		isset($columnsReport['Commissions.bank_address']) ? $arrayMark['Commissions.bank_address'] = 'siExl' : $arrayMark['Commissions.bank_address'] = 'noExl';
+		
+		isset($columnsReport['Commissions.swif_bank']) ? $arrayMark['Commissions.swif_bank'] = 'siExl' : $arrayMark['Commissions.swif_bank'] = 'noExl';
+		
+		isset($columnsReport['Commissions.aba_bank']) ? $arrayMark['Commissions.aba_bank'] = 'siExl' : $arrayMark['Commissions.aba_bank'] = 'noExl';
+		
+		isset($columnsReport['Commissions.reference']) ? $arrayMark['Commissions.reference'] = 'siExl' : $arrayMark['Commissions.reference'] = 'noExl';
+
+		isset($columnsReport['Commissions.pay_day']) ? $arrayMark['Commissions.pay_day'] = 'siExl' : $arrayMark['Commissions.pay_day'] = 'noExl';
+
+		isset($columnsReport['Commissions.status_commission']) ? $arrayMark['Commissions.status_commission'] = 'siExl' : $arrayMark['Commissions.status_commission'] = 'noExl';		
+
+		return $arrayMark;
+	}	
 }

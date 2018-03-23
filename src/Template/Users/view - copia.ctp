@@ -107,25 +107,13 @@
                     <b>Grado de instrucción:&nbsp;</b><?= h($user->employees[0]['degree_instruction']) ?>
                 <br />
                 <br />
-                   <b>Método de pago:&nbsp;</b><?= h($user->employees[0]['payment_method']) ?>
-                <br />
-                <br />
-                   <b>Cuenta o Paypal:&nbsp;</b><?= h($user->employees[0]['account_bank']) ?>
+                   <b>Banco:&nbsp;</b><?= h($user->employees[0]['bank']) ?>
                 <br />
                 <br />
                    <b>Tipo de cuenta:&nbsp;</b><?= h($user->employees[0]['account_type']) ?>
                 <br />
                 <br />
-                   <b>Banco:&nbsp;</b><?= h($user->employees[0]['bank']) ?>
-                <br />
-                <br />
-                   <b>Dirección del banco:&nbsp;</b><?= h($user->employees[0]['bank_address']) ?>
-                <br />
-                <br />
-                   <b>Swif del banco:&nbsp;</b><?= h($user->employees[0]['swif_bank']) ?>
-                <br />
-                <br />
-                   <b>Aba del banco:&nbsp;</b><?= h($user->employees[0]['aba_bank']) ?>
+                   <b>Número de cuenta:&nbsp;</b><?= h($user->employees[0]['account_bank']) ?>
                 <br />
                 <br />
             <?php endif; ?>

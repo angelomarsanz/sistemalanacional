@@ -114,6 +114,9 @@ class EmployeesTable extends Table
             ->allowEmpty('percentage_imposed');
 
         $validator
+            ->allowEmpty('payment_method');
+			
+        $validator
             ->allowEmpty('bank');
             
         $validator
@@ -121,6 +124,15 @@ class EmployeesTable extends Table
             
         $validator
             ->allowEmpty('account_bank');
+			
+        $validator
+            ->allowEmpty('bank_address');
+			
+        $validator
+            ->allowEmpty('swift_bank');
+			
+        $validator
+            ->allowEmpty('aba_bank');
             
         $validator
             ->boolean('record_deleted')

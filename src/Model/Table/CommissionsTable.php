@@ -97,6 +97,9 @@ class CommissionsTable extends Table
             ->allowEmpty('voucher_dir');
 
         $validator
+            ->allowEmpty('status_commission');			
+			
+        $validator
             ->allowEmpty('extra_column1');
 
         $validator
@@ -160,5 +163,28 @@ class CommissionsTable extends Table
 			)); 
 									
 		return $rules;
+    }
+    public function findCommissions(Query $query, array $options)
+    {
+        $query->where([['Commissions.registration_status' => 'ACTIVO']])
+			->contain(['Budgets', 'Users' => ['Employees']])
+			->order(['Users.surname' => 'ASC',
+				'Users.second_surname' => 'ASC',
+				'Users.first_name' => 'ASC',
+				'Users.second_name' => 'ASC']); 
+		
+        $arrayResult = [];
+        
+        if ($query)
+        {
+            $arrayResult['indicator'] = 0;
+            $arrayResult['searchRequired'] = $query;
+        }
+        else
+        {
+            $arrayResult['indicator'] = 1;
+        }
+        
+        return $arrayResult;
     }
 }

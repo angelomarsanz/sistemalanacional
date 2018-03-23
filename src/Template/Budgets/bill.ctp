@@ -1,15 +1,67 @@
 <?php
     use Cake\Routing\Router; 
 ?>
+
 <style>
 @media screen
 {
+    .volver 
+    {
+        display:scroll;
+        position:fixed;
+        top: 15%;
+        left: 50px;
+        opacity: 0.5;
+    }
+    .cerrar 
+    {
+        display:scroll;
+        position:fixed;
+        top: 15%;
+        left: 95px;
+        opacity: 0.5;
+    }
+    .menumenos
+    {
+        display:scroll;
+        position:fixed;
+        bottom: 5%;
+        right: 1%;
+        opacity: 0.5;
+        text-align: right;
+    }
+    .menumas 
+    {
+        display:scroll;
+        position:fixed;
+        bottom: 5%;
+        right: 1%;
+        opacity: 0.5;
+        text-align: right;
+    }
+    .noverScreen
+    {
+      display:none
+    }
     .ui-autocomplete 
     {
         z-index: 2000;
     }
 }
+@media print 
+{
+    .nover 
+    {
+      display:none
+    }
+    .saltopagina
+    {
+        display:block; 
+        page-break-before:always;
+    }
+}
 </style>
+
 <div class="row">
     <div class="col-md-12">
     	<div class="page-header">
@@ -108,6 +160,20 @@
         <?php endif; ?>
     </div>
 </div>
+<div id="menu-menos" class="menumenos nover">
+	<p>
+	<a href="#" id="mas" title="Más opciones" class='glyphicon glyphicon-plus btn btn-danger'></a>
+	</p>
+</div>
+<div id="menu-mas" style="display:none;" class="menumas nover">
+	<p>
+		<?= $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'bill'], ['id' => 'volver', 'class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
+		<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['id' => 'cerrar', 'class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'cerrar vista']) ?>
+		<?= $this->Html->link(__(''), ['controller' => 'Commissions', 'action' => 'reportCommissions'], ['id' => 'report-commissions', 'class' => 'glyphicon glyphicon-th-list btn btn-danger', 'title' => 'Reporte de comisiones']) ?>		
+	
+		<a href='#' id="menos" title="Menos opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
+	</p>
+</div>
 <script>
 function log(id, surgery) 
 {
@@ -141,6 +207,18 @@ $(document).ready(function()
 	
 		alert('Eliminar promotor Nro. ' + $('#promoter').val());
 		$.redirect('/sln/budgets/bill', { idBudget : $('#id').val(), surgery : $('#surgery').val(), swDelete : 1, promoter : $('#promoter').val() }); 
+    });
+
+	    $('#mas').on('click',function()
+    {
+        $('#menu-menos').hide();
+        $('#menu-mas').show();
+    });
+    
+    $('#menos').on('click',function()
+    {
+        $('#menu-mas').hide();
+        $('#menu-menos').show();
     });
 });
 </script>

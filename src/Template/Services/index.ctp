@@ -126,7 +126,7 @@
 
 function log(id) 
 {
-    $.redirect('/services/view', { id : id, controller : 'Services', action : 'index' }); 
+    $.redirect('/sln/services/view', { id : id, controller : 'Services', action : 'index' }); 
 }
 
 // Documento
