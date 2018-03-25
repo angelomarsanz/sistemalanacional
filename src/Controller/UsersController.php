@@ -1112,10 +1112,17 @@ class UsersController extends AppController
             $password = substr($firstName, 0, 1) . substr($surname, 0, 1) . $currentDate->second . $currentDate->minute . '$';
             
             $birthdate = $_POST['birthdate'];
+			
+			if (isset($_POST['country']))
+			{			
+				$countryTrim = trim($_POST['country']);
             
-            $countryTrim = trim($_POST['country']);
-            
-            $country = strtoupper($countryTrim);
+				$country = strtoupper($countryTrim);
+			}
+			else
+			{
+				$country = 'VENEZUELA';
+			}
     
             $addressTrim = trim($_POST['address']);
             
@@ -1385,10 +1392,17 @@ class UsersController extends AppController
             $password = substr($firstName, 0, 1) . substr($surname, 0, 1) . $currentDate->second . $currentDate->minute . '$';
             
             $birthdate = $_POST['birthdate'];
+			
+			if (isset($_POST['country']))
+			{			
+				$countryTrim = trim($_POST['country']);
             
-            $countryTrim = trim($_POST['country']);
-            
-            $country = strtoupper($countryTrim);
+				$country = strtoupper($countryTrim);
+			}
+			else
+			{
+				$country = 'VENEZUELA';
+			}
     
             $addressTrim = trim($_POST['address']);
             
@@ -1549,8 +1563,8 @@ class UsersController extends AppController
                 }
             }
         
-            exit(json_encode($jsondata, JSON_FORCE_OBJECT));	
-		}
+            exit(json_encode($jsondata, JSON_FORCE_OBJECT));
+        }
     }
 
     /**

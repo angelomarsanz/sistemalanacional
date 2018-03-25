@@ -358,5 +358,94 @@ class PatientsController extends AppController
     {
         
     }
+	public function reportPatients()
+	{	
+        setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+        date_default_timezone_set('America/Caracas');
+		
+        $currentDate = Time::now();
+		
+		$binnacles = new BinnaclesController;
 
+	    if ($this->request->is('post')) 
+        {					
+			if (isset($_POST['columnsReport']))
+			{
+				$columnsReport = $_POST['columnsReport'];
+			}
+			else
+			{
+				$columnsReport = [];
+			}
+			
+			$arrayMark = $this->markColumns($columnsReport);
+						
+			$patients = TableRegistry::get('Patients');
+
+			$arrayResult = $employees->find('patients');
+			
+			if ($arrayResult['indicator'] == 1)
+			{
+				$this->Flash->error(___('No se encontraron usuarios'));
+				
+				$binnacles->add('controller', 'Employees', 'reportEmployees', 'No se encontraron usuarios');
+				
+				return $this->redirect(['controller' => 'Users', 'action' => 'wait']);
+			}
+			else
+			{
+				$employeesUsers = $arrayResult['searchRequired'];
+			}
+	
+			$swImpresion = 1;
+						
+			$this->set(compact('swImpresion', 'employeesUsers', 'arrayMark', 'currentDate'));
+			$this->set('_serialize', ['swImpresion', 'employeesUsers', 'arrayMark', 'currenDate']); 
+		
+		}
+		else
+		{
+			$swImpresion = 0;
+			$this->set(compact('swImpresion'));
+			$this->set('_serialize', ['swImpresion']);
+		}
+	}
+	public function markColumns($columnsReport = null)
+	{
+		$arrayMark = [];
+		
+		isset($columnsReport['Users.sex']) ? $arrayMark['Users.sex'] = 'siExl' : $arrayMark['Users.sex'] = 'noExl';
+		isset($columnsReport['Users.identidy_card']) ? $arrayMark['Users.identidy_card'] = 'siExl' : $arrayMark['Users.identidy_card'] = 'noExl';
+		isset($columnsReport['Users.email']) ? $arrayMark['Users.email'] = 'siExl' : $arrayMark['Users.email'] = 'noExl';
+		isset($columnsReport['Users.cell_phone']) ? $arrayMark['Users.cell_phone'] = 'siExl' : $arrayMark['Users.cell_phone'] = 'noExl';
+			
+		isset($columnsReport['Patients.birthdate']) ? $arrayMark['Patients.birthdate'] = 'siExl' : $arrayMark['Patients.birthdate'] = 'noExl';
+		isset($columnsReport['Patients.landline']) ? $arrayMark['Patients.landline'] = 'siExl' : $arrayMark['Patients.landline'] = 'noExl';
+		isset($columnsReport['Patients.country']) ? $arrayMark['Patients.country'] = 'siExl' : $arrayMark['Patients.country'] = 'noExl';
+		isset($columnsReport['Patients.province_state']) ? $arrayMark['Patients.province_state'] = 'siExl' : $arrayMark['Patients.province_state'] = 'noExl';
+		isset($columnsReport['Patients.city']) ? $arrayMark['Patients.city'] = 'siExl' : $arrayMark['Patients.city'] = 'noExl';
+		isset($columnsReport['Patients.address']) ? $arrayMark['Patients.address'] = 'siExl' : $arrayMark['Patients.address'] = 'noExl';
+		
+		isset($columnsReport['Patients.profession']) ? $arrayMark['Patients.profession'] = 'siExl' : $arrayMark['Patients.profession'] = 'noExl';
+		isset($columnsReport['Patients.work_phone']) ? $arrayMark['Patients.work_phone'] = 'siExl' : $arrayMark['Patients.work_phone'] = 'noExl';
+		isset($columnsReport['Patients.workplace']) ? $arrayMark['Patients.workplace'] = 'siExl' : $arrayMark['Patients.workplace'] = 'noExl';
+		isset($columnsReport['Patients.work_address']) ? $arrayMark['Patients.work_address'] = 'siExl' : $arrayMark['Patients.work_address'] = 'noExl';
+		
+		isset($columnsReport['Patients.full_name_emergency']) ? $arrayMark['Patients.full_name_emergency'] = 'siExl' : $arrayMark['Patients.full_name_emergency'] = 'noExl';		
+		isset($columnsReport['Patients.cell_phone_emergency']) ? $arrayMark['Patients.cell_phone_emergency'] = 'siExl' : $arrayMark['Patients.cell_phone_emergency'] = 'noExl';
+		isset($columnsReport['Patients.landline_emergency']) ? $arrayMark['Patients.landline_emergency'] = 'siExl' : $arrayMark['Patients.landline_emergency'] = 'noExl';
+		isset($columnsReport['Patients.email_emergency']) ? $arrayMark['Patients.email_emergency'] = 'siExl' : $arrayMark['Patients.email_emergency'] = 'noExl';		
+		isset($columnsReport['Patients.full_name_companion']) ? $arrayMark['Patients.full_name_companion'] = 'siExl' : $arrayMark['Patients.full_name_companion'] = 'noExl';
+		isset($columnsReport['Patients.cell_phone_companion']) ? $arrayMark['Patients.cell_phone_companion'] = 'siExl' : $arrayMark['Patients.cell_phone_companion'] = 'noExl';
+		
+		isset($columnsReport['Patients.sponsor_type']) ? $arrayMark['Patients.sponsor_type'] = 'siExl' : $arrayMark['Patients.sponsor_type'] = 'noExl';
+		isset($columnsReport['Patients.sponsor']) ? $arrayMark['Patients.sponsor'] = 'siExl' : $arrayMark['Patients.sponsor'] = 'noExl';
+		isset($columnsReport['Patients.identidy_card']) ? $arrayMark['Patients.identidy_card'] = 'siExl' : $arrayMark['Patients.identidy_card'] = 'noExl';
+		isset($columnsReport['Patients.cell_phone_sponsor']) ? $arrayMark['Patients.cell_phone_sponsor'] = 'siExl' : $arrayMark['Patients.cell_phone_sponsor'] = 'noExl';		
+		isset($columnsReport['Patients.landline_sponsor']) ? $arrayMark['Patients.landline_sponsor'] = 'siExl' : $arrayMark['Patients.landline_sponsor'] = 'noExl';
+		isset($columnsReport['Patients.email.sponsor']) ? $arrayMark['Patients.email.sponsor'] = 'siExl' : $arrayMark['Patients.email.sponsor'] = 'noExl';
+		isset($columnsReport['Patients.address_sponsor']) ? $arrayMark['Patients.address_sponsor'] = 'siExl' : $arrayMark['Patients.address_sponsor'] = 'noExl';
+		
+		return $arrayMark;
+	}
 }

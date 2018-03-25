@@ -74,53 +74,16 @@ class UsersController extends AppController
 
     public function testFunction()
     {
-		setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
-		date_default_timezone_set('America/Caracas');
-
-		$currentDate = time::now();
+		$prueba = 'angelito';
 		
-		$service = new ServicesController;
-	
-		$arrayMail = [];
-
-        $arrayResult = $service->searchService('MASTOPEXIA DE AUMENTO');
-
-        if ($arrayResult['indicator'] == 0)
-        {
-			$arrayMail['mail'] = 'angelomarsanz@gmail.com';
-			$arrayMail['surgery'] = 'MASTOPEXIA DE AUMENTO';
-			$arrayMail['costBolivars'] = $arrayResult['costBolivars'];
-			$arrayMail['costDollars'] = $arrayResult['costDollars'];
-			$arrayMail['itemes'] = nl2br(htmlentities($arrayResult['itemes']));				
-			$arrayMail['subject'] = 'Presupuesto APP-99999'; 
-			$arrayMail['firstName'] = 'PEDRO';
-			$arrayMail['surname'] = 'PÉREZ';
-			$arrayMail['identidy'] = 'V-10349999';
-			$arrayMail['phone'] = '0426-5450888';
-			$arrayMail['address'] = 'VALENCIA';
-			$arrayMail['country'] = 'VENEZUELA';
-			$arrayMail['codeBudget'] = 'APP-99999'; 
-			$arrayMail['dateBudget'] = $currentDate;
-			$arrayMail['expirationDate'] = $currentDate->addDays(3);
-			$arrayMail['namePromoter'] = 'CARLOS GARCÍA';
-			$arrayMail['mailPromoter'] = 'transemainc@gmail.com';
-			$arrayMail['phonePromoter'] = '0426-3453311';
-			
-			$result = $this->mailBudgetTest($arrayMail);
-			
-			if ($result == 0)
-			{
-				$this->Flash->success(__('Presupuesto enviado exitosamente'));
-			}
-			else
-			{
-				$this->Flash->error(__('No se pudo enviar el presupuesto'));
-			}
+		if (strtoupper($prueba) == 'ANGELITO')
+		{
+			$this->Flash->success(__('strtoupper($prueba) contiene ANGELITO'));
 		}
 		else
 		{
-			$this->Flash->error(__('No se encontró el servicio'));
-		}
+			$this->Flash->success(__('strtoupper($prueba) no contiene ANGELITO'));	
+		}	
     }
 
     public function testComunicationSend()
@@ -1016,13 +979,13 @@ class UsersController extends AppController
 					$arrayMail['itemes'] = nl2br(htmlentities($arrayResult['itemes']));
 					$itemesBudget = $arrayResult['itemes'];
 					
-					if ($_POST['coin'] == 'BOLIVAR')
+					if (strtoupper($_POST['country']) == 'VENEZUELA')
 					{
-						$arrayResult = $budget->addAutomatic($idPatient, $arrayResult['serviceDescription'], $_POST['coin'], $arrayMail['costBolivars']);                            
+						$arrayResult = $budget->addAutomatic($idPatient, $arrayResult['serviceDescription'], 'BOLIVAR', $arrayMail['costBolivars']);                            
 					}
 					else
 					{
-						$arrayResult = $budget->addAutomatic($idPatient, $arrayResult['serviceDescription'], $_POST['coin'], $arrayMail['costDollars']);                            
+						$arrayResult = $budget->addAutomatic($idPatient, $arrayResult['serviceDescription'], 'DOLLAR', $arrayMail['costDollars']);                            
 					}
 
 					if($arrayResult['indicator'] == 0)
@@ -1165,9 +1128,7 @@ class UsersController extends AppController
             $emailTrim = trim($_POST['email']);
             
             $email = strtolower($emailTrim);
-			
-			$coin = $_POST['coin'];
-            
+		    
             $lastRecord = $this->Users->find('all', ['conditions' => [['Users.role' => 'Paciente'], ['Users.email' => $email]], 
                 'order' => ['Users.created' => 'DESC']]);
             
@@ -1248,13 +1209,13 @@ class UsersController extends AppController
                         $arrayMail['itemes'] = nl2br(htmlentities($arrayResult['itemes']));
                         $itemesBudget = $arrayResult['itemes'];
 
-                        if ($coin == 'BOLIVAR')
+                        if ($country == 'VENEZUELA')
                         {
-                            $arrayResult = $budget->addWebBudget($idPatient, $surgery, $coin, $arrayMail['costBolivars']);                            
+                            $arrayResult = $budget->addWebBudget($idPatient, $surgery, 'BOLIVAR', $arrayMail['costBolivars']);                            
                         }
                         else
                         {
-                            $arrayResult = $budget->addWebBudget($idPatient, $surgery, $coin, $arrayMail['costDollars']);                            
+                            $arrayResult = $budget->addWebBudget($idPatient, $surgery, 'DOLLAR', $arrayMail['costDollars']);                            
                         }
 
                         if($arrayResult['indicator'] == 0)
@@ -1321,6 +1282,15 @@ class UsersController extends AppController
     
     public function mailBudget($arrayMail = null)
     {
+		if (strtoupper($arrayMail['country']) == 'VENEZUELA') 
+		{
+			$varTotal = $arrayMail['costBolivars'];
+		}
+		else
+		{
+			$varTotal = $arrayMail['costDollars'];
+		}
+		
         $correo = new Email(); 
         $correo
 		  ->transport('donWeb')
@@ -1342,7 +1312,7 @@ class UsersController extends AppController
             'varExpirationDate' => $arrayMail['expirationDate'],
             'varSurgery' => $arrayMail['surgery'],
             'varItemes' => $arrayMail['itemes'],
-            'varTotal' => $arrayMail['costBolivars'],
+            'varTotal' => $varTotal,
 			'varNamePromoter' => $arrayMail['namePromoter'],
 			'varPhonePromoter' => $arrayMail['phonePromoter'],
 			'varMailPromoter' => $arrayMail['mailPromoter']
@@ -1363,7 +1333,8 @@ class UsersController extends AppController
         return $result;
     }
     
-// Esta función es solo para pruebas de comunicación
+/* Esta función es solo para pruebas de comunicación. Para pruebas se copia
+	el contenido de la función addWebBasic y se suprime la línea $this->autoRender = false; */
 
     public function addWebBasicF()
     {
@@ -1396,8 +1367,6 @@ class UsersController extends AppController
             
             $firstNameSurname = strtolower($firstName) . strtolower($surname);
             
-            $coin = $_POST['coin'];
-
             $users = TableRegistry::get('Users');
             
             $arrayResult = $users->find('username', ['firstname_surname' => $firstNameSurname]);
@@ -1432,7 +1401,7 @@ class UsersController extends AppController
             $emailTrim = trim($_POST['email']);
             
             $email = strtolower($emailTrim);
-            
+		    
             $lastRecord = $this->Users->find('all', ['conditions' => [['Users.role' => 'Paciente'], ['Users.email' => $email]], 
                 'order' => ['Users.created' => 'DESC']]);
             
@@ -1513,13 +1482,13 @@ class UsersController extends AppController
                         $arrayMail['itemes'] = nl2br(htmlentities($arrayResult['itemes']));
                         $itemesBudget = $arrayResult['itemes'];
 
-                        if ($coin == 'BOLIVAR')
+                        if ($country == 'VENEZUELA')
                         {
-                            $arrayResult = $budget->addWebBudget($idPatient, $surgery, $coin, $arrayMail['costBolivars']);                            
+                            $arrayResult = $budget->addWebBudget($idPatient, $surgery, 'BOLIVAR', $arrayMail['costBolivars']);                            
                         }
                         else
                         {
-                            $arrayResult = $budget->addWebBudget($idPatient, $surgery, $coin, $arrayMail['costDollars']);                            
+                            $arrayResult = $budget->addWebBudget($idPatient, $surgery, 'DOLLAR', $arrayMail['costDollars']);                            
                         }
 
                         if($arrayResult['indicator'] == 0)
@@ -1536,8 +1505,8 @@ class UsersController extends AppController
                             $arrayMail['country'] = $country;
                             $arrayMail['codeBudget'] = $arrayResult['codeBudget']; 
                             $arrayMail['dateBudget'] = $arrayResult['dateBudget'];
-							$arrayMail['expirationDate'] = $arrayResult['expirationDate'];
-                            $arrayMail['namePromoter'] = 'Sitio web';
+                            $arrayMail['expirationDate'] = $arrayResult['expirationDate'];						
+							$arrayMail['namePromoter'] = 'Sitio web';
 							$arrayMail['mailPromoter'] = 'angelomarsanz@gmail.com';
 							$arrayMail['phonePromoter'] = '+58-0241-835-2284';
                             
@@ -1580,8 +1549,8 @@ class UsersController extends AppController
                 }
             }
         
-            exit(json_encode($jsondata, JSON_FORCE_OBJECT));
-        }        
+            exit(json_encode($jsondata, JSON_FORCE_OBJECT));	
+		}
     }
 
     /**

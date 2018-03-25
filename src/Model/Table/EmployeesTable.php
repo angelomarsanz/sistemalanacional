@@ -133,6 +133,12 @@ class EmployeesTable extends Table
 			
         $validator
             ->allowEmpty('aba_bank');
+			
+        $validator
+            ->allowEmpty('registration_status');
+			
+        $validator
+            ->allowEmpty('reason_status');
             
         $validator
             ->boolean('record_deleted')
@@ -176,6 +182,30 @@ class EmployeesTable extends Table
         {
             $arrayResult['indicator'] = 1;
         }
+        return $arrayResult;
+    }
+    public function findEmployees(Query $query, array $options)
+    {
+        $query->where([['OR' => [['Employees.record_deleted IS NULL'], ['Employees.record_deleted' => 0]]], 
+			['OR' => [['Users.deleted_record IS NULL'], ['Users.deleted_record' => 0]]]])
+			->contain(['Users'])
+			->order(['Users.surname' => 'ASC',
+				'Users.second_surname' => 'ASC',
+				'Users.first_name' => 'ASC',
+				'Users.second_name' => 'ASC']); 
+		
+        $arrayResult = [];
+        
+        if ($query)
+        {
+            $arrayResult['indicator'] = 0;
+            $arrayResult['searchRequired'] = $query;
+        }
+        else
+        {
+            $arrayResult['indicator'] = 1;
+        }
+        
         return $arrayResult;
     }
 }

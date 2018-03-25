@@ -1,18 +1,71 @@
 <?php
     use Cake\Routing\Router; 
 ?>
+
 <style>
+@media screen
+{
+    .volver 
+    {
+        display:scroll;
+        position:fixed;
+        top: 15%;
+        left: 50px;
+        opacity: 0.5;
+    }
+    .cerrar 
+    {
+        display:scroll;
+        position:fixed;
+        top: 15%;
+        left: 95px;
+        opacity: 0.5;
+    }
+    .menumenos
+    {
+        display:scroll;
+        position:fixed;
+        bottom: 5%;
+        right: 1%;
+        opacity: 0.5;
+        text-align: right;
+    }
+    .menumas 
+    {
+        display:scroll;
+        position:fixed;
+        bottom: 5%;
+        right: 1%;
+        opacity: 0.5;
+        text-align: right;
+    }
+    .noverScreen
+    {
+      display:none
+    }
     .ui-autocomplete 
     {
         z-index: 2000;
     }
+}
+@media print 
+{
+    .nover 
+    {
+      display:none
+    }
+    .saltopagina
+    {
+        display:block; 
+        page-break-before:always;
+    }
+}
 </style>
+
 <div class="row">
     <div class="col-md-8">
     	<div class="page-header">
     	    <p>
-    	    <?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>
-    	    <?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-sm btn-default', 'title' => 'Cerrar vista', 'style' => 'color: #9494b8']) ?>
     	    <?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'addBasic', 'Users', 'indexPatientUser'], ['class' => 'glyphicon glyphicon-plus btn btn-sm btn-default', 'title' => 'Agregar paciente', 'style' => 'color: #9494b8']) ?>
     	    </p>
     	    <?php if ($current_user['role'] != 'Call center' && $current_user['role'] != 'Promotor(a)' && $current_user['role'] != 'Promotor(a) independiente'): ?>
@@ -54,6 +107,21 @@
 		<?php endif; ?> 
     </div>
 </div>
+<div id="menu-menos" class="menumenos nover">
+	<p>
+	<a href="#" id="mas" title="Más opciones" class='glyphicon glyphicon-plus btn btn-danger'></a>
+	</p>
+</div>
+<div id="menu-mas" style="display:none;" class="menumas nover">
+	<p>
+		<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['id' => 'volver', 'class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
+		<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['id' => 'cerrar', 'class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'cerrar vista']) ?>
+		<?= $this->Html->link(__(''), ['controller' => 'Patients', 'action' => 'reportPatients'], ['id' => 'report-commissions', 'class' => 'glyphicon glyphicon-th-list btn btn-danger', 'title' => 'Reporte de comisiones']) ?>		
+	
+		<a href='#' id="menos" title="Menos opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
+	</p>
+</div>
+
 <script>
     function log(id, promoter) 
     {
@@ -80,5 +148,16 @@
                 logPatient(ui.item.id);
               }
         });
+		$('#mas').on('click',function()
+		{
+			$('#menu-menos').hide();
+			$('#menu-mas').show();
+		});
+		
+		$('#menos').on('click',function()
+		{
+			$('#menu-mas').hide();
+			$('#menu-menos').show();
+		});
     });
 </script>

@@ -232,41 +232,19 @@
                     <h3>Datos de la persona de contacto en caso de emergencia: </h3>
                     <hr size="3" />
                 <?php    
-                    echo $this->Form->input('first_name_emergency', ['label' => 'Primer nombre: ']);
-                    echo $this->Form->input('second_name_emergency', ['label' => 'Segundo nombre: ']);
-                    echo $this->Form->input('surname_emergency', ['label' => 'Primer apellido: ']);
-                    echo $this->Form->input('second_surname_emergency', ['label' => 'Segundo apellido: ']);
-                    echo $this->Form->input('type_of_identification_emergency', 
-                        ['options' => 
-                        [null => ' ',
-                        'V' => 'Cédula venezolano',
-                        'E' => 'Cédula extranjero',
-                        'P' => 'Pasaporte'],
-                        'label' => 'Tipo de documento de identificación: ']);
-                    echo $this->Form->input('identidy_card_emergency', ['label' => 'Cédula: ']);
-                    echo $this->Form->input('address_emergency', ['label' => 'Dirección completa (urbanización o barrio, calle o avenida, Nro. de casa, edificio, piso, Nro. de apartamento, sector y punto de referencia): *']);
-                    echo $this->Form->input('email_emergency', ['label' => 'email: ']);
+                    echo $this->Form->input('first_name_emergency', ['label' => 'Nombre: ']);
+                    echo $this->Form->input('surname_emergency', ['label' => 'Apellido: ']);
+                    echo $this->Form->input('cell_phone_emergency', ['label' => 'Celular: ']);
                     echo $this->Form->input('landline_emergency', ['label' => 'Teléfono fijo: ']);
-                    echo $this->Form->input('cell_phone_emergency', ['label' => 'Celular: ']); ?>
+					echo $this->Form->input('email_emergency', ['label' => 'email: ']);
+				?>
                     <h3>Datos del acompañante: </h3>
                     <hr size="3" />
                 <?php 
-                    echo $this->Form->input('first_name_companion', ['label' => 'Primer nombre: ']);
-                    echo $this->Form->input('second_name_companion', ['label' => 'Segundo nombre: ']);
-                    echo $this->Form->input('surname_companion', ['label' => 'Primer apellido: ']);
-                    echo $this->Form->input('second_surname_companion', ['label' => 'Segundo apellido: ']);
-                    echo $this->Form->input('type_of_identification_companion', 
-                        ['options' => 
-                        [null => ' ',
-                        'V' => 'Cédula venezolano',
-                        'E' => 'Cédula extranjero',
-                        'P' => 'Pasaporte'],
-                        'label' => 'Tipo de documento de identificación: ']);
-                    echo $this->Form->input('identidy_card_companion', ['label' => 'Cédula: ']);
-                    echo $this->Form->input('address_companion', ['label' => 'Dirección completa (urbanización o barrio, calle o avenida, Nro. de casa, edificio, piso, Nro. de apartamento, sector y punto de referencia): *']);
-                    echo $this->Form->input('email_companion', ['label' => 'email: ']);
-                    echo $this->Form->input('landline_companion', ['label' => 'Teléfono fijo: ']);
-                    echo $this->Form->input('cell_phone_companion', ['label' => 'Celular: ']); ?>
+                    echo $this->Form->input('first_name_companion', ['label' => 'Nombre: ']);
+                    echo $this->Form->input('surname_companion', ['label' => 'Apellido: ']);
+					echo $this->Form->input('cell_phone_companion', ['label' => 'Celular: ']);
+				?>
                     <h3>Datos de la persona o institución responsable del pago de la cirugía: </h3>
                     <hr size="3" />
                 <?php

@@ -2,12 +2,14 @@
     <div class="col-md-6 col-md-offset-3">
     	<div class="page-header">
  	    <p>
-        <?php if (isset($idUser)): ?>
-	        <?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $idUser, 'Users', 'indexPatientUser'], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>
-        <?php elseif (isset($controller)): ?>
-	        <?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>
-        <?php else: ?>
-    	    <?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>
+		<?php if (isset($action)): ?>
+			<?php if ($action == 'indexPatientUser'): ?>	
+				<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $idPromoter, $controller, $action, $promoter], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>
+			<?php elseif ($action == 'viewGlobal'): ?>
+				<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $idUser, 'Users', 'indexPatientUser', $idPromoter], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>		
+			<?php endif; ?>
+		<?php else: ?>	
+			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'indexPatientUser'], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>
         <?php endif; ?>
 	    <?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-sm btn-default', 'title' => 'Cerrar vista', 'style' => 'color: #9494b8']) ?>
         </p>

@@ -169,9 +169,6 @@ class PatientsTable extends Table
             ->allowEmpty('email_companion');
 
         $validator
-            ->allowEmpty('landline_companion');
-
-        $validator
             ->allowEmpty('cell_phone_companion');
 
         $validator

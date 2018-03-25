@@ -209,7 +209,7 @@ $(document).ready(function()
 		$.redirect('/sln/budgets/bill', { idBudget : $('#id').val(), surgery : $('#surgery').val(), swDelete : 1, promoter : $('#promoter').val() }); 
     });
 
-	    $('#mas').on('click',function()
+	$('#mas').on('click',function()
     {
         $('#menu-menos').hide();
         $('#menu-mas').show();
