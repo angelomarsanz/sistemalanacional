@@ -349,12 +349,7 @@ class CommissionsController extends AppController
 				$error_msg[] = $errors;
 			}
 		}
-
-		if(empty($error_msg))
-		{
-			$error_msg[] = 'Error desconocido';
-		}
-
+		
 		return $error_msg;
 	}
 

@@ -5,6 +5,10 @@ use App\Controller\AppController;
 
 use App\Controller\BudgetsController;
 
+use App\Controller\BinnaclesController;
+
+use Cake\ORM\TableRegistry;
+
 use Cake\I18n\Time;
 
 /**
@@ -382,25 +386,25 @@ class PatientsController extends AppController
 						
 			$patients = TableRegistry::get('Patients');
 
-			$arrayResult = $employees->find('patients');
+			$arrayResult = $patients->find('patients');
 			
 			if ($arrayResult['indicator'] == 1)
 			{
-				$this->Flash->error(___('No se encontraron usuarios'));
+				$this->Flash->error(___('No se encontraron pacientes'));
 				
-				$binnacles->add('controller', 'Employees', 'reportEmployees', 'No se encontraron usuarios');
+				$binnacles->add('controller', 'Patients', 'reportPatients', 'No se encontraron pacientes');
 				
 				return $this->redirect(['controller' => 'Users', 'action' => 'wait']);
 			}
 			else
 			{
-				$employeesUsers = $arrayResult['searchRequired'];
+				$patientsUsers = $arrayResult['searchRequired'];
 			}
 	
 			$swImpresion = 1;
 						
-			$this->set(compact('swImpresion', 'employeesUsers', 'arrayMark', 'currentDate'));
-			$this->set('_serialize', ['swImpresion', 'employeesUsers', 'arrayMark', 'currenDate']); 
+			$this->set(compact('swImpresion', 'patientsUsers', 'arrayMark', 'currentDate'));
+			$this->set('_serialize', ['swImpresion', 'patientsUsers', 'arrayMark', 'currenDate']); 
 		
 		}
 		else
@@ -440,12 +444,76 @@ class PatientsController extends AppController
 		
 		isset($columnsReport['Patients.sponsor_type']) ? $arrayMark['Patients.sponsor_type'] = 'siExl' : $arrayMark['Patients.sponsor_type'] = 'noExl';
 		isset($columnsReport['Patients.sponsor']) ? $arrayMark['Patients.sponsor'] = 'siExl' : $arrayMark['Patients.sponsor'] = 'noExl';
-		isset($columnsReport['Patients.identidy_card']) ? $arrayMark['Patients.identidy_card'] = 'siExl' : $arrayMark['Patients.identidy_card'] = 'noExl';
+		isset($columnsReport['Patients.sponsor_identification']) ? $arrayMark['Patients.sponsor_identification'] = 'siExl' : $arrayMark['Patients.sponsor_identification'] = 'noExl';
 		isset($columnsReport['Patients.cell_phone_sponsor']) ? $arrayMark['Patients.cell_phone_sponsor'] = 'siExl' : $arrayMark['Patients.cell_phone_sponsor'] = 'noExl';		
 		isset($columnsReport['Patients.landline_sponsor']) ? $arrayMark['Patients.landline_sponsor'] = 'siExl' : $arrayMark['Patients.landline_sponsor'] = 'noExl';
-		isset($columnsReport['Patients.email.sponsor']) ? $arrayMark['Patients.email.sponsor'] = 'siExl' : $arrayMark['Patients.email.sponsor'] = 'noExl';
+		isset($columnsReport['Patients.email_sponsor']) ? $arrayMark['Patients.email_sponsor'] = 'siExl' : $arrayMark['Patients.email_sponsor'] = 'noExl';
 		isset($columnsReport['Patients.address_sponsor']) ? $arrayMark['Patients.address_sponsor'] = 'siExl' : $arrayMark['Patients.address_sponsor'] = 'noExl';
 		
 		return $arrayMark;
+	}
+	public function modifyData()
+	{
+		$binnacles = new BinnaclesController;
+		
+		$arrayRecords = [873, 414, 247, 210, 431, 585, 697, 949, 666, 871, 1011, 
+			1043, 230, 214, 618, 1020, 566, 825, 826, 718, 719, 
+			179, 200, 201, 204, 213, 215, 237, 253, 258];
+			
+		$accountUpdate = 0;
+		
+		foreach ($arrayRecords as $arrayRecord)
+		{
+			$patient = $this->Patients->get($arrayRecord);
+			
+			$patient->country = 'VENEZUELA';
+			
+			if (!($this->Patients->save($patient))) 
+			{
+				if($patient->errors())
+				{
+					$error_msg = $this->arrayErrors($patient->errors());
+					
+					$this->Flash->error(__('El registro: ' . $arrayRecord . ' no pudo ser actualizado debido a: ' . implode(' - ', $error_msg)));
+				}
+				else
+				{
+					$this->Flash->error(__('No se pudo actualizar el registro ' . $arrayRecord . ' por error desconocido'));
+					
+					$error_msg = ['No se pudo actualizar el registro: error desconocido'];
+				}
+				foreach($error_msg as $noveltys)
+				{
+					$binnacles->add('controller', 'Patients', 'modifyData', $noveltys . 'Registro ' . $arrayRecord);
+				}
+			}	
+			else
+			{
+				$accountUpdate++;
+			}
+		}
+		$this->Flash->success(__('Total pacientes actualizados: ' . $accountUpdate));
+	}
+	public function arrayErrors($arrayCake = null)
+	{
+		$error_msg = [];
+		
+		foreach($arrayCake as $errors)
+		{
+			if(is_array($errors))
+			{
+				foreach($errors as $error)
+				{
+					
+					$error_msg[] = $error;
+				}
+			}
+			else
+			{
+				$error_msg[] = $errors;
+			}
+		}
+		
+		return $error_msg;
 	}
 }

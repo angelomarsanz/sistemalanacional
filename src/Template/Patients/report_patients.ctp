@@ -117,10 +117,10 @@
 										<div class="col-md-11">							
 											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.sponsor_type]"> Tipo de responsable</p>
 											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.sponsor]"> Nombre</p>
-											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.identidy_card]"> Cédula/Pasaporte/RIF/RUC</p>
+											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.sponsor_identification]"> Cédula/Pasaporte/RIF/RUC</p>
 											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.cell_phone_sponsor]"> Celular</p>
 											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.landline_sponsor]"> Teléfono fijo</p>
-											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.email.sponsor]"> Email</p>
+											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.email_sponsor]"> Email</p>
 											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.address_sponsor]"> Dirección</p>
 										</div>
 									</div>
@@ -137,7 +137,7 @@
 				</div>
 				<div id="menu-mas" style="display:none;" class="menumas nover">
 					<p>
-						<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'index'], ['id' => 'volver', 'class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
+						<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'indexPatientUser'], ['id' => 'volver', 'class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
 						<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['id' => 'cerrar', 'class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'cerrar vista']) ?>
 						
 						<button id="marcar-todos" class="glyphicon icon-checkbox-checked btn btn-danger" title="Marcar todos" style="padding: 8px 12px 10px 12px;"></button>
@@ -153,25 +153,15 @@
 	</div>
 <?php else: ?>
 	<?php 
-		$arrayUsers = []; 
-		$accountRoles = 0;	
-		foreach ($employeesUsers as $employeesUser): 
-			if ($accountRoles == 0):
-				$arrayUsers[$employeesUser->user->role] = 1;
-				$accountRoles++;
+		$venezuela = 0; 
+		$otherCountry = 0;	
+		foreach ($patientsUsers as $patientsUser): 
+			$countryTrim = trim($patientsUser->country);            
+			$country = strtoupper($countryTrim);
+			if ($country == 'VENEZUELA'):
+				$venezuela++;
 			else:
-				$swEncontrado = 0;
-				foreach ($arrayUsers as $clave => $arrayUser):
-					if ($clave == $employeesUser->user->role):
-						$arrayUsers[$clave]++;
-						$swEncontrado = 1;
-						break;
-					endif;
-				endforeach;
-				if ($swEncontrado == 0):
-					$arrayUsers[$employeesUser->user->role] = 1;
-					$accountRoles++;
-				endif;
+				$otherCountry++;
 			endif;
 		endforeach;
 	?>
@@ -179,10 +169,10 @@
 	<br />
 	<div>
 		<?php $accountRecords = 0; ?>
-		<?php foreach ($employeesUsers as $employeesUser): ?>
+		<?php foreach ($patientsUsers as $patientsUser): ?>
 			<?php if ($accountRecords == 0): ?>
 				<?php $accountRecords++; ?>
-				<table id="employees-users" name="employees-users" class="table noverScreen">
+				<table id="patients-users" name="patients-users" class="table">
 					<thead>
 						<tr>
 							<th></th>
@@ -190,7 +180,7 @@
 						</tr>
 						<tr>
 							<th></th>
-							<th>Reporte de usuarios</th>
+							<th>Reporte de pacientes</th>
 						</tr>
 						<tr>
 							<th></th>
@@ -204,12 +194,14 @@
 							<th></th>
 							<th><b>Resumen:</b></th>
 						</tr>		
-						<?php foreach ($arrayUsers as $clave => $arrayUser): ?>								
-							<tr>
-								<th></th>
-								<th><?= $clave . ': ' . $arrayUser ?></th>
-							</tr>
-						<?php endforeach; ?>
+						<tr>
+							<th></th>
+							<th><?= 'Pacientes de venezuela: ' . $venezuela ?></th>
+						</tr>
+						<tr>
+							<th></th>
+							<th><?= 'Pacientes de otros países: ' . $otherCountry ?></th>
+						</tr>
 						<tr>
 							<th></th>
 							<th></th>
@@ -226,85 +218,109 @@
 							<th scope="col"><b>Nro.</b></th>
 							<th scope="col"><b>Nombre</b></th>
 							<th scope="col"><b>Usuario</b></th>
-							<th scope="col"><b>Rol</b></th>
 							<th scope="col" class=<?= $arrayMark['Users.sex'] ?>><b>Sexo</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.birthdate'] ?>><b>Fecha de nacimiento</b></th>
 							<th scope="col" class=<?= $arrayMark['Users.identidy_card'] ?>><b>Cédula/pasaporte</b></th>
-							<th scope="col" class=<?= $arrayMark['Employees.rif'] ?>><b>RIF</b></th>
 							<th scope="col" class=<?= $arrayMark['Users.cell_phone'] ?>><b>Celular</b></th>
-							<th scope="col" class=<?= $arrayMark['Employees.landline'] ?>><b>Teléfono fijo</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.landline'] ?>><b>Teléfono fijo</b></th>
 							<th scope="col" class=<?= $arrayMark['Users.email'] ?>><b>Email</b></th>
-							<th scope="col" class=<?= $arrayMark['Employees.address'] ?>><b>Dirección de habitación</b></th>
-							<th scope="col" class=<?= $arrayMark['Employees.birthdate'] ?>><b>Fecha de nacimiento</b></th>
-							<th scope="col" class=<?= $arrayMark['Employees.place_of_birth'] ?>><b>Lugar de nacimiento</b></th>
-							<th scope="col" class=<?= $arrayMark['Employees.country_of_birth'] ?>><b>País de nacimiento</b></th>
-							<th scope="col" class=<?= $arrayMark['Employees.degree_instruction'] ?>><b>Grado de instrucción</b></th>
-							<th scope="col" class=<?= $arrayMark['Employees.payment_method'] ?>><b>Método de pago</b></th>
-							<th scope="col" class=<?= $arrayMark['Employees.account_bank'] ?>><b>Cuenta</b></th>
-							<th scope="col" class=<?= $arrayMark['Employees.account_type'] ?>><b>Tipo de cuenta</b></th>
-							<th scope="col" class=<?= $arrayMark['Employees.bank'] ?>><b></b>Banco</th>
-							<th scope="col" class=<?= $arrayMark['Employees.bank_address'] ?>><b>Dirección del banco</b></th>
-							<th scope="col" class=<?= $arrayMark['Employees.swif_bank'] ?>><b>Swif banco</b></th>
-							<th scope="col" class=<?= $arrayMark['Employees.aba_bank'] ?>><b>Aba banco</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.country'] ?>><b>País</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.province_state'] ?>><b>Provincia o estado</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.city'] ?>><b>Ciudad</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.address'] ?>><b>Dirección</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.profession'] ?>><b>Profesión</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.work_phone'] ?>><b>Teléfono trabajo</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.workplace'] ?>><b>Lugar de trabajo</b></th>						
+							<th scope="col" class=<?= $arrayMark['Patients.work_address'] ?>><b>Dirección de trabajo</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.full_name_emergency'] ?>><b>Nombre contacto caso emergencia</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.cell_phone_emergency'] ?>><b>Teléfono (emergencia)</b></th>							
+							<th scope="col" class=<?= $arrayMark['Patients.landline_emergency'] ?>><b>Teléfono fijo (emergencia)</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.email_emergency'] ?>><b>Email contacto (emergencia)</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.full_name_companion'] ?>><b>Nombre del acompañante</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.cell_phone_companion'] ?>><b>Teléfono acompañante</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.sponsor_type'] ?>><b>Tipo de responsable pago cirugía</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.sponsor'] ?>><b>Nombre responsable pago cirugía</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.sponsor_identification'] ?>><b>Identificación (responsable)</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.cell_phone_sponsor'] ?>><b>Celular (responsable)</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.landline_sponsor'] ?>><b>Teléfono fijo (responsable)</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.email_sponsor'] ?>><b>Email (responsable)</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.address_sponsor'] ?>><b>Dirección (responsable)</b></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
 							<td><?= $accountRecords ?></td>
-							<td><?= $employeesUser->user->full_name ?></td>
-							<td><?= $employeesUser->user->username ?></td>
-							<td><?= $employeesUser->user->role ?></td>
-							<td class=<?= $arrayMark['Users.sex'] ?>><?= $employeesUser->user->sex ?></td>
-							<td class=<?= $arrayMark['Users.identidy_card'] ?>><?= $employeesUser->user->identidy_card ?></td>
-							<td class=<?= $arrayMark['Employees.rif'] ?>><?= $employeesUser->rif ?></td>
-							<td class=<?= $arrayMark['Users.cell_phone'] ?>><?= $employeesUser->user->cell_phone ?></td>
-							<td class=<?= $arrayMark['Employees.landline'] ?>><?= $employeesUser->landline ?></td>
-							<td class=<?= $arrayMark['Users.email'] ?>><?= $employeesUser->user->email ?></td>
-							<td class=<?= $arrayMark['Employees.address'] ?>><?= $employeesUser->address ?></td>
-							<?php if (isset($employeesUser->birthdate)): ?>
-								<td class=<?= $arrayMark['Employees.birthdate'] ?>><?= $employeesUser->birthdate->format('d-m-Y') ?></td>
+							<td><?= $patientsUser->user->full_name ?></td>
+							<td><?= $patientsUser->user->username ?></td>
+							<td class=<?= $arrayMark['Users.sex'] ?>><?= $patientsUser->user->sex ?></td>
+							<?php if (isset($patientsUser->birthdate)): ?>
+								<td class=<?= $arrayMark['Patients.birthdate'] ?>><?= $patientsUser->birthdate->format('d-m-Y') ?></td>
 							<?php else: ?>
-								<td class=<?= $arrayMark['Employees.birthdate'] ?>></td>
+								<td class=<?= $arrayMark['Patients.birthdate'] ?>></td>
 							<?php endif; ?>
-							<td class=<?= $arrayMark['Employees.place_of_birth'] ?>><?= $employeesUser->place_of_birth ?></td>
-							<td class=<?= $arrayMark['Employees.country_of_birth'] ?>><?= $employeesUser->country_of_birth ?></td>
-							<td class=<?= $arrayMark['Employees.degree_instruction'] ?>><?= $employeesUser->degree_instruction ?></td>
-							<td class=<?= $arrayMark['Employees.payment_method'] ?>><?= $employeesUser->payment_method ?></td>
-							<td class=<?= $arrayMark['Employees.account_bank'] ?>><?= $employeesUser->account_bank ?></td>
-							<td class=<?= $arrayMark['Employees.account_type'] ?>><?= $employeesUser->account_type ?></td>
-							<td class=<?= $arrayMark['Employees.bank'] ?>><?= $employeesUser->bank ?></td>
-							<td class=<?= $arrayMark['Employees.bank_address'] ?>><?= $employeesUser->bank_address ?></td>
-							<td class=<?= $arrayMark['Employees.swif_bank'] ?>><?= $employeesUser->swif_bank ?></td>
-							<td class=<?= $arrayMark['Employees.aba_bank'] ?>><?= $employeesUser->aba_bank ?></td>							
+							<td class=<?= $arrayMark['Users.identidy_card'] ?>><?= $patientsUser->user->type_of_identification . '-' . $patientsUser->user->identidy_card ?></td>
+							<td class=<?= $arrayMark['Users.cell_phone'] ?>><?= $patientsUser->user->cell_phone ?></td>
+							<td class=<?= $arrayMark['Patients.landline'] ?>><?= $patientsUser->landline ?></td>
+							<td class=<?= $arrayMark['Users.email'] ?>><?= $patientsUser->user->email ?></td>
+							<td class=<?= $arrayMark['Patients.country'] ?>><?= $patientsUser->country ?></td>
+							<td class=<?= $arrayMark['Patients.province_state'] ?>><?= $patientsUser->province_state ?></td>
+							<td class=<?= $arrayMark['Patients.city'] ?>><?= $patientsUser->city ?></td>
+							<td class=<?= $arrayMark['Patients.address'] ?>><?= $patientsUser->address ?></td>
+							<td class=<?= $arrayMark['Patients.profession'] ?>><?= $patientsUser->profession ?></td>
+							<td class=<?= $arrayMark['Patients.work_phone'] ?>><?= $patientsUser->work_phone ?></td>
+							<td class=<?= $arrayMark['Patients.workplace'] ?>><?= $patientsUser->workplace ?></td>
+							<td class=<?= $arrayMark['Patients.work_address'] ?>><?= $patientsUser->address ?></td>
+							<td class=<?= $arrayMark['Patients.full_name_emergency'] ?>><?= $patientsUser->surname_emergency . ' ' . $patientsUser->first_name_emergency ?></td>
+							<td class=<?= $arrayMark['Patients.cell_phone_emergency'] ?>><?= $patientsUser->cell_phone_emergency ?></td>
+							<td class=<?= $arrayMark['Patients.landline_emergency'] ?>><?= $patientsUser->landline_emergency ?></td>
+							<td class=<?= $arrayMark['Patients.email_emergency'] ?>><?= $patientsUser->email_emergency ?></td>
+							<td class=<?= $arrayMark['Patients.full_name_companion'] ?>><?= $patientsUser->surname_companion . ' ' . $patientsUser->first_name_companion ?></td>
+							<td class=<?= $arrayMark['Patients.cell_phone_companion'] ?>><?= $patientsUser->cell_phone_companion ?></td>
+							<td class=<?= $arrayMark['Patients.sponsor_type'] ?>><?= $patientsUser->sponsor_type ?></td>
+							<td class=<?= $arrayMark['Patients.sponsor'] ?>><?= $patientsUser->sponsor ?></td>
+							<td class=<?= $arrayMark['Patients.sponsor_identification'] ?>><?= $patientsUser->sponsor_identification ?></td>							
+							<td class=<?= $arrayMark['Patients.cell_phone_sponsor'] ?>><?= $patientsUser->cell_phone_sponsor ?></td>
+							<td class=<?= $arrayMark['Patients.landline_sponsor'] ?>><?= $patientsUser->landline_sponsor ?></td>
+							<td class=<?= $arrayMark['Patients.email_sponsor'] ?>><?= $patientsUser->email_sponsor ?></td>
+							<td class=<?= $arrayMark['Patients.address_sponsor'] ?>><?= $patientsUser->address_sponsor ?></td>
 						</tr>
 			<?php else: ?>
 				<?php $accountRecords++; ?>
 				<tr>
 					<td><?= $accountRecords ?></td>
-					<td><?= $employeesUser->user->full_name ?></td>
-					<td><?= $employeesUser->user->username ?></td>
-					<td><?= $employeesUser->user->role ?></td>
-					<td class=<?= $arrayMark['Users.sex'] ?>><?= $employeesUser->user->sex ?></td>
-					<td class=<?= $arrayMark['Users.identidy_card'] ?>><?= $employeesUser->user->identidy_card ?></td>
-					<td class=<?= $arrayMark['Employees.rif'] ?>><?= $employeesUser->rif ?></td>
-					<td class=<?= $arrayMark['Users.cell_phone'] ?>><?= $employeesUser->user->cell_phone ?></td>
-					<td class=<?= $arrayMark['Employees.landline'] ?>><?= $employeesUser->landline ?></td>
-					<td class=<?= $arrayMark['Users.email'] ?>><?= $employeesUser->user->email ?></td>
-					<td class=<?= $arrayMark['Employees.address'] ?>><?= $employeesUser->address ?></td>
-					<?php if (isset($employeesUser->birthdate)): ?>
-						<td class=<?= $arrayMark['Employees.birthdate'] ?>><?= $employeesUser->birthdate->format('d-m-Y') ?></td>
+					<td><?= $patientsUser->user->full_name ?></td>
+					<td><?= $patientsUser->user->username ?></td>
+					<td class=<?= $arrayMark['Users.sex'] ?>><?= $patientsUser->user->sex ?></td>
+					<?php if (isset($patientsUser->birthdate)): ?>
+						<td class=<?= $arrayMark['Patients.birthdate'] ?>><?= $patientsUser->birthdate->format('d-m-Y') ?></td>
 					<?php else: ?>
-						<td class=<?= $arrayMark['Employees.birthdate'] ?>></td>
+						<td class=<?= $arrayMark['Patients.birthdate'] ?>></td>
 					<?php endif; ?>
-					<td class=<?= $arrayMark['Employees.place_of_birth'] ?>><?= $employeesUser->place_of_birth ?></td>
-					<td class=<?= $arrayMark['Employees.country_of_birth'] ?>><?= $employeesUser->country_of_birth ?></td>
-					<td class=<?= $arrayMark['Employees.degree_instruction'] ?>><?= $employeesUser->degree_instruction ?></td>
-					<td class=<?= $arrayMark['Employees.payment_method'] ?>><?= $employeesUser->payment_method ?></td>
-					<td class=<?= $arrayMark['Employees.account_bank'] ?>><?= $employeesUser->account_bank ?></td>
-					<td class=<?= $arrayMark['Employees.account_type'] ?>><?= $employeesUser->account_type ?></td>
-					<td class=<?= $arrayMark['Employees.bank'] ?>><?= $employeesUser->bank ?></td>
-					<td class=<?= $arrayMark['Employees.bank_address'] ?>><?= $employeesUser->bank_address ?></td>
-					<td class=<?= $arrayMark['Employees.swif_bank'] ?>><?= $employeesUser->swif_bank ?></td>
-					<td class=<?= $arrayMark['Employees.aba_bank'] ?>><?= $employeesUser->aba_bank ?></td>							
+					<td class=<?= $arrayMark['Users.identidy_card'] ?>><?= $patientsUser->user->type_of_identification . '-' . $patientsUser->user->identidy_card ?></td>
+					<td class=<?= $arrayMark['Users.cell_phone'] ?>><?= $patientsUser->user->cell_phone ?></td>
+					<td class=<?= $arrayMark['Patients.landline'] ?>><?= $patientsUser->landline ?></td>
+					<td class=<?= $arrayMark['Users.email'] ?>><?= $patientsUser->user->email ?></td>
+					<td class=<?= $arrayMark['Patients.country'] ?>><?= $patientsUser->country ?></td>
+					<td class=<?= $arrayMark['Patients.province_state'] ?>><?= $patientsUser->province_state ?></td>
+					<td class=<?= $arrayMark['Patients.city'] ?>><?= $patientsUser->city ?></td>
+					<td class=<?= $arrayMark['Patients.address'] ?>><?= $patientsUser->address ?></td>
+					<td class=<?= $arrayMark['Patients.profession'] ?>><?= $patientsUser->profession ?></td>
+					<td class=<?= $arrayMark['Patients.work_phone'] ?>><?= $patientsUser->work_phone ?></td>
+					<td class=<?= $arrayMark['Patients.workplace'] ?>><?= $patientsUser->workplace ?></td>
+					<td class=<?= $arrayMark['Patients.work_address'] ?>><?= $patientsUser->address ?></td>
+					<td class=<?= $arrayMark['Patients.full_name_emergency'] ?>><?= $patientsUser->surname_emergency . ' ' . $patientsUser->first_name_emergency ?></td>
+					<td class=<?= $arrayMark['Patients.cell_phone_emergency'] ?>><?= $patientsUser->cell_phone_emergency ?></td>
+					<td class=<?= $arrayMark['Patients.landline_emergency'] ?>><?= $patientsUser->landline_emergency ?></td>
+					<td class=<?= $arrayMark['Patients.email_emergency'] ?>><?= $patientsUser->email_emergency ?></td>
+					<td class=<?= $arrayMark['Patients.full_name_companion'] ?>><?= $patientsUser->surname_companion . ' ' . $patientsUser->first_name_companion ?></td>
+					<td class=<?= $arrayMark['Patients.cell_phone_companion'] ?>><?= $patientsUser->cell_phone_companion ?></td>
+					<td class=<?= $arrayMark['Patients.sponsor_type'] ?>><?= $patientsUser->sponsor_type ?></td>
+					<td class=<?= $arrayMark['Patients.sponsor'] ?>><?= $patientsUser->sponsor ?></td>
+					<td class=<?= $arrayMark['Patients.sponsor_identification'] ?>><?= $patientsUser->sponsor_identification ?></td>							
+					<td class=<?= $arrayMark['Patients.cell_phone_sponsor'] ?>><?= $patientsUser->cell_phone_sponsor ?></td>
+					<td class=<?= $arrayMark['Patients.landline_sponsor'] ?>><?= $patientsUser->landline_sponsor ?></td>
+					<td class=<?= $arrayMark['Patients.email_sponsor'] ?>><?= $patientsUser->email_sponsor ?></td>
+					<td class=<?= $arrayMark['Patients.address_sponsor'] ?>><?= $patientsUser->address_sponsor ?></td>							
 				</tr>
 			<?php endif; ?>
 		<?php endforeach ?>
@@ -319,7 +335,7 @@
 	</div>
 	<div id="menu-mas" style="display:none;" class="menumas nover">
 		<p>
-			<a href="/sln/users/index" id="volver" title="Volver" class='glyphicon glyphicon-chevron-left btn btn-danger'></a>
+			<a href="/sln/users/indexPatientUser" id="volver" title="Volver" class='glyphicon glyphicon-chevron-left btn btn-danger'></a>
 			<a href="/sln/users/wait" id="cerrar" title="Cerrar vista" class='glyphicon glyphicon-remove btn btn-danger'></a>
 			<a href='#' id="menos" title="Menos opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
 		</p>
@@ -341,13 +357,13 @@ $(document).ready(function(){
     
     $("#excel").click(function(){
         
-        $("#employees-users").table2excel({
+        $("#patients-users").table2excel({
     
             exclude: ".noExl",
         
-            name: "employees_users",
+            name: "patients_users",
         
-            filename: $('#employees-users').attr('name') 
+            filename: $('#patients-users').attr('name') 
     
         });
     });

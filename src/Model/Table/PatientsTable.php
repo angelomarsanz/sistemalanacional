@@ -191,6 +191,42 @@ class PatientsTable extends Table
 
         $validator
             ->allowEmpty('cell_phone_sponsor');
+			
+        $validator
+            ->allowEmpty('extra_column1');
+			
+        $validator
+            ->allowEmpty('extra_column2');
+			
+        $validator
+            ->allowEmpty('extra_column3');
+
+        $validator
+            ->allowEmpty('extra_column4');
+			
+        $validator
+            ->allowEmpty('extra_column5');
+			
+        $validator
+            ->allowEmpty('extra_column6');
+			
+        $validator
+            ->allowEmpty('extra_column7');
+			
+        $validator
+            ->allowEmpty('extra_column8');
+			
+        $validator
+            ->allowEmpty('extra_column9');
+
+        $validator
+            ->allowEmpty('extra_column10');
+
+        $validator
+            ->allowEmpty('registration_status');
+			
+        $validator
+            ->allowEmpty('reason_status');
 
         $validator
             ->allowEmpty('responsible_user');
@@ -214,5 +250,34 @@ class PatientsTable extends Table
         $rules->add($rules->isUnique(['email']));
         $rules->add($rules->existsIn(['user_id'], 'Users'));
         return $rules;
+    }
+    public function findPatients(Query $query, array $options)
+    {
+        $query->where([['Patients.id >' =>1], 
+			['Users.surname !=' => ''],
+			['Users.first_name !=' => ''],
+			['Users.surname IS NOT NULL'],
+			['Users.first_name IS NOT NULL'],			
+			['OR' => [['Patients.record_deleted IS NULL'], ['Patients.record_deleted' => 0]]], 
+			['OR' => [['Users.deleted_record IS NULL'], ['Users.deleted_record' => 0]]]])
+			->contain(['Users'])
+			->order(['Users.surname' => 'ASC',
+				'Users.second_surname' => 'ASC',
+				'Users.first_name' => 'ASC',
+				'Users.second_name' => 'ASC']); 
+		
+        $arrayResult = [];
+        
+        if ($query)
+        {
+            $arrayResult['indicator'] = 0;
+            $arrayResult['searchRequired'] = $query;
+        }
+        else
+        {
+            $arrayResult['indicator'] = 1;
+        }
+        
+        return $arrayResult;
     }
 }

@@ -13,6 +13,8 @@ use App\Controller\DiarypatientsController;
 
 use App\Controller\CommissionsController;
 
+use App\Controller\BinnaclesController;
+
 use Cake\I18n\Time;
 
 use Cake\Mailer\Email;
@@ -668,6 +670,8 @@ class BudgetsController extends AppController
     public function bill($idBudget = null, $surgery = null)
     {
 		$commissions = new CommissionsController;
+		
+		$binnacles = new BinnaclesController;
 	
 		if ($this->request->is(['patch', 'post', 'put']))
         {      

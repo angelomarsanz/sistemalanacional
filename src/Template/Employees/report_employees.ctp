@@ -219,7 +219,7 @@
 							<td><?= $employeesUser->user->username ?></td>
 							<td><?= $employeesUser->user->role ?></td>
 							<td class=<?= $arrayMark['Users.sex'] ?>><?= $employeesUser->user->sex ?></td>
-							<td class=<?= $arrayMark['Users.identidy_card'] ?>><?= $employeesUser->user->identidy_card ?></td>
+							<td class=<?= $arrayMark['Users.identidy_card'] ?>><?= $employeesUser->user->type_of_identification .'-' . $employeesUser->user->identidy_card ?></td>
 							<td class=<?= $arrayMark['Employees.rif'] ?>><?= $employeesUser->rif ?></td>
 							<td class=<?= $arrayMark['Users.cell_phone'] ?>><?= $employeesUser->user->cell_phone ?></td>
 							<td class=<?= $arrayMark['Employees.landline'] ?>><?= $employeesUser->landline ?></td>
@@ -249,7 +249,7 @@
 					<td><?= $employeesUser->user->username ?></td>
 					<td><?= $employeesUser->user->role ?></td>
 					<td class=<?= $arrayMark['Users.sex'] ?>><?= $employeesUser->user->sex ?></td>
-					<td class=<?= $arrayMark['Users.identidy_card'] ?>><?= $employeesUser->user->identidy_card ?></td>
+					<td class=<?= $arrayMark['Users.identidy_card'] ?>><?= $employeesUser->user->type_of_identification .'-' . $employeesUser->user->identidy_card ?></td>
 					<td class=<?= $arrayMark['Employees.rif'] ?>><?= $employeesUser->rif ?></td>
 					<td class=<?= $arrayMark['Users.cell_phone'] ?>><?= $employeesUser->user->cell_phone ?></td>
 					<td class=<?= $arrayMark['Employees.landline'] ?>><?= $employeesUser->landline ?></td>
