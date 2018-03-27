@@ -57,9 +57,15 @@
 		<input id="country-patient" type="hidden" value=<?= $user->patients[0]['country'] ?>>
 		<input id="email-patient" type="hidden" value=<?= $user->email ?>>
         <input id="id-patient" type="hidden" value=<?= $user->patients[0]['id'] ?>>
-		<input id="name-promoter" type="hidden" value=<?= $promoter->surname . ' ' . $promoter->first_name ?>>
+		<input id="surname-promoter" type="hidden" value=<?= $promoter->surname ?>>
+		<input id="name-promoter" type="hidden" value=<?= $promoter->first_name ?>>
 		<input id="cell-promoter" type="hidden" value=<?= $promoter->cell_phone ?>>
 		<input id="email-promoter" type="hidden" value=<?= $promoter->email ?>>
+		<?php if (strtoupper($user->patients[0]['country']) == 'VENEZUELA'): ?>
+			<input id="coin" type="hidden" value="BOLIVAR">
+		<?php else: ?>
+			<input id="coin" type="hidden" value="DOLLAR">
+		<?php endif; ?>
     </div>
     <div class="row">
         <div class="col col-sm-4">
@@ -194,12 +200,8 @@
                         <div id="agregar-presupuesto-paciente" style="display:none">   
                             <?php
 								echo $this->Form->input('surgery', ['label' => 'Servicio médico: *', 'required' => 'true', 'options' => $services]); 
-								echo $this->Form->input('coin', 
-									['label' => 'Moneda en que se emitirá el presupuesto: ', 'required' => 'true', 'options' => 
-									[null => ' ',
-									'BOLIVAR' => 'BOLIVAR',
-									'DOLLAR' => 'DOLLAR']]);
 							?>
+							<button id="aceptar" type="button" class="btn btn-success">Aceptar</button>
                         </div>
                         <?php foreach ($user->patients as $patients): ?>
                             <div class="table-responsive">
@@ -213,44 +215,46 @@
                                     </thead>
                                     <tbody>
                                         <?php foreach ($patients->budgets as $budgets): ?>
-                                            <?php if ($budgets->deleted_record != 1): ?>
-                                                <tr>
-                                                    <td><?= h($budgets->application_date->format('d-m-Y')) ?></td>
-                                                    <td><?= h($budgets->surgery) ?></td>
-													<td>
-														<?php 
-															if ($budgets->initial_budget == null):
-																echo $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'view',
-																	$budgets->id, 
-																	$user->full_name,
-																	$promoter->full_name, 
-																	$promoter->cell_phone, 
-																	$promoter->email, 'Users', 'viewGlobal', $user->id, $promoter->id], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto']);
-															else: 
-																$pdf = ".pdf";
-																$pos = strpos($budgets->initial_budget, $pdf);
-																if ($pos):
-																	echo $this->Html->link(__(''), '/files/budgets/initial_budget/' . $diarys->budget->initial_budget_dir . '/'. $diarys->budget->initial_budget, ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto', 'target' => '_blank']);
-																else:    
-																	$txt = ".txt";   
-																	$pos = strpos($budgets->initial_budget, $txt);
-																	if ($pos):
-																		echo $this->Html->link(__(''), '/files/budgets/initial_budget/' . $diarys->budget->initial_budget_dir . '/'. $diarys->budget->initial_budget, ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto', 'target' => '_blank']);
-																	else:      
-																		echo $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'view',
+                                            <?php if ($budgets->deleted_record == null || $budgets->deleted_record == false): ?>
+												<?php if ($budgets->activity_result != 'Cerrado'): ?>
+													<tr>
+														<td><?= h($budgets->application_date->format('d-m-Y')) ?></td>
+														<td><?= h($budgets->surgery) ?></td>
+														<td>
+															<?php 
+																if ($budgets->initial_budget == null):
+																	echo $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'view',
 																		$budgets->id, 
 																		$user->full_name,
 																		$promoter->full_name, 
 																		$promoter->cell_phone, 
 																		$promoter->email, 'Users', 'viewGlobal', $user->id, $promoter->id], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto']);
-																   endif;
+																else: 
+																	$pdf = ".pdf";
+																	$pos = strpos($budgets->initial_budget, $pdf);
+																	if ($pos):
+																		echo $this->Html->link(__(''), '/files/budgets/initial_budget/' . $diarys->budget->initial_budget_dir . '/'. $diarys->budget->initial_budget, ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto', 'target' => '_blank']);
+																	else:    
+																		$txt = ".txt";   
+																		$pos = strpos($budgets->initial_budget, $txt);
+																		if ($pos):
+																			echo $this->Html->link(__(''), '/files/budgets/initial_budget/' . $diarys->budget->initial_budget_dir . '/'. $diarys->budget->initial_budget, ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto', 'target' => '_blank']);
+																		else:      
+																			echo $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'view',
+																			$budgets->id, 
+																			$user->full_name,
+																			$promoter->full_name, 
+																			$promoter->cell_phone, 
+																			$promoter->email, 'Users', 'viewGlobal', $user->id, $promoter->id], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto']);
+																	   endif;
+																	endif;
 																endif;
-															endif;
-														?>													
-													</td>
-                                                    <td><?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $budgets->id, 'Users', 'viewGlobal', $user->id, $user->patients[0]['id'], $user->parent_user], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar presupuesto']) ?></td> 
-                                                    <td><?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $budgets->id, 'Users', 'viewGlobal', $user->id], ['confirm' => __('Está seguro de que desea eliminar el presupuesto?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar']) ?></td>
-                                                </tr>
+															?>													
+														</td>
+														<td><?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $budgets->id, 'Users', 'viewGlobal', $user->id, $user->patients[0]['id'], $user->parent_user], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar presupuesto']) ?></td> 
+														<td><?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $budgets->id, 'Users', 'viewGlobal', $user->id], ['confirm' => __('Está seguro de que desea eliminar el presupuesto?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar']) ?></td>
+													</tr>
+												<?php endif; ?>
                                             <?php endif; ?>
                                         <?php endforeach; ?>
                                     </tbody>
@@ -286,27 +290,31 @@
                                             ->second(59);
                                     ?>
                                     <?php foreach ($patients->budgets as $budgets): ?>
-                                        <?php $accountDiary = 0; ?>
-                                        <?php foreach ($budgets->diarypatients as $diaryPatient): ?>
-                                            <?php if ($diaryPatient->activity_date <= $currentDate &&
-                                                $diaryPatient->status == null &&
-                                                $diaryPatient->deleted_record == null): ?>
-                                                <tr>
-                                                    <td><?= $budgets->surgery ?></td>
-                                                    <td><?= $diaryPatient->activity_date->format('d-m-Y') ?></td>
-                                                    <?php $diferent = $diaryPatient->activity_date->diff($currentDate); ?>
-                                                    <?php if ($diferent->y > 0 || $diferent->m > 0 || $diferent->d > 0): ?>
-                                                        <?php $observation = "Atraso"; ?>
-                                                        <td style="color: red;"><?= $observation ?></td>
-                                                    <?php else: ?>
-                                                        <?php $observation = "Pendiente"; ?>
-                                                        <td style="color: blue;"><?= $observation ?></td>
-                                                    <?php endif; ?>
-                                                    <td><?= $diaryPatient->short_description_activity ?></td>
-                                                </tr>
-                                                <?php $accountDiary++; ?>
-                                            <?php endif; ?>
-                                        <?php endforeach; ?>
+										<?php $accountDiary = 0; ?>
+										<?php if ($budgets->deleted_record == null || $budgets->deleted_record == false): ?>
+											<?php if ($budgets->activity_result != 'Cerrado'): ?>
+												<?php foreach ($budgets->diarypatients as $diaryPatient): ?>
+													<?php if ($diaryPatient->activity_date <= $currentDate &&
+														$diaryPatient->status == null &&
+														$diaryPatient->deleted_record == null): ?>
+														<tr>
+															<td><?= $budgets->surgery ?></td>
+															<td><?= $diaryPatient->activity_date->format('d-m-Y') ?></td>
+															<?php $diferent = $diaryPatient->activity_date->diff($currentDate); ?>
+															<?php if ($diferent->y > 0 || $diferent->m > 0 || $diferent->d > 0): ?>
+																<?php $observation = "Atraso"; ?>
+																<td style="color: red;"><?= $observation ?></td>
+															<?php else: ?>
+																<?php $observation = "Pendiente"; ?>
+																<td style="color: blue;"><?= $observation ?></td>
+															<?php endif; ?>
+															<td><?= $diaryPatient->short_description_activity ?></td>
+														</tr>
+														<?php $accountDiary++; ?>
+													<?php endif; ?>
+												<?php endforeach; ?>
+											<?php endif; ?>
+										<?php endif; ?>
                                     <?php endforeach; ?> 
                                 </tbody>
                             </table>
@@ -343,19 +351,23 @@
                                                 ->second(59);
                                         ?>
                                         <?php foreach ($patients->budgets as $budgets): ?>
-                                            <?php $accountFuture = 0; ?>
-                                            <?php foreach ($budgets->diarypatients as $diaryPatient): ?>
-                                                <?php if ($diaryPatient->activity_date > $currentDate &&
-                                                    $diaryPatient->status == null &&
-                                                    $diaryPatient->deleted_record == null): ?>
-                                                    <tr>
-                                                        <td><?= $budgets->surgery ?></td>
-                                                        <td><?= $diaryPatient->activity_date->format('d-m-Y') ?></td>
-                                                        <td><?= $diaryPatient->short_description_activity ?></td>
-                                                    </tr>
-                                                    <?php $accountFuture++; ?>
-                                                <?php endif; ?>
-                                            <?php endforeach; ?>
+											<?php $accountFuture = 0; ?>
+											<?php if ($budgets->deleted_record == null || $budgets->deleted_record == false): ?>
+												<?php if ($budgets->activity_result != 'Cerrado'): ?>													
+													<?php foreach ($budgets->diarypatients as $diaryPatient): ?>
+														<?php if ($diaryPatient->activity_date > $currentDate &&
+															$diaryPatient->status == null &&
+															$diaryPatient->deleted_record == null): ?>
+															<tr>
+																<td><?= $budgets->surgery ?></td>
+																<td><?= $diaryPatient->activity_date->format('d-m-Y') ?></td>
+																<td><?= $diaryPatient->short_description_activity ?></td>
+															</tr>
+															<?php $accountFuture++; ?>
+														<?php endif; ?>
+													<?php endforeach; ?>
+												<?php endif; ?>
+											<?php endif; ?>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
@@ -422,14 +434,14 @@ $(document).ready(function(){
         $('#agregar-presupuesto-paciente').toggle('slow');
     });
 
-    $('#coin').change(function(e)
+    $('#aceptar').click(function(e)
     {
         e.preventDefault();
 
 		$.redirect('/sln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
 			firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
 			emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
-			namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
+			surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
 			coin : $('#coin').val(), controller : 'Users', action : 'viewGlobal' }); 
 	});
 	

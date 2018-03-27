@@ -243,6 +243,7 @@
                                 [null => '',
                                 'Ahorros' => 'Ahorros',
                                 'Corriente' => 'Corriente',
+								'paypal' => 'Paypal',
 								'Otro tipo de cuenta' => 'Otro tipo de cuenta']]);
 							echo $this->Form->input('bank', ['label' => 'Banco:']);
 							echo $this->Form->input('bank_address', ['label' => 'Dirección del banco: *']);

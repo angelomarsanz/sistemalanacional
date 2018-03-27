@@ -66,7 +66,7 @@
 						<div class="col-md-12">
 							<h4>Datos del paciente</h4>
 							<div class="row">
-								<div class="col-md-6">						
+								<div class="col-md-4">						
 									<p><input class="column-mark" type="checkbox" name="columnsReport[Users.sex]"> Sexo</p>
 									<p><input class="column-mark" type="checkbox" name="columnsReport[Employees.birthdate]"> Fecha de nacimiento</p>
 							
@@ -86,7 +86,8 @@
 									<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.workplace]"> Lugar de trabajo</p>
 									<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.work_address]"> Dirección de trabajo</p>	
 
-									<br />
+								</div>
+								<div class="col-md-4">
 									<h5>Persona de contacto en caso de emergencia:</h5>
 									<div class="row">
 										<div class="col-md-1">
@@ -97,9 +98,8 @@
 											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.landline_emergency]"> Teléfono fijo</p>
 											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.email_emergency]"> Email</p>
 										</div>
-									</div>			
-								</div>
-								<div class="col-md-6">
+									</div>
+									<br />
 									<h5>Datos del acompañante:</h5>
 									<div class="row">
 										<div class="col-md-1">
@@ -109,14 +109,15 @@
 												<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.cell_phone_companion]"> Celular</p>
 										</div>
 									</div>	
-									<br />
+								</div>
+								<div class="col-md-4">
 									<h5>Datos del responsable del pago de la cirugía:</h5>
 									<div class="row">
 										<div class="col-md-1">
 										</div>
 										<div class="col-md-11">							
-											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.sponsor_type]"> Tipo de responsable</p>
 											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.sponsor]"> Nombre</p>
+											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.sponsor_type]"> Clasificación del responsable del pago</p>
 											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.sponsor_identification]"> Cédula/Pasaporte/RIF/RUC</p>
 											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.cell_phone_sponsor]"> Celular</p>
 											<p><input class="column-mark" type="checkbox" name="columnsReport[Patients.landline_sponsor]"> Teléfono fijo</p>
@@ -144,7 +145,7 @@
 
 						<button id="desmarcar-todos" class="glyphicon icon-checkbox-unchecked btn btn-danger" title="Desmarcar todos" style="padding: 8px 12px 10px 12px;"></button>
 
-						<?= $this->Form->button(__(''), ['id' => 'generar-reporte', 'class' => 'glyphicon glyphicon-th-list btn btn-danger']) ?>			
+						<?= $this->Form->button(__(''), ['id' => 'generar-reporte', 'title' => 'Generar reporte', 'class' => 'glyphicon glyphicon-th-list btn btn-danger']) ?>			
 						<a href='#' id="menos" title="Menos opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
 					</p>
 				</div>
@@ -172,7 +173,7 @@
 		<?php foreach ($patientsUsers as $patientsUser): ?>
 			<?php if ($accountRecords == 0): ?>
 				<?php $accountRecords++; ?>
-				<table id="patients-users" name="patients-users" class="table">
+				<table id="patients-users" name="patients-users" class="table noverScreen">
 					<thead>
 						<tr>
 							<th></th>
@@ -238,8 +239,8 @@
 							<th scope="col" class=<?= $arrayMark['Patients.email_emergency'] ?>><b>Email contacto (emergencia)</b></th>
 							<th scope="col" class=<?= $arrayMark['Patients.full_name_companion'] ?>><b>Nombre del acompañante</b></th>
 							<th scope="col" class=<?= $arrayMark['Patients.cell_phone_companion'] ?>><b>Teléfono acompañante</b></th>
-							<th scope="col" class=<?= $arrayMark['Patients.sponsor_type'] ?>><b>Tipo de responsable pago cirugía</b></th>
 							<th scope="col" class=<?= $arrayMark['Patients.sponsor'] ?>><b>Nombre responsable pago cirugía</b></th>
+							<th scope="col" class=<?= $arrayMark['Patients.sponsor_type'] ?>><b>Clasificación del responsable del pago</b></th>
 							<th scope="col" class=<?= $arrayMark['Patients.sponsor_identification'] ?>><b>Identificación (responsable)</b></th>
 							<th scope="col" class=<?= $arrayMark['Patients.cell_phone_sponsor'] ?>><b>Celular (responsable)</b></th>
 							<th scope="col" class=<?= $arrayMark['Patients.landline_sponsor'] ?>><b>Teléfono fijo (responsable)</b></th>
@@ -275,9 +276,9 @@
 							<td class=<?= $arrayMark['Patients.landline_emergency'] ?>><?= $patientsUser->landline_emergency ?></td>
 							<td class=<?= $arrayMark['Patients.email_emergency'] ?>><?= $patientsUser->email_emergency ?></td>
 							<td class=<?= $arrayMark['Patients.full_name_companion'] ?>><?= $patientsUser->surname_companion . ' ' . $patientsUser->first_name_companion ?></td>
-							<td class=<?= $arrayMark['Patients.cell_phone_companion'] ?>><?= $patientsUser->cell_phone_companion ?></td>
-							<td class=<?= $arrayMark['Patients.sponsor_type'] ?>><?= $patientsUser->sponsor_type ?></td>
+							<td class=<?= $arrayMark['Patients.cell_phone_companion'] ?>><?= $patientsUser->cell_phone_companion ?></td>					
 							<td class=<?= $arrayMark['Patients.sponsor'] ?>><?= $patientsUser->sponsor ?></td>
+							<td class=<?= $arrayMark['Patients.sponsor_type'] ?>><?= $patientsUser->sponsor_type ?></td>
 							<td class=<?= $arrayMark['Patients.sponsor_identification'] ?>><?= $patientsUser->sponsor_identification ?></td>							
 							<td class=<?= $arrayMark['Patients.cell_phone_sponsor'] ?>><?= $patientsUser->cell_phone_sponsor ?></td>
 							<td class=<?= $arrayMark['Patients.landline_sponsor'] ?>><?= $patientsUser->landline_sponsor ?></td>
@@ -313,9 +314,9 @@
 					<td class=<?= $arrayMark['Patients.landline_emergency'] ?>><?= $patientsUser->landline_emergency ?></td>
 					<td class=<?= $arrayMark['Patients.email_emergency'] ?>><?= $patientsUser->email_emergency ?></td>
 					<td class=<?= $arrayMark['Patients.full_name_companion'] ?>><?= $patientsUser->surname_companion . ' ' . $patientsUser->first_name_companion ?></td>
-					<td class=<?= $arrayMark['Patients.cell_phone_companion'] ?>><?= $patientsUser->cell_phone_companion ?></td>
-					<td class=<?= $arrayMark['Patients.sponsor_type'] ?>><?= $patientsUser->sponsor_type ?></td>
+					<td class=<?= $arrayMark['Patients.cell_phone_companion'] ?>><?= $patientsUser->cell_phone_companion ?></td>					
 					<td class=<?= $arrayMark['Patients.sponsor'] ?>><?= $patientsUser->sponsor ?></td>
+					<td class=<?= $arrayMark['Patients.sponsor_type'] ?>><?= $patientsUser->sponsor_type ?></td>
 					<td class=<?= $arrayMark['Patients.sponsor_identification'] ?>><?= $patientsUser->sponsor_identification ?></td>							
 					<td class=<?= $arrayMark['Patients.cell_phone_sponsor'] ?>><?= $patientsUser->cell_phone_sponsor ?></td>
 					<td class=<?= $arrayMark['Patients.landline_sponsor'] ?>><?= $patientsUser->landline_sponsor ?></td>

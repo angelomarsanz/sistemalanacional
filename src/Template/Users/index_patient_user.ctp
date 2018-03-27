@@ -116,7 +116,7 @@
 	<p>
 		<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['id' => 'volver', 'class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
 		<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['id' => 'cerrar', 'class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'cerrar vista']) ?>
-		<?= $this->Html->link(__(''), ['controller' => 'Patients', 'action' => 'reportPatients'], ['id' => 'report-commissions', 'class' => 'glyphicon glyphicon-th-list btn btn-danger', 'title' => 'Reporte de comisiones']) ?>		
+		<?= $this->Html->link(__(''), ['controller' => 'Patients', 'action' => 'reportPatients'], ['id' => 'report-patients', 'class' => 'glyphicon glyphicon-th-list btn btn-danger', 'title' => 'Reporte de pacientes']) ?>		
 	
 		<a href='#' id="menos" title="Menos opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
 	</p>

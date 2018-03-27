@@ -51,7 +51,7 @@
 
                         <li><?=  $this->Html->link('Servicios', ['controller' => 'Services', 'action' => 'index']) ?></li>
 
-                        <li><?=  $this->Html->link('Pagos', ['controller' => 'Budgets', 'action' => 'bill']) ?></li>
+                        <li><?=  $this->Html->link('Comisiones', ['controller' => 'Budgets', 'action' => 'bill']) ?></li>
 
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Sistema <span class="caret"></span></a>

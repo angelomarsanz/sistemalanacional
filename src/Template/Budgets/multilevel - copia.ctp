@@ -54,7 +54,6 @@
 						        	<?php $swBudgetsFather = 0; ?>
 				            		<?php $comisionPadreBolivar = 0; ?>
 									<?php $comisionPadreDolar = 0; ?>
-									<?php if ($rolePromoter == 'Coordinador(a)' || $rolePromoter == 'Promotor(a)' || $rolePromoter == 'Promotor(a) independiente'): ?>
 						            <?php foreach ($budgetsG as $budgetsGs): ?>
 						            	<?php if ($budgetsGs->patient->user->parent_user == $father): ?>
 										<?php $keyArray = 'u' . $budgetsGs->patient->user->parent_user . 'b' . $budgetsGs->id; ?> 
@@ -89,7 +88,6 @@
 										<?php endif; ?>
 						                <?php endif; ?>
 						            <?php endforeach; ?>
-									<?php endif; ?>
 						        </tbody>
 						    </table>                    
        				        <?php if ($swBudgetsFather == 0): ?>
@@ -110,8 +108,8 @@
     			    	<?php $comisionHijosBolivar = 0; ?>
 						<?php $comisionHijosDolar = 0; ?>
 				    	<?php $swChildren = 0; ?>
-						<?php if ($rolePromoter == 'Promotor(a)' || $rolePromoter == 'Promotor(a) independiente'): ?>
-							<?php foreach ($children as $childrens): ?>
+				        <?php foreach ($children as $childrens): ?>
+				        	<?php if ($rolePromoter != 'Coordinador(a)'): ?>
 				        		<?php $swChildren = 1; ?>
 					        	<h4 style="margin-left: 10px;"><?= $childrens->full_name ?></h4>
 								<div class="table-responsive" style="margin-left: 20px;">
@@ -169,8 +167,8 @@
 							        	<p style="margin-left: 10px;">Este promotor no tiene presupuestos activos</p>
 							        <?php endif; ?>      
 								</div> 
-							<?php endforeach; ?>
-						<?php endif; ?>
+						    <?php endif; ?>
+				        <?php endforeach; ?>
 				        <?php if ($swChildren == 0): ?>
 				        	<p style="margin-left: 10px;">Este promotor no tiene hijos</p>
 				        <?php endif; ?>
@@ -189,8 +187,8 @@
 				    	<?php $swGrandchildren = 0; ?>
 				    	<?php $comisionNietosBolivar = 0; ?>
 						<?php $comisionNietosDolar = 0; ?>
-						<?php if ($rolePromoter == 'Promotor(a)' || $rolePromoter == 'Promotor(a) independiente'): ?>
-							<?php foreach ($children as $childrens): ?>
+				        <?php foreach ($children as $childrens): ?>
+				        	<?php if ($rolePromoter != 'Coordinador(a)'): ?>
 					        	<?php $swChildren = 1; ?>
 					        	<h4 style="margin-left: 10px;"><?= $childrens->full_name ?></h4>
 					            <?php foreach ($grandchildren as $grandchildrens): ?>
@@ -254,8 +252,8 @@
 										</div> 
 					        		<?php endif; ?>
 				            	<?php endforeach; ?>
-							<?php endforeach; ?>
-						<?php endif; ?>
+				        	<?php endif; ?>
+				        <?php endforeach; ?>
 				        <?php if ($swChildren == 0): ?>
 				        	<p style="margin-left: 10px;">Este promotor no tiene hijos</p>
 				        <?php endif; ?>

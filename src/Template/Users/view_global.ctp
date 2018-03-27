@@ -135,30 +135,18 @@
                         <b>Nombre:</b>&nbsp;<?= $user->patients[0]['first_name_emergency'] . ' ' . $user->patients[0]['surname_emergency'] ?>
                     <br />
                     <br />
-                        <b>Nro. de identificación:</b>&nbsp;<?= $user->patients[0]['type_of_identification_emergency'] . '-' . $user->patients[0]['identidy_card_emergency'] ?>
-                    <br />
-                    <br />
-                        <b>Dirección:</b>&nbsp;<?= $user->patients[0]['address_emergency'] ?>
+                        <b>Celular:</b>&nbsp;<?= $user->patients[0]['cell_phone_emergency'] ?>
                     <br />
                     <br />
                         <b>Teléfono fijo:</b>&nbsp;<?= $user->patients[0]['landline_emergency'] ?>
                     <br />
                     <br />
-                        <h3>Datos del acompañante:</h3>
+                        <b>Email:</b>&nbsp;<?= $user->patients[0]['email_emergency'] ?>
+                    <br />
+                    <br />
+						<h3>Datos del acompañante:</h3>
                         <hr size="3" />
                         <b>Nombre:</b>&nbsp;<?= $user->patients[0]['first_name_companion'] . ' ' . $user->patients[0]['surname_companion'] ?>
-                    <br />
-                    <br />
-                        <b>Nro. de identificación:</b>&nbsp;<?= $user->patients[0]['type_of_identification_companion'] . '-' . $user->patients[0]['identidy_card_companion'] ?>
-                    <br />
-                    <br />
-                        <b>Dirección:</b>&nbsp;<?= $user->patients[0]['address_companion'] ?>
-                    <br />
-                    <br />
-                        <b>Email:</b>&nbsp;<?= $user->patients[0]['email_companion'] ?>
-                    <br />
-                    <br />
-                        <b>Teléfono fijo:</b>&nbsp;<?= $user->patients[0]['landline_companion'] ?>
                     <br />
                     <br />
                         <b>Celular:</b>&nbsp;<?= $user->patients[0]['cell_phone_companion'] ?>

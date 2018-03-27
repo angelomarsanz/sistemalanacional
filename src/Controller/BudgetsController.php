@@ -596,6 +596,8 @@ class BudgetsController extends AppController
     public function multilevel()
     {
         $this->loadModel('Users');
+		
+		$this->loadModel('Commissions');
 
         if ($this->request->is('post'))
         {
@@ -637,6 +639,19 @@ class BudgetsController extends AppController
             ->where(['OR' => ['Users.deleted_record IS NULL', 'Users.deleted_record' => false]])
             ->order(['Users.surname' => 'ASC', 'Users.second_surname' => 'ASC', 'Users.first_name' => 'ASC', 'Users.second_name' => 'ASC', 'Budgets.application_date' => 'DESC']);
 
+        $commissions = TableRegistry::get('Commissions');
+
+        $vCommissions = $commissions->find()
+            ->where([['Commissions.registration_status' => 'ACTIVO'], ['Commissions.status_commission' => 'PENDIENTE DE PAGO']]);
+
+		$arrayCommissions = [];
+		
+		foreach ($vCommissions as $vCommission)
+		{
+			$keyArray = 'u' . $vCommission->user_id . 'b' . $vCommission->budget_id;
+			$arrayCommissions[$keyArray] = $vCommission->status_commission;
+		}	
+			
         $users = TableRegistry::get('Users');
 
         $children = $users->find()
@@ -664,10 +679,10 @@ class BudgetsController extends AppController
 
         $currentView = 'multilevel';
 
-        $this->set(compact('promoter', 'father', 'rolePromoter', 'budgetsG', 'children', 'grandchildren', 'currentView'));
-        $this->set('_serialize', ['promoter', 'father', 'rolePromoter', 'budgetsG', 'children', 'grandchildren', 'currentView']);
+        $this->set(compact('promoter', 'father', 'rolePromoter', 'budgetsG', 'children', 'grandchildren', 'currentView', 'arrayCommissions'));
+        $this->set('_serialize', ['promoter', 'father', 'rolePromoter', 'budgetsG', 'children', 'grandchildren', 'currentView', 'arrayCommissions']);
     }
-    public function bill($idBudget = null, $surgery = null)
+    public function bill($idBudget = null, $budgetSurgery = null)
     {
 		$commissions = new CommissionsController;
 		
@@ -679,7 +694,7 @@ class BudgetsController extends AppController
             {			
 				$idBudget = $_POST['idBudget'];
 				
-				$surgery = $_POST['surgery']; 
+				$budgetSurgery = $_POST['budgetSurgery']; 
 				
 				if (isset($_POST['swDelete']))
 				{				
@@ -691,20 +706,20 @@ class BudgetsController extends AppController
 					$budget->coin_bill = null;
 					$budget->bill = null;
 					$budget->bill_dir = null;
-
-					$arrayResult = $commissions->add($_POST['promoter'], $budget->id, $budget->amount_bill, $budget->coin_bill, 1);
 					
+					$arrayResult = $commissions->add($_POST['promoter'], $budget->id, $budget->amount_bill, $budget->coin_bill, 1);
+										
 					if ($arrayResult['indicator'] == 0)
 					{
 						if ($this->Budgets->save($budget)) 
 						{
 							$this->Flash->success(__('La factura fue eliminada exitosamente'));
-							return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budget->surgery]);
+							return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $idBudget, $budgetSurgery]);
 						}
 						else
 						{
 							$this->Flash->error(__('La factura no pudo ser eliminada'));
-							return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budget->surgery]);
+							return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $idBudget, $budgetSurgery]);
 						}
 					}
 					else
@@ -715,31 +730,33 @@ class BudgetsController extends AppController
 						{
 							$binnacles->add('controller', 'Commissions', 'add', $noveltys);
 						}
-						return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budget->surgery]);
+						return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $idBudget, $budgetSurgery]);
 					}
 				}
             }
             else
             {			
                 $budget = $this->Budgets->get($_POST['id']);
+				
+				$budgetSurgery = $budget->number_budget . ' - ' . $budget->surgery;
 
                 $budget = $this->Budgets->patchEntity($budget, $this->request->data);
-							
+										
 				$arrayResult = $commissions->add($budget->extra_column1, $budget->id, $budget->amount_bill, $budget->coin_bill, 0);
 				
 				if ($arrayResult['indicator'] == 0)
-				{
+				{				
 					$budget->extra_column1 = null;
-				
+					
 					if ($this->Budgets->save($budget)) 
 					{
 						$this->Flash->success(__('La factura fue guardada exitosamente'));
-						return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budget->surgery]);
+						return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budgetSurgery]);
 					}
 					else
 					{
 						$this->Flash->error(__('La factura no pudo ser guardada'));
-						return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budget->surgery]);
+						return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budgetSurgery]);
 					}
 				}
 				else
@@ -750,7 +767,7 @@ class BudgetsController extends AppController
 					{
 						$binnacles->add('controller', 'Commissions', 'add', $noveltys);
 					}
-					return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budget->surgery]);
+					return $this->redirect(['controller' => 'budgets', 'action' => 'bill', $budget->id, $budgetSurgery]);
 				}
             }
         }
@@ -775,8 +792,8 @@ class BudgetsController extends AppController
 
 			$currentView = 'bill';
 
-			$this->set(compact('currentView', 'surgery', 'budget', 'budgetQuery', 'promoter'));
-			$this->set('_serialize', ['currentView', 'surgery', 'budget', 'budgetQuery', 'promoter']);	
+			$this->set(compact('currentView', 'budgetSurgery', 'budget', 'budgetQuery', 'promoter'));
+			$this->set('_serialize', ['currentView', 'budgetSurgery', 'budget', 'budgetQuery', 'promoter']);	
 		}
 		else
 		{

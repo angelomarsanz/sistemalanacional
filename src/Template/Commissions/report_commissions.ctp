@@ -104,7 +104,7 @@
 
 			<button id="desmarcar-todos" class="glyphicon icon-checkbox-unchecked btn btn-danger" title="Desmarcar todos" style="padding: 8px 12px 10px 12px;"></button>
 
-			<?= $this->Form->button(__(''), ['id' => 'generar-reporte', 'class' => 'glyphicon glyphicon-th-list btn btn-danger']) ?>			
+			<?= $this->Form->button(__(''), ['id' => 'generar-reporte', 'title' => 'Generar reporte', 'class' => 'glyphicon glyphicon-th-list btn btn-danger']) ?>			
 			<a href='#' id="menos" title="Menos opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
 		</p>
 	</div>

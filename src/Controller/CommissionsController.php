@@ -85,7 +85,7 @@ class CommissionsController extends AppController
 		$employee = new EmployeesController;
 		
 		$swError = 0;
-		
+				
 		$employeePromoter = $this->Commissions->Users->get($idPromoter, [
             'contain' => ['Employees']
             ]);
