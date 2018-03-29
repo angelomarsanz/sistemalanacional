@@ -238,8 +238,8 @@
                                 'Transferencia' => 'Transferencia',
                                 'Paypal' => 'Paypal',
 								'Otro método de pago' => 'Otro método de pago']]);
-                            echo $this->Form->input('account_bank', ['label' => 'Cuenta o Paypal: *']);
-                            echo $this->Form->input('account_type', ['label' => 'Tipo de cuenta: *', 'options' => 
+                            echo $this->Form->input('account_bank', ['label' => 'Cuenta o Paypal: *', 'required' => true]);
+                            echo $this->Form->input('account_type', ['label' => 'Tipo de cuenta: *', 'required' => true, 'options' => 
                                 [null => '',
                                 'Ahorros' => 'Ahorros',
                                 'Corriente' => 'Corriente',

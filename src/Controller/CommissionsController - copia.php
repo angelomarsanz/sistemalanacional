@@ -7,6 +7,10 @@ use App\Controller\EmployeesController;
 
 use App\Controller\BinnaclesController;
 
+use Cake\ORM\TableRegistry;
+
+use Cake\I18n\Time;
+
 /**
  * Commissions Controller
  *
@@ -28,6 +32,11 @@ class CommissionsController extends AppController
         }
         return parent::isAuthorized($user);
     }
+	
+	public function testFunction()
+	{
+
+	}
 
     /**
      * Index method
@@ -67,7 +76,7 @@ class CommissionsController extends AppController
      *
      * @return \Cake\Network\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add($idPromoter = null, $idBudget = null, $amount = null, $coin = null)
+    public function add($idPromoter = null, $idBudget = null, $amount = null, $coin = null, $swDelete = null)
     {
 		$this->autoRender = false;
 			
@@ -76,9 +85,7 @@ class CommissionsController extends AppController
 		$employee = new EmployeesController;
 		
 		$swError = 0;
-		
-		$novelty = '';
-	
+				
 		$employeePromoter = $this->Commissions->Users->get($idPromoter, [
             'contain' => ['Employees']
             ]);
@@ -91,7 +98,7 @@ class CommissionsController extends AppController
 				{			
 					$idFather = $employeePromoter->parent_user;
 					
-					$arrayResult = $this->addCommission($employeePromoter, 'PROMOTOR', $idBudget, $amount, $coin);
+					$arrayResult = $this->addCommission($employeePromoter, 'PROMOTOR', $idBudget, $amount, $coin, $swDelete);
 					
 					if ($arrayResult['indicator'] == 0)
 					{
@@ -106,7 +113,7 @@ class CommissionsController extends AppController
 								{						
 									$idGrandfather = $employeeFather->parent_user;
 									
-									$arrayResult = $this->addCommission($employeeFather, 'FATHER', $idBudget, $amount, $coin);
+									$arrayResult = $this->addCommission($employeeFather, 'PROMOTOR-PADRE', $idBudget, $amount, $coin, $swDelete);
 									
 									if ($arrayResult['indicator'] == 0)
 									{
@@ -119,13 +126,13 @@ class CommissionsController extends AppController
 											{
 												if ($employeeGrandfather->role == 'Promotor(a)' || $employeeGrandfather->role == 'Promotor(a) independiente')
 												{																
-													$arrayResult = $this->addCommission($employeeGrandfather, 'GRANDFATHER', $idBudget, $amount, $coin);
+													$arrayResult = $this->addCommission($employeeGrandfather, 'PROMOTOR-ABUELO', $idBudget, $amount, $coin, $swDelete);
 													
 													if ($arrayResult['indicator'] != 0)
 													{
 														$swError = 1;
 						
-														$novelty = 'No se pudo registrar la comisión del promotor-abuelo';
+														$novelty = $arraResult['arrayError'];
 													}
 												}
 											}
@@ -134,14 +141,14 @@ class CommissionsController extends AppController
 										{
 											$swError = 1;
 											
-											$novelty = 'No se pudo registrar la comisión del promotor-abuelo';
+											$novelty = ['No se encontraron los datos básicos del promotor-abuelo'];
 										}
 									}
 									else
 									{
 										$swError = 1;
 										
-										$novelty = 'No se pudo registrar la comisión del promotor-padre';
+										$novelty = $arraResult['arrayError'];
 									}
 								}
 							}
@@ -150,14 +157,14 @@ class CommissionsController extends AppController
 						{
 							$swError = 1;
 							
-							$novelty = 'No se encontraron los datos básicos del promotor-padre';
+							$novelty = ['No se encontraron los datos básicos del promotor-padre'];
 						}
 					}
 					else
 					{
 						$swError = 1;
 				
-						$novelty = 'No se pudo registrar la comisión del promotor';
+						$novelty = $arrayResult['arrayError'];
 					}
 				}
 			}
@@ -166,58 +173,89 @@ class CommissionsController extends AppController
 		{
 			$swError = 1;
 			
-			$novelty = 'No se encontraron los datos básicos del promotor';
+			$novelty = ['No se encontraron los datos básicos del promotor'];
 		}
-		if ($swError != 0)
+		
+		$arrayResult = [];
+	
+		if ($swError == 0)
+		{	
+			$arrayResult['indicator'] = 0;
+		}
+		else
 		{
-			$this->Flash->error(__($novelty));
-			
-			$binnacles->add('controller', 'Commissions', 'add', $novelty);
+			$arrayResult['indicator'] = 1;
+			$arrayResult['arrayError'] = $novelty;
 		}
+		return $arrayResult;
     }
 	
-	public function addCommission($employeePromoter = null, $typeBeneficiary = null, $idBudget = null, $amount = null, $coin)
+	public function addCommission($employeePromoter = null, $typeBeneficiary = null, $idBudget = null, $amount = null, $coin, $swDelete = null)
 	{
 		$this->autoRender = false;
 		
 		$arrayResult = [];
-	
-        $commission = $this->Commissions->newEntity();
 		
-		$commission->user_id = $employeePromoter->id;
-		
-		$commission->budget_id = $idBudget;
+        setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+        date_default_timezone_set('America/Caracas');
 
-		$commission->type_beneficiary = $typeBeneficiary;
+        $currentDate = time::now();
 		
-		if ($typeBeneficiary == 'PROMOTOR')
+		$lastRecord = $this->Commissions->find('all', ['conditions' => [['user_id' => $employeePromoter->id], ['budget_id' => $idBudget]], 
+			'order' => ['Commissions.created' => 'DESC'] ]);
+
+		$row = $lastRecord->first();
+		
+		if ($row)
 		{
-			$commission->amount = $amount * 0.03;
-		}
-		elseif ($typeBeneficiary == 'FATHER')
-		{
-			$commission->amount = $amount * 0.015;
+			$commission = $this->Commissions->get($row->id);		
 		}
 		else
 		{
-			$commission->amount = $amount * 0.005;
+			if ($swDelete == 0)
+			{
+				$commission = $this->Commissions->newEntity();
+			}
+			else
+			{
+				$arrayResult['indicator'] = 0;
+				return $arrayResult;
+			}
+		}
+
+		if ($swDelete == 1)
+		{
+			$commission->registration_status = 'ELIMINADO';
+		}
+		else
+		{
+			$commission->user_id = $employeePromoter->id;
+			
+			$commission->budget_id = $idBudget;
+
+			$commission->type_beneficiary = $typeBeneficiary;
+			
+			if ($typeBeneficiary == 'PROMOTOR')
+			{
+				$commission->amount = $amount * 0.03;
+			}
+			elseif ($typeBeneficiary == 'PROMOTOR-PADRE')
+			{
+				$commission->amount = $amount * 0.015;
+			}
+			else
+			{
+				$commission->amount = $amount * 0.005;
+			}
+			
+			$commission->coin = $coin;
+						
+			$commission->status_commission = 'PENDIENTE DE PAGO';
+			
+			$commission->registration_status = 'ACTIVO';
 		}
 		
-		$commission->coin = $coin;
-			
-		$commission->payment_method = $employeePromoter->employees[0]['payment_method'];
-	
-		$commission->account = $employeePromoter->employees[0]['account_bank'];
-
-		$commission->account_type = $employeePromoter->employees[0]['account_type'];
-		
-		$commission->bank = $employeePromoter->employees[0]['bank'];
-		
-		$commission->bank_address = $employeePromoter->employees[0]['bank_address'];
-		
-		$commission->swif_bank = $employeePromoter->employees[0]['swif_bank'];
-		
-		$commission->aba_bank = $employeePromoter->employees[0]['aba_bank'];
+		$commission->date_status = $currentDate;
 		
 		$commission->responsible_user = $this->Auth->user('username');
 		
@@ -228,6 +266,18 @@ class CommissionsController extends AppController
 		else
 		{
 			$arrayResult['indicator'] = 1;
+			
+			if($commission->errors())
+			{
+                $error_msg = $this->arrayErrors($commission->errors());
+			}
+			else
+			{
+				$error_msg = ['Error desconocido'];
+			}
+			
+			$arrayResult['arrayError'] = $error_msg;
+
 		}
 			
 		return $arrayResult;
@@ -240,24 +290,111 @@ class CommissionsController extends AppController
      * @return \Cake\Network\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit($idBudget = null, $controller = null, $action = null)
     {
-        $commission = $this->Commissions->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $commission = $this->Commissions->patchEntity($commission, $this->request->data);
-            if ($this->Commissions->save($commission)) {
-                $this->Flash->success(__('The commission has been saved.'));
+		setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+		date_default_timezone_set('America/Caracas');
+		
+		$binnacles = new BinnaclesController;
+		
+		$this->loadModel('Employees');
+		
+		$budget = $this->Commissions->Budgets->get($idBudget);
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The commission could not be saved. Please, try again.'));
-        }
-        $users = $this->Commissions->Users->find('list', ['limit' => 200]);
-        $budgets = $this->Commissions->Budgets->find('list', ['limit' => 200]);
-        $this->set(compact('commission', 'users', 'budgets'));
-        $this->set('_serialize', ['commission']);
+		if ($this->request->is(['patch', 'post', 'put'])) 
+		{
+			if (isset($_POST['id']))
+			{
+				$commission = $this->Commissions->get($_POST['id']);
+				
+				$commission = $this->Commissions->patchEntity($commission, $this->request->data);
+							
+				$tmpTime = new Time();
+			
+				$tmpTime
+					->year($commission->pay_day->year)
+					->month($commission->pay_day->month)
+					->day($commission->pay_day->day)
+					->hour(23)
+					->minute(59)
+					->second(59);
+								
+				$commission->pay_day = $tmpTime;
+				
+				$commission->status_commission = 'PAGADA';
+				
+				if ($this->Commissions->save($commission)) 
+				{	
+					$this->Flash->success(__('El pago se registró exitosamente'));
+				}
+				else
+				{
+					if($commission->errors())
+					{
+						$error_msg = $this->arrayErrors($commission->errors());
+					}
+					else
+					{
+						$error_msg = ['Error desconocido'];
+					}
+					$this->Flash->error(__("No se pudo registrar el pago debido a: " . implode(" - ", $error_msg)));
+
+					foreach($error_msg as $noveltys)
+					{
+						$binnacles->add('controller', 'Commissions', 'edit', $noveltys . 'id ' . $_POST['id']);
+					}
+				}
+			}
+			else
+			{
+				$this->Flash->error(__('No se pudo registrar el pago'));
+				$binnacles->add('controller', 'Commissions', 'edit', 'No se pudo actualizar el pago del presupuesto ' . $idBudget);
+			}
+		}
+
+		$commissions = $this->Commissions->find('all', ['conditions' => ['Commissions.budget_id' => $idBudget], 
+				'order' => ['Commissions.id' => 'ASC'] ]);
+
+		foreach ($commissions as $commission)
+		{
+			if ($commission->type_beneficiary == 'PROMOTOR')
+			{
+				$cPromoter = $this->Commissions->get($commission->id);
+							
+				$promoters = $this->Employees->find('all', 
+					['conditions' => ['Employees.user_id' => $commission->user_id],					
+					'contain' => ['Users'],
+					'order' => ['Employees.created' => 'DESC']]);
+					
+				$promoterUser = $promoters->first();	
+			}
+			elseif ($commission->type_beneficiary == 'PROMOTOR-PADRE')
+			{
+				$cFather = $this->Commissions->get($commission->id);
+							
+				$parents = $this->Employees->find('all', 
+					['conditions' => ['Employees.user_id' => $commission->user_id],					
+					'contain' => ['Users'],
+					'order' => ['Employees.created' => 'DESC']]);
+					
+				$fatherUser = $parents->first();	
+			}
+			elseif ($commission->type_beneficiary == 'PROMOTOR-ABUELO')
+			{
+				$cGrandfather = $this->Commissions->get($commission->id);
+							
+				$grandparents = $this->Employees->find('all', 
+					['conditions' => ['Employees.user_id' => $commission->user_id],					
+					'contain' => ['Users'],
+					'order' => ['Employees.created' => 'DESC']]);
+					
+				$grandfatherUser = $grandparents->first();	
+			}
+		}
+		
+		
+        $this->set(compact('budget', 'cPromoter', 'promoterUser', 'cFather', 'fatherUser', 'cGrandfather', 'grandfatherUser', 'controller', 'action'));
+        $this->set('_serialize', ['budget', 'cPromoter', 'promoterUser', 'cFather', 'fatherUser', 'cGrandfather', 'grandfatherUser', 'controller', 'action']);
     }
 
     /**
@@ -279,4 +416,111 @@ class CommissionsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+	public function arrayErrors($arrayCake = null)
+	{
+		$error_msg = [];
+		
+		foreach($arrayCake as $errors)
+		{
+			if(is_array($errors))
+			{
+				foreach($errors as $error)
+				{
+					
+					$error_msg[] = $error;
+				}
+			}
+			else
+			{
+				$error_msg[] = $errors;
+			}
+		}
+		
+		return $error_msg;
+	}
+
+	public function reportCommissions()
+	{	
+        setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+        date_default_timezone_set('America/Caracas');
+		
+        $currentDate = Time::now();
+		
+		$binnacles = new BinnaclesController;
+
+	    if ($this->request->is('post')) 
+        {					
+			if (isset($_POST['columnsReport']))
+			{
+				$columnsReport = $_POST['columnsReport'];
+			}
+			else
+			{
+				$columnsReport = [];
+			}
+			
+			$arrayMark = $this->markColumns($columnsReport);
+						
+			$commissions = TableRegistry::get('Commissions');
+
+			$arrayResult = $commissions->find('commissions');
+			
+			if ($arrayResult['indicator'] == 1)
+			{
+				$this->Flash->error(___('No se encontraron comisiones'));
+				$binnacles->add('controller', 'Commissions', 'reportCommissions', 'No se encontraron comisiones');
+				
+				return $this->redirect(['controller' => 'Users', 'action' => 'wait']);
+			}
+			else
+			{
+				$commissions = $arrayResult['searchRequired'];
+			}
+	
+			$swImpresion = 1;
+						
+			$this->set(compact('swImpresion', 'commissions', 'arrayMark', 'currentDate'));
+			$this->set('_serialize', ['swImpresion', 'commissions', 'arrayMark', 'currenDate']); 
+		
+		}
+		else
+		{
+			$swImpresion = 0;
+			$this->set(compact('swImpresion'));
+			$this->set('_serialize', ['swImpresion']);
+		}
+	}
+	public function markColumns($columnsReport = null)
+	{
+		$arrayMark = [];
+		
+		isset($columnsReport['Commissions.type_beneficiary']) ? $arrayMark['Commissions.type_beneficiary'] = 'siExl' : $arrayMark['Commissions.type_beneficiary'] = 'noExl';
+				
+		isset($columnsReport['Commissions.amount']) ? $arrayMark['Commissions.amount'] = 'siExl' : $arrayMark['Commissions.amount'] = 'noExl';
+		
+		isset($columnsReport['Commissions.coin']) ? $arrayMark['Commissions.coin'] = 'siExl' : $arrayMark['Commissions.coin'] = 'noExl';
+		
+		isset($columnsReport['Commissions.payment_method']) ? $arrayMark['Commissions.payment_method'] = 'siExl' : $arrayMark['Commissions.payment_method'] = 'noExl';
+		
+		isset($columnsReport['Commissions.account']) ? $arrayMark['Commissions.account'] = 'siExl' : $arrayMark['Commissions.account'] = 'noExl';
+		
+		isset($columnsReport['Commissions.account_type']) ? $arrayMark['Commissions.account_type'] = 'siExl' : $arrayMark['Commissions.account_type'] = 'noExl';
+		
+		isset($columnsReport['Commissions.bank']) ? $arrayMark['Commissions.bank'] = 'siExl' : $arrayMark['Commissions.bank'] = 'noExl';
+		
+		isset($columnsReport['Commissions.bank_address']) ? $arrayMark['Commissions.bank_address'] = 'siExl' : $arrayMark['Commissions.bank_address'] = 'noExl';
+		
+		isset($columnsReport['Commissions.swif_bank']) ? $arrayMark['Commissions.swif_bank'] = 'siExl' : $arrayMark['Commissions.swif_bank'] = 'noExl';
+		
+		isset($columnsReport['Commissions.aba_bank']) ? $arrayMark['Commissions.aba_bank'] = 'siExl' : $arrayMark['Commissions.aba_bank'] = 'noExl';
+		
+		isset($columnsReport['Commissions.reference']) ? $arrayMark['Commissions.reference'] = 'siExl' : $arrayMark['Commissions.reference'] = 'noExl';
+
+		isset($columnsReport['Commissions.pay_day']) ? $arrayMark['Commissions.pay_day'] = 'siExl' : $arrayMark['Commissions.pay_day'] = 'noExl';
+
+		isset($columnsReport['Commissions.status_commission']) ? $arrayMark['Commissions.status_commission'] = 'siExl' : $arrayMark['Commissions.status_commission'] = 'noExl';		
+
+		return $arrayMark;
+	}	
 }

@@ -75,17 +75,22 @@ class BudgetsController extends AppController
     
     public function testFunction()
     {
-        $budgets = TableRegistry::get('Budgets');
-        
-        $arrayResult = $budgets->find('only', ['patient_id' => '2', 'surgery' => 'Mastopexia + Dermolipectomía + Lipoescultura']);
-        
-        if ($arrayResult['indicator'] == 0)
-        {
-            $row = $arrayResult['searchRequired'];
-        }
-        
-        $this->Flash->success(__('responsible_user: ' . $row->responsible_user));
-    }
+		$budget = $this->Budgets->get(1737);
+		
+		$this->Flash->success(__('coin: ' . $budget->coin));
+		$this->Flash->success(__('coin_bill: ' . $budget->coin_bill));
+		
+		$budget->coin_bill = 'PRUEBA';
+		
+		if ($this->Budgets->save($budget)) 
+		{
+			$this->Flash->success(__('El presupuesto se actualizó'));
+		}
+		else
+		{
+			$this->Flash->error(__('El presupuesto no se actualizó'));
+		}
+	}
 
      /**
      * Index method
@@ -625,6 +630,7 @@ class BudgetsController extends AppController
             ['Budgets.id',
             'Budgets.number_budget', 
             'Budgets.surgery', 
+			'Budgets.coin',
             'Budgets.number_bill', 
             'Budgets.amount_bill', 
             'Patients.id',
@@ -703,11 +709,10 @@ class BudgetsController extends AppController
 					$budget->date_bill = null;
 					$budget->number_bill = null;				
 					$budget->amount_bill = null;
-					$budget->coin_bill = null;
 					$budget->bill = null;
 					$budget->bill_dir = null;
 					
-					$arrayResult = $commissions->add($_POST['promoter'], $budget->id, $budget->amount_bill, $budget->coin_bill, 1);
+					$arrayResult = $commissions->add($_POST['promoter'], $budget->id, $budget->amount_bill, $budget->coin, 1);
 										
 					if ($arrayResult['indicator'] == 0)
 					{
@@ -742,7 +747,7 @@ class BudgetsController extends AppController
 
                 $budget = $this->Budgets->patchEntity($budget, $this->request->data);
 										
-				$arrayResult = $commissions->add($budget->extra_column1, $budget->id, $budget->amount_bill, $budget->coin_bill, 0);
+				$arrayResult = $commissions->add($budget->extra_column1, $budget->id, $budget->amount_bill, $budget->coin, 0);
 				
 				if ($arrayResult['indicator'] == 0)
 				{				

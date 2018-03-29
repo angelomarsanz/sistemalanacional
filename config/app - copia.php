@@ -189,6 +189,14 @@ return [
             'tls' => null,
             'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
         ],
+		'donWeb' => [
+            'className' => 'Smtp',
+            'host' => 'localhost',
+            'port' => 587,
+            'timeout' => 30,
+            'username' => 'noresponder@cirugiaslanacional.com',
+            'password' => 'Angel2703',
+        ],
     ],
 
     /**

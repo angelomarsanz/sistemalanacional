@@ -65,12 +65,10 @@
 <div class="row">
     <div class="col-md-12">
     	<div class="page-header">
-    	    <?= $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'bill'], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>
-    	    <?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-sm btn-default', 'title' => 'Cerrar vista', 'style' => 'color: #9494b8']) ?>
-			<h2>Pagos</h2>
+			<h3>Comisiones</h3>
             <?php if (isset($budgetSurgery)): ?>
-                <h3>Presupuesto: <?= $budgetSurgery ?></h3>
-				<h4>Paciente: <?= $budgetQuery->patient->user->full_name ?></h4>
+                <h4>Presupuesto: <?= $budgetSurgery ?></h4>
+				<h5>Paciente: <?= $budgetQuery->patient->user->full_name ?></h5>
             <?php endif; ?>
         </div>
         <?php if (isset($budget)):	
@@ -102,9 +100,10 @@
 				endif;
 			endif;
 		?>		
-			<button id="ver-cargar-factura" class="glyphicon glyphicon-open btn btn-primary" title="Cargar factura"></button>
-			<button id="ver-modificar-factura" class="glyphicon glyphicon-edit btn btn-primary" title="Modificar factura"></button>
-			<button id="eliminar-factura" class="glyphicon glyphicon-trash btn btn-primary" title="Eliminar factura"></button>
+			<button id="ver-cargar-modificar-factura" class="glyphicon glyphicon-open btn btn-primary" title="Cargar o modificar la factura"></button>
+			<button id="eliminar-factura" class="glyphicon glyphicon-trash btn btn-danger" title="Eliminar factura"></button>
+			<?= $this->Html->link(__(''), ['controller' => 'Commissions', 'action' => 'edit', $budget->id, 'Budgets', 'bill'], ['id' => 'pagar-comisiones', 'class' => 'glyphicon glyphicon-usd btn btn-primary', 'title' => 'Pagar comisiones']) ?>	
+			
 			<br />
 			<br />
 			<div id="cargar-modificar-factura" class="row" style="display:none">
@@ -119,10 +118,6 @@
 									echo $this->Form->input('date_bill', ['type' => 'date', 'required' => 'true', 'label' => 'Fecha de la factura: *']);
 									echo $this->Form->input('number_bill', ['type' => 'number', 'required' => 'true', 'label' => 'Número de la factura: *']);
 									echo $this->Form->input('amount_bill', ['class' => 'decimal-2-places', 'required' => 'true', 'label' => 'Monto de la factura: *']);
-									echo $this->Form->input('coin_bill', ['label' => 'Moneda en que se emitió la factura: *', 'required' => 'true', 'options' => 
-									[null => " ",
-									 'BOLIVAR' => 'BOLIVAR',
-									 'DOLAR' => 'DOLAR']]);
 									echo $this->Form->input('bill', array('type' => 'file', 'label' => 'Factura:'));
 									echo $this->Form->input('extra_column1', ['type' => 'hidden', 'value' => $promoter->id]);
 								?>
@@ -166,11 +161,7 @@ $(document).ready(function()
           }
     });
 	
-    $('#ver-cargar-factura').on('click',function(){
-        $('#cargar-modificar-factura').toggle('slow');
-    });
-
-    $('#ver-modificar-factura').on('click',function(){
+    $('#ver-cargar-modificar-factura').on('click',function(){
         $('#cargar-modificar-factura').toggle('slow');
     });
 	
@@ -178,7 +169,7 @@ $(document).ready(function()
 	
 		e.preventDefault();
 	
-		budgetSurgery = $('#number_budget').val() + ' - ' + $('#surgery').val();
+		budgetSurgery = $('#number-budget').val() + ' - ' + $('#surgery').val();
 		
 		$.redirect('/sln/budgets/bill', { idBudget : $('#id').val(), budgetSurgery : budgetSurgery, swDelete : 1, promoter : $('#extra-column1').val() }); 
     });

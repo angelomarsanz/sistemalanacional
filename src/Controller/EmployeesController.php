@@ -42,6 +42,26 @@ class EmployeesController extends AppController
         }
         return parent::isAuthorized($user);
     }     
+	
+    public function testFunction()
+    {
+		$employee = $this->Employees->get(111);
+		
+		$this->Flash->success(__('payment_method: ' . $employee->payment_method));
+		$this->Flash->success(__('classification: ' . $employee->classification));
+		
+		$employee->payment_method = 'PRUEBA';
+		$employee->classification = 'PRUEBA';
+		
+		if ($this->Employees->save($employee)) 
+		{
+			$this->Flash->success(__('El empleado se actualizó'));
+		}
+		else
+		{
+			$this->Flash->error(__('El empleado no se actualizó'));
+		}
+	}
 
     /**
      * Index method
@@ -172,6 +192,7 @@ class EmployeesController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) 
         {
             $employee = $this->Employees->patchEntity($employee, $this->request->data);
+			
             if ($this->Employees->save($employee)) 
             {
                 $this->Flash->success(__('Los datos se completaron correctamente'));

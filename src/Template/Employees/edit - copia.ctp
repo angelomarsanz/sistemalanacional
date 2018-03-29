@@ -233,46 +233,22 @@
                             echo $this->Form->input('landline', ['label' => 'Número de teléfono fijo: *']);
                             echo $this->Form->input('address', ['label' => 'Dirección completa (urbanización o barrio, calle o avenida, Nro. de casa, edificio, piso, Nro. de apartamento, sector y punto de referencia: *']);
                             echo $this->Form->input('degree_instruction', ['label' => 'Grado de instrucción: *']);
-                            echo $this->Form->input('bank', ['label' => 'Banco:', 'options' => 
+							echo $this->Form->input('payment_method', ['label' => 'Método de pago: *', 'options' => 
                                 [null => '',
-                                '100% Banco' => '100% Banco',
-                                'Activo' => 'Activo',
-                                'Agrícola de Venezuela' => 'Agrícola de Venezuela',
-                                'Bancamiga' => 'Bancamiga',
-                                'Bancaribe' => 'Bancaribe',
-                                'Bancoex' => 'Bancoex',
-                                'Bancrecer' => 'Bancrecer',
-                                'Banesco' => 'Banesco',
-                                'Banfanb' => 'Banfanb',
-                                'Bangente' => 'Bangente',
-                                'Banplus' => 'Banplus',
-                                'Bicentenario del Pueblo' => 'Bicentenario del Pueblo',
-                                'BOD' => 'BOD',
-                                'Caroní' => 'Caroní',
-                                'Citibank' => 'Citibank',
-                                'Delsur' => 'Delsur',
-                                'Exportación y Comercio' => 'Exportación y Comercio', 
-                                'Exterior' => 'Exterior',
-                                'Fondo Común' => 'Fondo Común',
-                                'Instituto Municipal de Crédito Popular (IMCP)' => 'Instituto Municipal de Crédito Popular (IMCP)',
-                                'Internacional de Desarrollo' => 'Internacional de Desarrollo',
-                                'Mercantil' => 'Mercantil',
-                                'Mi Banco' => 'Mi Banco',
-                                'Nacional de Crédito' => 'Nacional de Crédito',
-                                'Novo Banco' => 'Novo Banco',
-                                'Plata' => 'Plata',
-                                'Plaza' => 'Plaza',
-                                'Provincial' => 'Provincial',
-                                'Sofitasa' => 'Sofitasa',
-                                'Tesoro' => 'Tesoro',
-                                'Venezolano de Crédito' => 'Venezolano de Crédito',
-                                'Venezuela' => 'Venezuela',
-                                'Otro banco no especificado en la lista']]); 
-                            echo $this->Form->input('account_type', ['label' => 'Tipo de cuenta: *', 'options' => 
+                                'Transferencia' => 'Transferencia',
+                                'Paypal' => 'Paypal',
+								'Otro método de pago' => 'Otro método de pago']]);
+                            echo $this->Form->input('account_bank', ['label' => 'Cuenta o Paypal: *', 'required' => true]);
+                            echo $this->Form->input('account_type', ['label' => 'Tipo de cuenta: *', 'required' => true, 'options' => 
                                 [null => '',
                                 'Ahorros' => 'Ahorros',
-                                'Corriente' => 'Corriente']]);
-                            echo $this->Form->input('account_bank', ['label' => 'Número de cuenta: *']);
+                                'Corriente' => 'Corriente',
+								'paypal' => 'Paypal',
+								'Otro tipo de cuenta' => 'Otro tipo de cuenta']]);
+							echo $this->Form->input('bank', ['label' => 'Banco:']);
+							echo $this->Form->input('bank_address', ['label' => 'Dirección del banco: *']);
+							echo $this->Form->input('swif_bank', ['label' => 'Swif del banco: *']);
+							echo $this->Form->input('aba_bank', ['label' => 'Aba del banco: *']);
                         ?>
                     </div>
                 </div>

@@ -118,13 +118,13 @@
 		$commissionsBolivarUnpaid = 0; 
 		foreach ($commissions as $commission): 
 			if ($commission->coin == 'BOLIVAR'): 
-				if ($commission->status_commission == 'PAGAGA'):
+				if ($commission->status_commission == 'PAGADA'):
 					$commissionsBolivarPaid+= $commission->amount;
 				else: 
 					$commissionsBolivarUnpaid+= $commission->amount;
 				endif; 
 			else: 
-				if ($commission->status_commission == 'PAGAGA'): 
+				if ($commission->status_commission == 'PAGADA'): 
 					$commissionsDolarPaid+= $commission->amount;
 				else:
 					$commissionsDolarUnpaid+= $commission->amount;
@@ -162,15 +162,18 @@
 						</tr>		
 						<tr>
 							<th></th>
-							<th><?= 'Comisiones en bolívares pagadas: ' . number_format(($commissionsBolivarPaid), 2, ",", ".") ?></th>
+							<th>Comisiones en bolívares pagadas:</th>
+							<th><?= number_format(($commissionsBolivarPaid), 2, ",", ".") ?></th>
 						</tr>
 						<tr>
 							<th></th>
-							<th><?= 'Comisiones en bolívares no pagadas: ' . number_format(($commissionsBolivarUnpaid), 2, ",", ".") ?></th>
+							<th>Comisiones en bolívares no pagadas:</th>
+							<th><?= number_format(($commissionsBolivarUnpaid), 2, ",", ".") ?></th>
 						</tr>
 						<tr>
 							<th></th>
-							<th><?= 'Total comisiones en bolívares: ' . number_format(($commissionsBolivarPaid + $commissionsBolivarUnpaid), 2, ",", ".") ?></th>
+							<th><b>Total comisiones en bolívares:</b></th>
+							<th><b><?= number_format(($commissionsBolivarPaid + $commissionsBolivarUnpaid), 2, ",", ".") ?></b></th>
 						</tr>
 						<tr>
 							<th></th>
@@ -178,15 +181,18 @@
 						</tr>
 						<tr>
 							<th></th>
-							<th><?= 'Comisiones en dólares pagadas: ' . number_format(($commissionsDolarPaid), 2, ",", ".") ?></th>
+							<th>Comisiones en dólares pagadas:</th>
+							<th><?= number_format(($commissionsDolarPaid), 2, ",", ".") ?></th>
 						</tr>
 						<tr>
 							<th></th>
-							<th><?= 'Comisiones en dólares no pagadas: ' . number_format(($commissionsDolarUnpaid), 2, ",", ".") ?></th>
+							<th>Comisiones en dólares no pagadas:</th>
+							<th><?= number_format(($commissionsDolarUnpaid), 2, ",", ".") ?></th>
 						</tr>
 						<tr>
 							<th></th>
-							<th><?= 'Total comisiones en dólares: ' . number_format(($commissionsDolarPaid + $commissionsDolarUnpaid), 2, ",", ".") ?></th>
+							<th><b>Total comisiones en dólares:</b></th>
+							<th><b><?= number_format(($commissionsDolarPaid + $commissionsDolarUnpaid), 2, ",", ".") ?></b></th>
 						</tr>
 						<tr>
 							<th></th>
@@ -224,7 +230,7 @@
 							<td><?= $accountRecords ?></td>
 							<td><?= $commission->user->full_name ?></td>                       
 							<td class=<?= $arrayMark['Commissions.type_beneficiary'] ?>><?= $commission->type_beneficiary ?></td>
-							<td><?= $commission->budget->surgery ?></td>
+							<td><?= $commission->budget->number_budget . ' - ' . $commission->budget->surgery ?></td>
 							<td class=<?= $arrayMark['Commissions.status_commission'] ?>><?= $commission->status_commission ?></td>
 							<td class=<?= $arrayMark['Commissions.amount'] ?>><?= number_format(($commission->amount), 2, ",", ".") ?></td>
 							<td class=<?= $arrayMark['Commissions.coin'] ?>><?= $commission->coin ?></td>
@@ -244,7 +250,7 @@
 					<td><?= $accountRecords ?></td>
 					<td><?= $commission->user->full_name ?></td>
 					<td class=<?= $arrayMark['Commissions.type_beneficiary'] ?>><?= $commission->type_beneficiary ?></td>
-					<td><?= $commission->budget->surgery ?></td>
+					<td><?= $commission->budget->number_budget . ' - ' . $commission->budget->surgery ?></td>
 					<td class=<?= $arrayMark['Commissions.status_commission'] ?>><?= $commission->status_commission ?></td>
 					<td class=<?= $arrayMark['Commissions.amount'] ?>><?= number_format(($commission->amount), 2, ",", ".") ?></td>
 					<td class=<?= $arrayMark['Commissions.coin'] ?>><?= $commission->coin ?></td>

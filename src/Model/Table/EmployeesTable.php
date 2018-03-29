@@ -114,7 +114,8 @@ class EmployeesTable extends Table
             ->allowEmpty('percentage_imposed');
 
         $validator
-            ->allowEmpty('payment_method');
+            ->requirePresence('payment_method', 'create')
+            ->notEmpty('payment_method');
 			
         $validator
             ->allowEmpty('bank');

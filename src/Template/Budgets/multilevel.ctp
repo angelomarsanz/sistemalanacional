@@ -30,9 +30,9 @@
 </style>
 <div class="row">
     <div class="col-md-12">
-		<h2>Multinivel</h2>
+		<h3>Multinivel</h3>
 		<?php if (isset($budgetsG)): ?>
-			<h3 style="margin-left: 10px;"><?= $promoter ?></h3>
+			<h4 style="margin-left: 10px;"><?= $promoter ?></h4>
 			<div class="row">
 			    <div class="col-md-9">
 				   	<div id="pacientes-atendidos" style="margin-left: 10px; display:none;">
@@ -75,7 +75,7 @@
 							            		<td style="width: 10%;"><?= h($budgetsGs->number_budget) ?></td>
 							                    <td style="width: 10%;"><?= h($budgetsGs->surgery) ?></td>
 							                    <td style="width: 10%;"><?= h($budgetsGs->number_bill) ?></td>
-												<?php if ($budgetsGs->coin_bill == 'BOLIVAR'): ?>
+												<?php if ($budgetsGs->coin == 'BOLIVAR'): ?>
 													<td style="width: 10%;"><?= number_format($budgetsGs->amount_bill, 2, ",", ".") ?></td>
 													<td style="width: 10%;"></td>
 													<?php $comisionPadreBolivar+= $budgetsGs->amount_bill; ?>
@@ -113,7 +113,7 @@
 						<?php if ($rolePromoter == 'Promotor(a)' || $rolePromoter == 'Promotor(a) independiente'): ?>
 							<?php foreach ($children as $childrens): ?>
 				        		<?php $swChildren = 1; ?>
-					        	<h4 style="margin-left: 10px;"><?= $childrens->full_name ?></h4>
+					        	<h5 style="margin-left: 10px;"><?= $childrens->full_name ?></h5>
 								<div class="table-responsive" style="margin-left: 20px;">
 								    <table class="table table-striped table-hover">
 								        <thead>
@@ -132,7 +132,7 @@
 								            <?php foreach ($budgetsG as $budgetsGs): ?>
 								            	<?php if ($budgetsGs->patient->user->parent_user == $childrens->id): ?>
 												<?php $keyArray = 'u' . $budgetsGs->patient->user->parent_user . 'b' . $budgetsGs->id; ?> 
-												<?php if (isset($arrayCommissions[$keyArray])): ?>
+												<?php if (isset($arrayCommissions[$keyArray]) || $budgetsGs->number_bill == null): ?>
 								            		<?php $swBudgetsChildren = 1; ?>
 									                <tr>
 									            		<?php if ($accountBudget == 0): ?>
@@ -149,7 +149,7 @@
 									            		<td style="width: 10%;"><?= h($budgetsGs->number_budget) ?></td>
 									                    <td style="width: 10%;"><?= h($budgetsGs->surgery) ?></td>
 									                    <td style="width: 10%;"><?= h($budgetsGs->number_bill) ?></td>
-														<?php if ($budgetsGs->coin_bill == 'BOLIVAR'): ?>
+														<?php if ($budgetsGs->coin == 'BOLIVAR'): ?>
 															<td style="width: 10%;"><?= number_format($budgetsGs->amount_bill, 2, ",", ".") ?></td>
 															<td style="width: 10%;"></td>
 															<?php $comisionHijosBolivar+= $budgetsGs->amount_bill; ?>
@@ -174,17 +174,17 @@
 				        <?php if ($swChildren == 0): ?>
 				        	<p style="margin-left: 10px;">Este promotor no tiene hijos</p>
 				        <?php endif; ?>
-						<p style="margin-left: 10px;"><b><?php echo 'Total ventas en bolívares realizadas por los hijos: Bs. ' . number_format($comisionHijosBolivar, 2, ",", "."); ?></b></p>
-						<p style="margin-left: 10px;"><b><?php echo 'Comisiones por ventas en bolívares (1.5%) realizadas por los hijos: Bs. ' . number_format(($comisionHijosBolivar * 0.03), 2, ",", "."); ?></b></p>
-						<p style="margin-left: 10px;"><b><?php echo 'Total ventas en dólares realizadas por los hijos: $ ' . number_format($comisionHijosDolar, 2, ",", "."); ?></b></p>
-						<p style="margin-left: 10px;"><b><?php echo 'Comisiones por ventas en dólares (1.5%) realizadas por los hijos: $ ' . number_format(($comisionHijosDolar * 0.03), 2, ",", "."); ?></b></p>
+						<p style="margin-left: 30px;"><b><?php echo 'Total ventas en bolívares realizadas por los hijos: Bs. ' . number_format($comisionHijosBolivar, 2, ",", "."); ?></b></p>
+						<p style="margin-left: 30px;"><b><?php echo 'Comisiones por ventas en bolívares (1.5%) realizadas por los hijos: Bs. ' . number_format(($comisionHijosBolivar * 0.03), 2, ",", "."); ?></b></p>
+						<p style="margin-left: 30px;"><b><?php echo 'Total ventas en dólares realizadas por los hijos: $ ' . number_format($comisionHijosDolar, 2, ",", "."); ?></b></p>
+						<p style="margin-left: 30px;"><b><?php echo 'Comisiones por ventas en dólares (1.5%) realizadas por los hijos: $ ' . number_format(($comisionHijosDolar * 0.03), 2, ",", "."); ?></b></p>
 				    </div>
 			    </div>
 			</div>
 			<div class="row">
 			    <div class="col-md-9">
 			   	   	<div id="hijos-nietos" style="margin-left: 10px; display:none;">
-				    	<h4>Hijos y nietos</h4>
+				    	<h5>Hijos y nietos</h5>
 				    	<?php $swChildren = 0; ?>
 				    	<?php $swGrandchildren = 0; ?>
 				    	<?php $comisionNietosBolivar = 0; ?>
@@ -192,7 +192,7 @@
 						<?php if ($rolePromoter == 'Promotor(a)' || $rolePromoter == 'Promotor(a) independiente'): ?>
 							<?php foreach ($children as $childrens): ?>
 					        	<?php $swChildren = 1; ?>
-					        	<h4 style="margin-left: 10px;"><?= $childrens->full_name ?></h4>
+					        	<h5 style="margin-left: 10px;"><?= $childrens->full_name ?></h5>
 					            <?php foreach ($grandchildren as $grandchildrens): ?>
 					            	<?php if ($grandchildrens->parent_user == $childrens->id): ?>
 					            		<?php $swGrandchildren = 1; ?>
@@ -215,7 +215,7 @@
 										            <?php foreach ($budgetsG as $budgetsGs): ?>
 										            	<?php if ($budgetsGs->patient->user->parent_user == $grandchildrens->id): ?>
 														<?php $keyArray = 'u' . $budgetsGs->patient->user->parent_user . 'b' . $budgetsGs->id; ?> 
-														<?php if (isset($arrayCommissions[$keyArray])): ?>
+														<?php if (isset($arrayCommissions[$keyArray]) || $budgetsGs->number_bill == null): ?>
 										            		<?php $swBudgetsGrandchildren = 1; ?>
 											                <tr>
 											            		<?php if ($accountBudget == 0): ?>
@@ -232,7 +232,7 @@
 											            		<td style="width: 10%;"><?= h($budgetsGs->number_budget) ?></td>
 											                    <td style="width: 10%;"><?= h($budgetsGs->surgery) ?></td>
 											                    <td style="width: 10%;"><?= h($budgetsGs->number_bill) ?></td>
-																<?php if ($budgetsGs->coin_bill == 'BOLIVAR'): ?>
+																<?php if ($budgetsGs->coin == 'BOLIVAR'): ?>
 																	<td style="width: 10%;"><?= number_format($budgetsGs->amount_bill, 2, ",", ".") ?></td>
 																	<td style="width: 10%;"></td>
 																	<?php $comisionNietosBolivar+= $budgetsGs->amount_bill; ?>
@@ -262,10 +262,10 @@
 				        <?php if ($swGrandchildren == 0): ?>
 				        	<p style="margin-left: 20px;">Este promotor no tiene nietos</p>
 				        <?php endif; ?>
-						<p style="margin-left: 10px;"><b><?php echo 'Total ventas en bolívares realizadas por los nietos: Bs. ' . number_format($comisionNietosBolivar, 2, ",", "."); ?></b></p>
-						<p style="margin-left: 10px;"><b><?php echo 'Comisiones por ventas en bolívares (3%) realizadas por los nietos: Bs. ' . number_format(($comisionNietosBolivar * 0.03), 2, ",", "."); ?></b></p>
-						<p style="margin-left: 10px;"><b><?php echo 'Total ventas en dólares realizadas por los nietos: $ ' . number_format($comisionNietosDolar, 2, ",", "."); ?></b></p>
-						<p style="margin-left: 10px;"><b><?php echo 'Comisiones por ventas en dólares (0,5%) realizadas por los nietos: $ ' . number_format(($comisionNietosDolar * 0.03), 2, ",", "."); ?></b></p>
+						<p style="margin-left: 40px;"><b><?php echo 'Total ventas en bolívares realizadas por los nietos: Bs. ' . number_format($comisionNietosBolivar, 2, ",", "."); ?></b></p>
+						<p style="margin-left: 40px;"><b><?php echo 'Comisiones por ventas en bolívares (3%) realizadas por los nietos: Bs. ' . number_format(($comisionNietosBolivar * 0.03), 2, ",", "."); ?></b></p>
+						<p style="margin-left: 40px;"><b><?php echo 'Total ventas en dólares realizadas por los nietos: $ ' . number_format($comisionNietosDolar, 2, ",", "."); ?></b></p>
+						<p style="margin-left: 40px;"><b><?php echo 'Comisiones por ventas en dólares (0,5%) realizadas por los nietos: $ ' . number_format(($comisionNietosDolar * 0.03), 2, ",", "."); ?></b></p>
 				    </div>
 			    </div>
 			</div>
