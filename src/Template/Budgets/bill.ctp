@@ -102,7 +102,7 @@
 		?>		
 			<button id="ver-cargar-modificar-factura" class="glyphicon glyphicon-open btn btn-primary" title="Cargar o modificar la factura"></button>
 			<button id="eliminar-factura" class="glyphicon glyphicon-trash btn btn-danger" title="Eliminar factura"></button>
-			<?= $this->Html->link(__(''), ['controller' => 'Commissions', 'action' => 'edit', $budget->id, 'Budgets', 'bill'], ['id' => 'pagar-comisiones', 'class' => 'glyphicon glyphicon-usd btn btn-primary', 'title' => 'Pagar comisiones']) ?>	
+			<?= $this->Html->link(__(''), ['controller' => 'Commissions', 'action' => 'index', $budget->id, 'Budgets', 'bill'], ['id' => 'pagar-comisiones', 'class' => 'glyphicon glyphicon-usd btn btn-primary', 'title' => 'Pagar comisiones']) ?>	
 			
 			<br />
 			<br />
@@ -116,7 +116,8 @@
 									echo $this->Form->input('surgery', ['type' => 'hidden']);
 									echo $this->Form->input('number_budget', ['type' => 'hidden']);
 									echo $this->Form->input('date_bill', ['type' => 'date', 'required' => 'true', 'label' => 'Fecha de la factura: *']);
-									echo $this->Form->input('number_bill', ['type' => 'number', 'required' => 'true', 'label' => 'Número de la factura: *']);
+									echo $this->Form->input('number_bill', ['required' => 'true', 'label' => 'Número de la factura: *']);
+									echo $this->Form->input('coin', ['disabled' => 'true', 'label' => 'Moneda:']);
 									echo $this->Form->input('amount_bill', ['class' => 'decimal-2-places', 'required' => 'true', 'label' => 'Monto de la factura: *']);
 									echo $this->Form->input('bill', array('type' => 'file', 'label' => 'Factura:'));
 									echo $this->Form->input('extra_column1', ['type' => 'hidden', 'value' => $promoter->id]);
@@ -152,7 +153,7 @@ function log(id, budgetSurgery)
 $(document).ready(function()
 { 
     $(".decimal-2-places").numeric({ decimalPlaces: 2 });
-    $('#number-budget').autocomplete(
+    $('#number-budget-search').autocomplete(
     {
         source:'<?php echo Router::url(array("controller" => "Budgets", "action" => "findBudget")); ?>',
         minLength: 3,             
@@ -168,6 +169,12 @@ $(document).ready(function()
     $('#eliminar-factura').on('click',function(e){
 	
 		e.preventDefault();
+	
+		var r= confirm('¿Está seguro de que desea eliminar esta factura?');
+		if (r == false)
+		{
+			return false;
+		}
 	
 		budgetSurgery = $('#number-budget').val() + ' - ' + $('#surgery').val();
 		

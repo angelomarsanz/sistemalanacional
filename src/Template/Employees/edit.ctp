@@ -233,11 +233,6 @@
                             echo $this->Form->input('landline', ['label' => 'Número de teléfono fijo: *']);
                             echo $this->Form->input('address', ['label' => 'Dirección completa (urbanización o barrio, calle o avenida, Nro. de casa, edificio, piso, Nro. de apartamento, sector y punto de referencia: *']);
                             echo $this->Form->input('degree_instruction', ['label' => 'Grado de instrucción: *']);
-							echo $this->Form->input('payment_method', ['label' => 'Método de pago: *', 'options' => 
-                                [null => '',
-                                'Transferencia' => 'Transferencia',
-                                'Paypal' => 'Paypal',
-								'Otro método de pago' => 'Otro método de pago']]);
                             echo $this->Form->input('account_bank', ['label' => 'Cuenta o Paypal: *', 'required' => true]);
                             echo $this->Form->input('account_type', ['label' => 'Tipo de cuenta: *', 'required' => true, 'options' => 
                                 [null => '',
