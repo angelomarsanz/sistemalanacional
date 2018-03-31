@@ -148,7 +148,7 @@
 <script>
 function log(id, budgetSurgery) 
 {
-    $.redirect('/sln/budgets/bill', { idBudget : id, budgetSurgery : budgetSurgery }); 
+    $.redirect('/dsln/budgets/bill', { idBudget : id, budgetSurgery : budgetSurgery }); 
 }
 $(document).ready(function()
 { 
@@ -178,7 +178,7 @@ $(document).ready(function()
 	
 		budgetSurgery = $('#number-budget').val() + ' - ' + $('#surgery').val();
 		
-		$.redirect('/sln/budgets/bill', { idBudget : $('#id').val(), budgetSurgery : budgetSurgery, swDelete : 1, promoter : $('#extra-column1').val() }); 
+		$.redirect('/dsln/budgets/bill', { idBudget : $('#id').val(), budgetSurgery : budgetSurgery, swDelete : 1, promoter : $('#extra-column1').val() }); 
     });
 
 	$('#mas').on('click',function()

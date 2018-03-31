@@ -56,12 +56,12 @@ class CommissionsController extends AppController
 
 		$commissions = $this->Commissions->find('all', 
 			['conditions' => ['Commissions.budget_id' => $idBudget], 
-			['contain' => ['Users', 'Budgets'],
+			'contain' => ['Users', 'Budgets'],
 			'order' => ['Users.surname' => 'ASC', 'Users.second_surname' => 'ASC','Users.first_name' => 'ASC','Users.second_name' => 'ASC',]]);
 				
         $this->set(compact('budget', 'commisions', 'controller', 'action'));
         $this->set('_serialize', ['budget', 'commissions', 'controller', 'action']);
-    }    }
+    }    
 
     /**
      * View method

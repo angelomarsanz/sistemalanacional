@@ -56,7 +56,7 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Sistema <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
-                                <li><?=  $this->Html->link('Interruptor sistema', ['controller' => 'Systems', 'action' => 'systemSwitch']) ?></li>
+                                <li><?=  $this->Html->link('Interruptores del sistema', ['controller' => 'Systems', 'action' => 'systemSwitch']) ?></li>
                                 <li><?=  $this->Html->link('Verificar servidor', ['controller' => 'Users', 'action' => 'serverError']) ?></li>
                            </ul>
                         </li>
