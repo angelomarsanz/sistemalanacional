@@ -70,7 +70,7 @@
 <div class="row">
     <div class="col-md-9">
     	<div class="page-header">
-			<h4>Comisiones promotores</h4>
+			<h4>Comisiones de promotores</h4>
             <?php if (isset($budget)): ?>
                 <h5>Correspondientes al presupuesto: <?= $budget->number_budget . ' - ' . $budget->surgery ?></h5>
             <?php endif; ?>
@@ -90,15 +90,16 @@
                 <tbody>
 					<?php foreach ($commissions as $commission): ?>						
 						<tr>
-							<td>$comission->user->full_name</td>
-							<td>$comission->type_of_beneficiary</td>
-							<td>$comission->coin</td>
-							<td>$comission->amount</td>
+							<td><?= $commission->user->full_name ?></td>
+							<td><?= $commission->type_beneficiary ?></td>
+							<td><?= $commission->coin ?></td>
+							<td><?= $commission->amount ?></td>
 							<td class="actions">
-								<?= $this->Html->link(__(''), ['controller' => 'Commisions', 'action' => 'edit', $commission->id, 'Commissions', 'index'], ['class' => 'glyphicon glyphicon-usd btn btn-primary', 'title' => 'Registrar o modificar pago']) ?>
-								<?= $this->Form->postLink(__(''), ['controller' => 'Commissions', 'action' => 'delete', $commission->id], ['class' => 'glyphicon glyphicon-usd btn btn-danger', 'title' => 'Eliminar pago'], ['confirm' => __('Está seguro de que desea eliminar esta comisión?']) ?>
+								<?= $this->Html->link(__(''), ['controller' => 'Commissions', 'action' => 'edit', $commission->id, 'Commissions', 'index'], ['class' => 'glyphicon glyphicon-usd btn btn-primary', 'title' => 'Registrar o modificar pago']) ?>
+								<?= $this->Form->postLink(__(''), ['controller' => 'Commissions', 'action' => 'delete', $commission->id, 'Commissions', 'index'], ['class' => 'glyphicon glyphicon-trash btn btn-danger', 'title' => 'Eliminar pago', 'confirm' => __('Está seguro de que desea eliminar esta comisión?')]) ?>
 							</td>
 						</tr>
+					<?php endforeach; ?>
 				</tbody>
 			</table>
 		</div>
@@ -139,4 +140,4 @@ $(document).ready(function(){
         $('#menu-menos').show();
     });	
 });
-</script>			
+</script>

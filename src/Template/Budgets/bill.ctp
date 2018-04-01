@@ -65,6 +65,7 @@
 <div class="row">
     <div class="col-md-12">
     	<div class="page-header">
+			<input type="hidden" id="ambiente" value=<?= $system->ambient ?>>
 			<h3>Comisiones</h3>
             <?php if (isset($budgetSurgery)): ?>
                 <h4>Presupuesto: <?= $budgetSurgery ?></h4>
@@ -148,7 +149,14 @@
 <script>
 function log(id, budgetSurgery) 
 {
-    $.redirect('/dsln/budgets/bill', { idBudget : id, budgetSurgery : budgetSurgery }); 
+	if ($('#ambiente').val() == 'Producción')
+	{
+		$.redirect('/sln/budgets/bill', { idBudget : id, budgetSurgery : budgetSurgery });
+	}
+	else
+	{
+		$.redirect('/dsln/budgets/bill', { idBudget : id, budgetSurgery : budgetSurgery });
+	}
 }
 $(document).ready(function()
 { 
@@ -177,9 +185,16 @@ $(document).ready(function()
 		}
 	
 		budgetSurgery = $('#number-budget').val() + ' - ' + $('#surgery').val();
-		
-		$.redirect('/dsln/budgets/bill', { idBudget : $('#id').val(), budgetSurgery : budgetSurgery, swDelete : 1, promoter : $('#extra-column1').val() }); 
-    });
+
+		if ($('#ambiente').val() == 'Producción')
+		{
+			$.redirect('/sln/budgets/bill', { idBudget : $('#id').val(), budgetSurgery : budgetSurgery, swDelete : 1, promoter : $('#extra-column1').val() }); 
+		}
+		else
+		{
+			$.redirect('/dsln/budgets/bill', { idBudget : $('#id').val(), budgetSurgery : budgetSurgery, swDelete : 1, promoter : $('#extra-column1').val() });		
+		}
+	});
 
 	$('#mas').on('click',function()
     {

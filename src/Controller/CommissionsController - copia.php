@@ -45,16 +45,23 @@ class CommissionsController extends AppController
      *
      * @return \Cake\Network\Response|null
      */
-    public function index()
+    public function index($idBudget = null, $controller = null, $action = null)
     {
-        $this->paginate = [
-            'contain' => ['Users', 'Budgets']
-        ];
-        $commissions = $this->paginate($this->Commissions);
+		setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+		date_default_timezone_set('America/Caracas');
+		
+		$binnacles = new BinnaclesController;
+					
+		$budget = $this->Commissions->Budgets->get($idBudget);
 
-        $this->set(compact('commissions'));
-        $this->set('_serialize', ['commissions']);
-    }
+		$commissions = $this->Commissions->find('all', 
+			['conditions' => ['Commissions.budget_id' => $idBudget], 
+			'contain' => ['Users', 'Budgets'],
+			'order' => ['Users.surname' => 'ASC', 'Users.second_surname' => 'ASC','Users.first_name' => 'ASC','Users.second_name' => 'ASC',]]);
+				
+        $this->set(compact('budget', 'commissions', 'controller', 'action'));
+        $this->set('_serialize', ['budget', 'commissions', 'controller', 'action']);
+    }    
 
     /**
      * View method

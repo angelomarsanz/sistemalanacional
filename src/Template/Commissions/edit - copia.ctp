@@ -98,12 +98,6 @@
 							<td style="text-align: right;"><?= number_format(($cPromoter->amount), 2, ",", ".") ?></td>
 							<td><?= $cPromoter->coin ?></td>
 							<td class="actions">
-								<button id="pagar-a-promotor" class="glyphicon glyphicon-usd btn btn-primary" title="Registrar o modificar pago"></button>
-								<?php if ($cPromoter->status_commission == 'PAGADA'): ?>
-									<input type="hidden" id="id-commission-promoter" value=<?= $cPromoter->id ?>>
-									<button id="eliminar-pago-promotor" class="glyphicon glyphicon-trash btn btn-danger" title="Eliminar pago"></button>
-								<?php else: ?>
-									<button id="eliminar-pago-promotor" class="glyphicon glyphicon-trash btn btn-danger" title="Eliminar pago" disabled="true"></button>
 								<?php endif; ?>
 							</td>
 						</tr>

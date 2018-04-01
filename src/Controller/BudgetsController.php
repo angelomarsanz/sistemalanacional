@@ -15,6 +15,8 @@ use App\Controller\CommissionsController;
 
 use App\Controller\BinnaclesController;
 
+use App\Controller\SystemsController;
+
 use Cake\I18n\Time;
 
 use Cake\Mailer\Email;
@@ -690,6 +692,10 @@ class BudgetsController extends AppController
     }
     public function bill($idBudget = null, $budgetSurgery = null)
     {
+		$this->loadModel('Systems');
+
+		$system = $this->Systems->get(2);
+		
 		$commissions = new CommissionsController;
 		
 		$binnacles = new BinnaclesController;
@@ -797,15 +803,15 @@ class BudgetsController extends AppController
 
 			$currentView = 'bill';
 
-			$this->set(compact('currentView', 'budgetSurgery', 'budget', 'budgetQuery', 'promoter'));
-			$this->set('_serialize', ['currentView', 'budgetSurgery', 'budget', 'budgetQuery', 'promoter']);	
+			$this->set(compact('system', 'currentView', 'budgetSurgery', 'budget', 'budgetQuery', 'promoter'));
+			$this->set('_serialize', ['system', 'currentView', 'budgetSurgery', 'budget', 'budgetQuery', 'promoter']);	
 		}
 		else
 		{
             $currentView = 'bill';
 
-            $this->set(compact('currentView'));
-            $this->set('_serialize', ['currentView']);           
+            $this->set(compact('system', 'currentView'));
+            $this->set('_serialize', ['system', 'currentView']);           
         }
     }
     public function findBudget()
