@@ -188,9 +188,9 @@ class BudgetsController extends AppController
 		
 		$budget->activity_date_finish = Time::now(); 
 		
-		$budget->activity_result = "SIN CONFIRMAR";
+		$budget->activity_result = "Verificar correo y teléfonos del paciente y confirmar presupuesto";
 		
-		$budget->detailed_result_activity = 'PRESUPUESTO NUEVO';
+		$budget->detailed_result_activity = 'Sin detalles';
 
 		$budget->date_budget = Time::now();
 		
@@ -298,9 +298,9 @@ class BudgetsController extends AppController
             
             $budget->activity_date_finish = Time::now(); 
             
-            $budget->activity_result = "SIN CONFIRMAR";
+            $budget->activity_result = "Verificar correo y teléfonos del paciente y confirmar presupuesto";
             
-            $budget->detailed_result_activity = 'PRESUPUESTO NUEVO';
+            $budget->detailed_result_activity = 'Sin detalles';
 
             $budget->date_budget = Time::now();
             

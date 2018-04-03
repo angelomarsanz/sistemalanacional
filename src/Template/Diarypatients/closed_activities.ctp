@@ -1,0 +1,1 @@
+<p>closedActivities</p>

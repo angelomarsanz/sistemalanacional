@@ -21,11 +21,11 @@
                         <label class="control-label" for="identidyCard">Cédula o RIF: </label>
                         <input id="identidyCard" name="identidyCard" type='text' class='form-control' value='99999999'>
 
+                        <label class="control-label" for="surname">Primer apellido: </label>
+                        <p><input id="surname" name="surname" type='text' class='form-control' value='PRUEBA'><p>						
+						
                         <label class="control-label" for="firstName">Primer nombre: </label>
                         <p><input id="firstName" name="firstName" type='text' class='form-control' value='SISTEMA'><p>
-
-                        <label class="control-label" for="surname">Primer apellido: </label>
-                        <p><input id="surname" name="surname" type='text' class='form-control' value='PRUEBA'><p>
 
                         <label class="control-label" for="sex">Sexo: </label>
                         <p><input id="sex" name="sex" type='text' class='form-control' value='MASCULINO'><p>
@@ -37,7 +37,7 @@
                         <p><input id="cellPhone" name="cellPhone" type='text' class='form-control' value='99999999'><p>
 
                         <label class="control-label" for="email">Email: </label>
-                        <p><input id="email" name="email" type='text' class='form-control' value='pruebasistema@gmail.com'><p>
+                        <p><input id="email" name="email" type='text' class='form-control' value='pruebasistema1@gmail.com'><p>
 
                         <label class="control-label" for="country">País: </label>
                         <p><input id="country" name="country" type='text' class='form-control' value='Venezuela'><p>

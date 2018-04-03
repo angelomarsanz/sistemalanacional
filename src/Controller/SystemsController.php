@@ -104,12 +104,15 @@ class SystemsController extends AppController
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $system = $this->Systems->patchEntity($system, $this->request->data);
-            if ($this->Systems->save($system)) {
-                $this->Flash->success(__('El sistema cambió de estado exitosamente'));
+			
+			$system->responsible_user = $this->Auth->user('username');
+            
+			if ($this->Systems->save($system)) {
+                $this->Flash->success(__('Los estatus de los interruptores se cambiaron exitosamente'));
 
                 return $this->redirect(['controller' => 'users', 'action' => 'wait']);
             }
-            $this->Flash->error(__('El sistema no pudo cambiar de estado'));
+            $this->Flash->error(__('No se pudieron cambiar los estatus de los interruptores'));
         }
         $this->set(compact('system'));
         $this->set('_serialize', ['system']);

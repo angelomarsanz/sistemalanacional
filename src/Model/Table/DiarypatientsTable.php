@@ -83,6 +83,42 @@ class DiarypatientsTable extends Table
 
         $validator
             ->allowEmpty('status');
+			
+        $validator
+            ->allowEmpty('extra_column1');
+			
+		$validator
+			->allowEmpty('extra_column2');
+			
+		$validator
+			->allowEmpty('extra_column3');
+			
+		$validator
+			->allowEmpty('extra_column4');
+
+		$validator
+			->allowEmpty('extra_column5');
+			
+		$validator
+			->allowEmpty('extra_column6');
+			
+		$validator
+			->allowEmpty('extra_column7');
+			
+		$validator
+			->allowEmpty('extra_column8');
+			
+		$validator
+			->allowEmpty('extra_column9');
+			
+		$validator
+			->allowEmpty('extra_column10');
+
+		$validator
+			->allowEmpty('registration_status');
+			
+		$validator
+			->allowEmpty('reason_status');
             
         $validator
             ->allowEmpty('responsible_user');

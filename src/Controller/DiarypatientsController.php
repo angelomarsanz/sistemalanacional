@@ -5,6 +5,8 @@ use App\Controller\AppController;
 
 use Cake\ORM\TableRegistry;
 
+use App\Controller\BinnaclesController;
+
 use Cake\I18n\Time;
 
 /**
@@ -266,7 +268,7 @@ class DiarypatientsController extends AppController
 
         $diarypatient->activity_date = $currentDate;  
         
-        $diarypatient->short_description_activity = "Confirmar presupuesto";
+        $diarypatient->short_description_activity = "Verificar correo y teléfonos del paciente y confirmar presupuesto";
         
         $diarypatient->detailed_activity_description = "Sin detalles";
         
@@ -316,7 +318,7 @@ class DiarypatientsController extends AppController
 
         $diarypatient->activity_date = $currentDate;  
         
-        $diarypatient->short_description_activity = "Confirmar presupuesto";
+        $diarypatient->short_description_activity = "Verificar correo y teléfonos del paciente y confirmar presupuesto";
         
         $diarypatient->detailed_activity_description = "Sin detalles";
         
@@ -332,11 +334,11 @@ class DiarypatientsController extends AppController
 
         if ($this->Diarypatients->save($diarypatient)) 
         {
-            $result = 1;    
+            $result = 0;    
         }
         else
         {
-            $result = 0;
+            $result = 1;
         }
 
         return $result;
@@ -363,9 +365,9 @@ class DiarypatientsController extends AppController
         
         $diarypatient->activity_date_next = $currentDateProx;  
         
-        $diarypatient->activity_next = "Confirmar presupuesto con el paciente";
+        $diarypatient->activity_next = "Verificar correo y teléfonos del paciente y confirmar presupuesto";
         
-        $diarypatient->detailed_next_activity = "";        
+        $diarypatient->detailed_next_activity = "Sin detalles";        
         
         $diarypatient->status = true;
         
@@ -427,7 +429,9 @@ class DiarypatientsController extends AppController
     {
 		setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
 		date_default_timezone_set('America/Caracas');
-					
+		
+		$currentDate = time::now();
+						
         $diarypatient = $this->Diarypatients->get($id, [
             'contain' => ['Budgets' => ['Patients' => ['Users']]]
         ]);
@@ -451,11 +455,15 @@ class DiarypatientsController extends AppController
 			
             if ($this->Diarypatients->save($diarypatient)) 
             {
+				$budget = $this->Diarypatients->Budgets->get($diarypatient->budget_id);
+
 				if ($diarypatient->activity_next == 'Cerrar (el paciente ya no está interesado)' ||
 					$diarypatient->activity_next == 'Cerrar (ya se practicó la cirugía o se ejecutó el servicio)')
-				{
-					$budget = $this->Diarypatients->Budgets->get($diarypatient->budget_id);
+				{					
+					$this->Flash->success(__('La actividad se cerró exitosamente'));
 					
+					$budget->activity_date_finish = $currentDate;
+				
 					$budget->activity_result = 'Cerrado';
 
 					if ($diarypatient->activity_next == 'Cerrar (el paciente ya no está interesado)')
@@ -465,18 +473,10 @@ class DiarypatientsController extends AppController
 					else
 					{
 						$budget->detailed_result_activity = 'Ya se practicó la cirugía o se ejecutó el servicio';
-					} 
-					if ($this->Diarypatients->Budgets->save($budget))
-					{
-						$this->Flash->success(__('La actividad se cerró exitosamente'));
-					}
-					else
-					{
-						$this->Flash->error(__('No se pudo cerrar la actividad'));
-					}
+					} 					
 				}
 				else
-				{
+				{	
 					$diarypatientProx = $this->Diarypatients->newEntity();
 					
 					$diarypatientProx->budget_id = $diarypatient->budget_id; 
@@ -488,9 +488,7 @@ class DiarypatientsController extends AppController
 					$diarypatientProx->detailed_activity_description = $diarypatient->detail_next_activity;
 					
 					$diarypatientProx->activity_comments = "";
-							
-					$currentDate = Time::now();
-					
+												
 					$currentDate->hour(23)
 						->minute(59)
 						->second(59);
@@ -505,21 +503,35 @@ class DiarypatientsController extends AppController
 					
 					if ($this->Diarypatients->save($diarypatientProx)) 
 					{
-						$this->Flash->success(__('La actividad se cerró exitosamente'));
+						$this->Flash->success(__('La actividad se cerró exitosamente'));							
 					}
 					else
 					{
 						$this->Flash->error(__('No se pudo cerrar la actividad'));
 					}
+					
+					$budget->activity_date_finish = $diarypatient->activity_date_next;
+					
+					$budget->activity_result = $diarypatient->activity_next;
+					
+					$budget->detailed_result_activity = $diarypatient->detail_next_activity;
+				}
+				if ($this->Diarypatients->Budgets->save($budget))
+				{
+					$this->Flash->success(__('El presupuesto se actualizó exitosamente'));
+				}
+				else
+				{
+					$this->Flash->error(__('No se pudo actualizar el presupuesto'));
 				}
             }
             else
             {
-				$this->Flash->error(__('El último mensaje'));
                 $this->Flash->error(__('No se pudo cerrar la actividad'));    
             }
             return $this->redirect(['action' => $origin]); 
         }
+		
         $this->set(compact('diarypatient', 'origin', 'promoter'));
         $this->set('_serialize', ['diarypatient', 'origin', 'promoter']);
     }
@@ -577,4 +589,227 @@ class DiarypatientsController extends AppController
     {
         $this->set(compact('idPatient', 'origin'));
     }
+	
+	public function EliminateRedundantActivities()
+	{	
+		$this->adjustClosedBudgets(); 
+			
+		$this->budgetsWithoutActivity();
+			
+		$this->closedActivities();	
+
+		$this->updateBudgets();	
+	}	
+	
+	public function adjustClosedBudgets()
+	{					
+		$closedBudgets = $this->Diarypatients->find('all')
+			->contain(['Budgets'])
+			->where([['Diarypatients.id >' => 1],
+			['Diarypatients.status IS NULL'],
+            ['Budgets.activity_result' => 'Cerrado']])
+			->order(['Diarypatients.id' => 'ASC']);
+			
+		$accountClosed = $closedBudgets->count();  
+
+		$this->Flash->success(__('Total presupuestos cerrados que aún tienen actividades abiertas: ' . $accountClosed));
+		
+		$accountUpdate = 0;
+		
+		foreach ($closedBudgets as $closedBudget)
+		{
+			$diarypatient = $this->Diarypatients->get($closedBudget->id);
+			
+			$diarypatient->status = true;
+			
+            if ($this->Diarypatients->save($diarypatient)) 
+            {
+				$accountUpdate++;
+			}
+			else
+			{
+				$this->Flash->error(__('No se pudo actualizar la actividad identificada como: ' . $closedBudgets->id));
+			}
+		}
+		$this->Flash->success(__('Total actividades cerradas: ' . $accountUpdate));
+		
+		unset($closedBudgets, $closedBudget);
+		
+		return;
+	}
+	public function budgetsWithoutActivity()
+	{
+		$binnacles = new BinnaclesController;
+	
+		$openBudgets = $this->Diarypatients->Budgets->find('all')
+			->where([['Budgets.id >' => 1],
+            ['OR' => ['Budgets.activity_result IS NULL', 'Budgets.activity_result !=' => 'Cerrado']]])
+			->order(['Budgets.id' => 'ASC']); 
+			
+		$accountOpen = $openBudgets->count();
+		
+		$this->Flash->success(__('Presupuestos abiertos: ' . $accountOpen));
+		
+		$accountWithActivity = 0;
+		$accountWithoutActivity = 0;
+		
+		foreach ($openBudgets as $openBudget)
+		{
+			$lastRecord = $this->Diarypatients->find('all')
+				->where(['Diarypatients.budget_id' => $openBudget->id])
+				->order(['Diarypatients.created' => 'DESC']);
+							
+			$row = $lastRecord->first();
+
+			if ($row)
+			{
+				$accountWithActivity++;
+			}
+			else	
+			{
+				$accountWithoutActivity++;
+								
+				$diarypatient = $this->Diarypatients->newEntity();
+        
+				$diarypatient->budget_id = $openBudget->id;
+				
+				setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+				date_default_timezone_set('America/Caracas');
+
+				$currentDate = Time::now();
+				
+				$currentDate->hour(23)
+					->minute(59)
+					->second(59);
+					
+				$currentDateProx = $currentDate;
+
+				$diarypatient->activity_date = $currentDate;  
+				
+				$diarypatient->short_description_activity = "Verificar correo y teléfonos del paciente y confirmar presupuesto";
+				
+				$diarypatient->detailed_activity_description = "Sin detalles";
+				
+				$diarypatient->activity_comments = "";
+				
+				$diarypatient->activity_date_next = $currentDateProx;  
+				
+				$diarypatient->activity_next = "";
+				
+				$diarypatient->detailed_next_activity = "";        
+				
+				$diarypatient->responsible_user = 'clnacional2017';
+
+				if (!($this->Diarypatients->save($diarypatient))) 
+				{
+					$binnacles->add('controller', 'Diarypatients', 'budgetsWithoutActivity', 'Presupuesto sin actividad id: ' . $openBudget->id);
+				} 
+			}
+		}
+		$this->Flash->success(__('Presupuestos con actividad: ' . $accountWithActivity));
+		$this->Flash->success(__('Presupuestos sin actividad: ' . $accountWithoutActivity));
+		
+		unset($openBudgets, $openBudget);
+		
+		return;
+	}
+	public function closedActivities()
+	{		
+		$verifyActivities = $this->Diarypatients->find('all')
+			->contain(['Budgets'])
+			->where([['Diarypatients.id >' => 1],
+			['Diarypatients.status IS NULL'],
+            ['OR' => ['Budgets.activity_result IS NULL', 'Budgets.activity_result !=' => 'Cerrado']]])
+			->order(['Diarypatients.budget_id' => 'ASC', 'Diarypatients.activity_date' => 'DESC']); 
+			
+		$accountVerify = $verifyActivities->count();  
+
+		$this->Flash->success(__('Total actividades abiertas de presupuestos activos: ' . $accountVerify));	
+		
+		$accountRecords = 0;
+		$previousBudget = 0;
+		$accountActivities = 0;
+		$accountNotClosed = 0;
+		$accountClosed = 0;
+		foreach ($verifyActivities as $verifyActivity)
+		{			
+			if ($accountRecords == 0)
+			{
+				$previousBudget = $verifyActivity->budget_id;
+			}
+			$accountRecords++;
+			if ($previousBudget != $verifyActivity->budget_id)
+			{
+				$previousBudget = $verifyActivity->budget_id;
+				$accountActivities = 0;
+			}
+			$accountActivities++;
+								
+			if ($accountActivities == 1)
+			{
+				$accountNotClosed++;
+			}
+			else
+			{
+				$diarypatient = $this->Diarypatients->get($verifyActivity->id);
+							
+				$diarypatient->status = true;
+					
+				if ($this->Diarypatients->save($diarypatient)) 
+				{
+					$accountClosed++;	
+				}
+				else
+				{
+					$this->Flash->error(__('No se pudo cerrar la actividad identificada como: ' . $verifyActivity->id));
+				}
+			}
+		}
+		$this->Flash->success(__('Total actividades no cerradas: ' . $accountNotClosed));
+		$this->Flash->success(__('Total actividades cerradas: ' . $accountClosed));
+		
+		unset($verifyActivities, $verifyActivitie); 
+		
+		return; 
+	}
+	public function updateBudgets()
+	{
+		$openActivities = $this->Diarypatients->find('all')
+			->contain(['Budgets'])
+			->where([['Diarypatients.id >' => 1],
+			['Diarypatients.status IS NULL'],
+            ['OR' => ['Budgets.activity_result IS NULL', 'Budgets.activity_result !=' => 'Cerrado']]])
+			->order(['Diarypatients.budget_id' => 'ASC']);
+			
+		$accountOpen = $openActivities->count();  
+
+		$this->Flash->success(__('Total actividades abiertas de presupuestos activos: ' . $accountOpen));
+		
+		$accountUpdate = 0;
+		
+		foreach ($openActivities as $openActivity)
+		{
+			$budget = $this->Diarypatients->Budgets->get($openActivity->budget_id);
+								
+			$budget->activity_date_finish = $openActivity->activity_date;
+			
+			$budget->activity_result = $openActivity->short_description_activity;
+			
+			$budget->detailed_result_activity = $openActivity->detailed_activity_description;
+			
+			if ($this->Diarypatients->Budgets->save($budget))
+			{
+				$accountUpdate++;
+			}
+			else
+			{
+				$this->Flash->error(__('No se pudo actualizar el presupuesto id: ' . $openActivity->budget_id));
+			}
+		}
+		$this->Flash->success(__('Total presupuestos actualizados: ' . $accountUpdate));
+		
+		unset($openActivities, $openActivity);
+		
+		return;
+	}
 }

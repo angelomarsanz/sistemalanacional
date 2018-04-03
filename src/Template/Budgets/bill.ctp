@@ -65,7 +65,7 @@
 <div class="row">
     <div class="col-md-12">
     	<div class="page-header">
-			<input type="hidden" id="ambiente" value=<?= $system->ambient ?>>
+			<input type="hidden" id="ambiente" value=<?= $system->logo ?>>
 			<h3>Comisiones</h3>
             <?php if (isset($budgetSurgery)): ?>
                 <h4>Presupuesto: <?= $budgetSurgery ?></h4>

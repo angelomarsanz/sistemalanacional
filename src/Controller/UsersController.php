@@ -3,6 +3,8 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 
+use App\Controller\BinnaclesController;
+
 use App\Controller\EmployeesController;
 
 use App\Controller\PatientsController;
@@ -1007,13 +1009,12 @@ class UsersController extends AppController
 						$idBudget = $arrayResult['id'];
 						
 						$result = $iteme->add($idBudget, $itemesBudget);
-
-						$result = $this->mailBudget($arrayMail);
 						
 						$result = $diarypatient->addAutomatic($idBudget);
 					
 						if ($result == 0)
 						{
+							$result = $this->mailBudget($arrayMail);
 							if ($this->Auth->user('username'))
 							{
 								$this->Flash->success(__('El paciente se creo exitosamente'));
@@ -1064,6 +1065,8 @@ class UsersController extends AppController
     public function addWebBasic()
     {
         $this->autoRender = false;
+		
+		$binnacles = new BinnaclesController;
 
         $patient = new PatientsController;
         
@@ -1188,10 +1191,21 @@ class UsersController extends AppController
                 }
                 else
                 {
+					if($user->errors())
+					{
+						$error_msg = $this->arrayErrors($user->errors());
+					}
+					else
+					{
+						$error_msg = ['Error desconocido'];
+					}
                     $jsondata['success'] = false;
-                    $jsondata['data'] = 'No se pudo crear el usuario';
+                    $jsondata['data'] = "No se pudo crear el usuario " . $user->username . ' debido a: ' . implode(" - ", $error_msg);
+					foreach($error_msg as $noveltys)
+					{
+						$result = $binnacles->add('controller', 'Users', 'addWebBasic', $noveltys . 'username: ' . $user->username);
+					}
                 }
-
             }
         
             if (isset($idUser))
@@ -1248,12 +1262,11 @@ class UsersController extends AppController
                             
                             $result = $iteme->add($idBudget, $itemesBudget);
 
-                            $result = $this->mailBudget($arrayMail);
-
                             $result = $diarypatient->addWebDiary($idBudget);
     
-                            if ($result > 0)
+                            if ($result == 0)
                             {
+								$result = $this->mailBudget($arrayMail);
                                 $jsondata['success'] = true;
                                 $jsondata['data'] = 'El usuario, el paciente, presupuesto y agenda fueron creados exitosamente';
                             }
@@ -1345,6 +1358,8 @@ class UsersController extends AppController
 
     public function addWebBasicF()
     {
+		$binnacles = new BinnaclesController;
+
         $patient = new PatientsController;
         
         $budget = new BudgetsController;
@@ -1468,10 +1483,21 @@ class UsersController extends AppController
                 }
                 else
                 {
+					if($user->errors())
+					{
+						$error_msg = $this->arrayErrors($user->errors());
+					}
+					else
+					{
+						$error_msg = ['Error desconocido'];
+					}
                     $jsondata['success'] = false;
-                    $jsondata['data'] = 'No se pudo crear el usuario';
+                    $jsondata['data'] = "No se pudo crear el usuario " . $user->username . ' debido a: ' . implode(" - ", $error_msg);
+					foreach($error_msg as $noveltys)
+					{
+						$result = $binnacles->add('controller', 'Users', 'addWebBasic', $noveltys . 'username: ' . $user->username);
+					}
                 }
-
             }
         
             if (isset($idUser))
@@ -1528,12 +1554,11 @@ class UsersController extends AppController
                             
                             $result = $iteme->add($idBudget, $itemesBudget);
 
-                            $result = $this->mailBudget($arrayMail);
-
                             $result = $diarypatient->addWebDiary($idBudget);
     
-                            if ($result > 0)
+                            if ($result == 0)
                             {
+								$result = $this->mailBudget($arrayMail);
                                 $jsondata['success'] = true;
                                 $jsondata['data'] = 'El usuario, el paciente, presupuesto y agenda fueron creados exitosamente';
                             }
@@ -2347,4 +2372,26 @@ class UsersController extends AppController
 
         return $result;
     }
+	public function arrayErrors($arrayCake = null)
+	{
+		$error_msg = [];
+		
+		foreach($arrayCake as $errors)
+		{
+			if(is_array($errors))
+			{
+				foreach($errors as $error)
+				{
+					
+					$error_msg[] = $error;
+				}
+			}
+			else
+			{
+				$error_msg[] = $errors;
+			}
+		}
+		
+		return $error_msg;
+	}
 }

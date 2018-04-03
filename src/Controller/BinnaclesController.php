@@ -66,9 +66,14 @@ class BinnaclesController extends AppController
 		
 		$binnacle->novelty = $novelty;
 		
-        $this->Binnacles->save($binnacle);
+		$result = 0;
 		
-		return;
+        if (!($this->Binnacles->save($binnacle)))
+		{
+			$result = 1;
+		}
+		
+		return result;
     }
 
     /**
