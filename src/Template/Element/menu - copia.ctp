@@ -51,12 +51,12 @@
 
                         <li><?=  $this->Html->link('Servicios', ['controller' => 'Services', 'action' => 'index']) ?></li>
 
-                        <li><?=  $this->Html->link('Facturación', ['controller' => 'Budgets', 'action' => 'bill']) ?></li>
+                        <li><?=  $this->Html->link('Comisiones', ['controller' => 'Budgets', 'action' => 'bill']) ?></li>
 
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Sistema <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
-                                <li><?=  $this->Html->link('Interruptor sistema', ['controller' => 'Systems', 'action' => 'systemSwitch']) ?></li>
+                                <li><?=  $this->Html->link('Interruptores del sistema', ['controller' => 'Systems', 'action' => 'systemSwitch']) ?></li>
                                 <li><?=  $this->Html->link('Verificar servidor', ['controller' => 'Users', 'action' => 'serverError']) ?></li>
                            </ul>
                         </li>
@@ -72,7 +72,7 @@
                             <?php if ($currentView == 'bill'): ?>
                                 <form class="navbar-form navbar-left" role="search">
                                     <div class="form-group">
-                                        <input type="text" id="number-budget" class="form-control" placeholder="Buscar presupuesto..." title="Escriba el número del presupuesto"/>
+                                        <input type="text" id="number-budget-search" class="form-control" placeholder="Buscar presupuesto..." title="Escriba el número del presupuesto"/>
                                     </div>
                                 </form>
                             <?php endif; ?>
@@ -141,7 +141,7 @@
                             <?php if ($currentView == 'bill'): ?>
                                 <form class="navbar-form navbar-left" role="search">
                                     <div class="form-group">
-                                        <input type="text" id="number-budget" class="form-control" placeholder="Buscar presupuesto..." title="Escriba el número del presupuesto"/>
+                                        <input type="text" id="number-budget-search" class="form-control" placeholder="Buscar presupuesto..." title="Escriba el número del presupuesto"/>
                                     </div>
                                 </form>
                             <?php endif; ?>

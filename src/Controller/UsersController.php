@@ -1155,6 +1155,8 @@ class UsersController extends AppController
                                 
                 $jsondata['success'] = false;
                 $jsondata['data'] = 'El usuario ya existe con el id: ' . $row->id;
+				
+				$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'El usuario: ' . $user->username . 'ya existe');
             }
             else
             {
@@ -1173,6 +1175,8 @@ class UsersController extends AppController
                 $user->sex = $_POST['sex'];
                 $user->email = $email;
                 $user->cell_phone = $_POST['cellPhone'];
+				$user->status = "ACTIVO";
+				$user->date_status = $currentDate;
                 $user->responsible_user = 'clnacional2017';
                 
                 if ($this->Users->save($user)) 
@@ -1274,25 +1278,28 @@ class UsersController extends AppController
                             {
                                 $jsondata['success'] = false;
                                 $jsondata['data'] = 'No se pudo crear la agenda del paciente';
+								$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear la agenda del paciente: ' . $user->username);
                             }
                         }
                         else
                         {
                             $jsondata['success'] = false;
                             $jsondata['data'] = 'No se pudo crear el presupuesto';
-                            
+							$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear el presupuesto del paciente: ' . $user->username);
                         }
                     }
                     else
                     {
                         $jsondata['success'] = false;
-                        $jsondata['data'] = 'No se pudo crear el presupuesto';
+                        $jsondata['data'] = 'No se encontró el servicio';
+						$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se encontró el servicio requerido por el paciente: ' . $user->username);
                     }
                 }
                 else
                 {
                     $jsondata['success'] = false;
                     $jsondata['data'] = 'No se pudo crear el paciente';
+					$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear el paciente: ' . $user->username);
                 }
             }
         
@@ -1357,7 +1364,7 @@ class UsersController extends AppController
 	el contenido de la función addWebBasic y se suprime la línea $this->autoRender = false; */
 
     public function addWebBasicF()
-    {
+    {	
 		$binnacles = new BinnaclesController;
 
         $patient = new PatientsController;
@@ -1447,6 +1454,8 @@ class UsersController extends AppController
                                 
                 $jsondata['success'] = false;
                 $jsondata['data'] = 'El usuario ya existe con el id: ' . $row->id;
+				
+				$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'El usuario: ' . $user->username . 'ya existe');
             }
             else
             {
@@ -1465,6 +1474,8 @@ class UsersController extends AppController
                 $user->sex = $_POST['sex'];
                 $user->email = $email;
                 $user->cell_phone = $_POST['cellPhone'];
+				$user->status = "ACTIVO";
+				$user->date_status = $currentDate;
                 $user->responsible_user = 'clnacional2017';
                 
                 if ($this->Users->save($user)) 
@@ -1566,25 +1577,28 @@ class UsersController extends AppController
                             {
                                 $jsondata['success'] = false;
                                 $jsondata['data'] = 'No se pudo crear la agenda del paciente';
+								$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear la agenda del paciente: ' . $user->username);
                             }
                         }
                         else
                         {
                             $jsondata['success'] = false;
                             $jsondata['data'] = 'No se pudo crear el presupuesto';
-                            
+							$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear el presupuesto del paciente: ' . $user->username);
                         }
                     }
                     else
                     {
                         $jsondata['success'] = false;
-                        $jsondata['data'] = 'No se pudo crear el presupuesto';
+                        $jsondata['data'] = 'No se encontró el servicio';
+						$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se encontró el servicio requerido por el paciente: ' . $user->username);
                     }
                 }
                 else
                 {
                     $jsondata['success'] = false;
                     $jsondata['data'] = 'No se pudo crear el paciente';
+					$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear el paciente: ' . $user->username);
                 }
             }
         
@@ -2393,5 +2407,454 @@ class UsersController extends AppController
 		}
 		
 		return $error_msg;
+	}
+	public function removePromotersTest()
+	{
+		$binnacles = new BinnaclesController;
+
+		$arrayPromoters = [1257]; // Escribir el id del promotor a eliminar
+			
+		foreach ($arrayPromoters as $arrayPromoter)
+		{	
+			try 
+			{
+				$swError = 0;
+				
+				$userG = $this->Users->get($arrayPromoter);
+
+				$lastRecord = $this->Users->Employees->find('all')
+					->where(['Employees.user_id' => $userG->id])
+					->order(['Employees.created' => 'DESC']);
+
+				$employee = $lastRecord->first();
+			
+				if ($employee)
+				{
+					$employeeG = $this->Users->Employees->get($employee->id);
+					
+					if (!($this->Users->Employees->delete($employeeG))) 
+					{
+						if($employeeG->errors())
+						{
+							$error_msg = $this->arrayErrors($employeeG->errors());
+						}
+						else
+						{
+							$error_msg = ['Error desconocido'];
+						}
+						foreach($error_msg as $noveltys)
+						{
+							$result = $binnacles->add('controller', 'Users', 'removePromotersTest', $noveltys . ' empleado: ' . $employee->id);
+						}		
+						$this->Flash->error(__('No se pudo eliminar el empleado ' . $employee->id . ' debido a: ' . implode(' - ', $error_msg)));
+						$swError = 1;
+					}
+				}
+				
+				$childrens = $this->Users->find('all')->where
+					(['Users.parent_user' => $userG->id]);
+					
+				foreach ($childrens as $children)
+				{
+					if ($children->role == 'Paciente')
+					{
+						$swErrorPatient = $this->removePatientsTest($children->id);
+						if ($swErrorPatient == 1)
+						{
+							$swError = $swErrorPatient;
+						}
+					}
+					else
+					{
+						$swErrorSon = $this->removeSonTest($children->id);
+						if ($swErrorSon == 1)
+						{
+							$swError = $swErrorSon;
+						}
+					}
+				}
+				
+				if (!($this->Users->delete($userG))) 
+				{
+					if($userG->errors())
+					{
+						$error_msg = $this->arrayErrors($userG->errors());
+					}
+					else
+					{
+						$error_msg = ['Error desconocido'];
+					}
+					foreach($error_msg as $noveltys)
+					{
+						$result = $binnacles->add('controller', 'Users', 'removePromotersTest', $noveltys . ' usuario-promotor: ' . $userG->id);
+					}		
+					$this->Flash->error(__('No se pudo eliminar el usuario-promotor ' . $userG->id . ' debido a: ' . implode(' - ', $error_msg)));
+					$swError = 1;
+				}	
+				if ($swError == 0)
+				{
+					$this->Flash->success(__('El usuario-promotor ' . $userG->id . ' y todas sus dependencias fueron eliminadas satisfactoriamente'));
+				}
+			} 
+			catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) 
+			{
+				$this->Flash->error(__('Usuario-promotor no existe: ' . $arrayPromoter));
+				$result = $binnacles->add('controller', 'Users', 'removePromotersTest', 'No existe el usuario-promotor: ' . $arrayPromoter);
+				$swError = 1;
+			}		
+		}
+		return;
+	}
+	
+	public function removeSonTest($idSon = null)
+	{
+		$binnacles = new BinnaclesController;
+
+		$arrayPromoters = [$idSon];
+			
+		foreach ($arrayPromoters as $arrayPromoter)
+		{	
+			try 
+			{
+				$swError = 0;
+				
+				$userG = $this->Users->get($arrayPromoter);
+
+				$lastRecord = $this->Users->Employees->find('all')
+					->where(['Employees.user_id' => $userG->id])
+					->order(['Employees.created' => 'DESC']);
+
+				$employee = $lastRecord->first();
+			
+				if ($employee)
+				{
+					$employeeG = $this->Users->Employees->get($employee->id);
+					
+					if (!($this->Users->Employees->delete($employeeG))) 
+					{
+						if($employeeG->errors())
+						{
+							$error_msg = $this->arrayErrors($employeeG->errors());
+						}
+						else
+						{
+							$error_msg = ['Error desconocido'];
+						}
+						foreach($error_msg as $noveltys)
+						{
+							$result = $binnacles->add('controller', 'Users', 'removeSonTest', $noveltys . ' empleado: ' . $employee->id);
+						}		
+						$this->Flash->error(__('No se pudo eliminar el empleado ' . $employee->id . ' debido a: ' . implode(' - ', $error_msg)));
+						$swError = 1;
+					}
+				}
+				
+				$childrens = $this->Users->find('all')->where
+					(['Users.parent_user' => $userG->id]);
+					
+				foreach ($childrens as $children)
+				{
+					if ($children->role == 'Paciente')
+					{
+						$swErrorPatient = $this->removePatientsTest($children->id);
+						if ($swErrorPatient == 1)
+						{
+							$swError = $swErrorPatient;
+						}
+					}
+					else
+					{
+						$swErrorGrandchild = $this->removeGrandchildTest($children->id);
+						if ($swErrorGrandchild == 1)
+						{
+							$swError = $swErrorGrandchild;
+						}
+					}
+				}
+				
+				if (!($this->Users->delete($userG))) 
+				{
+					if($userG->errors())
+					{
+						$error_msg = $this->arrayErrors($userG->errors());
+					}
+					else
+					{
+						$error_msg = ['Error desconocido'];
+					}
+					foreach($error_msg as $noveltys)
+					{
+						$result = $binnacles->add('controller', 'Users', 'removeSonTest', $noveltys . ' usuario-hijo: ' . $userG->id);
+					}		
+					$this->Flash->error(__('No se pudo eliminar el usuario-hijo ' . $userG->id . ' debido a: ' . implode(' - ', $error_msg)));
+					$swError = 1;
+				}	
+				if ($swError == 0)
+				{
+					$this->Flash->success(__('El usuario-hijo ' . $userG->id . ' y todas sus dependencias fueron eliminadas satisfactoriamente'));
+				}
+			} 
+			catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) 
+			{
+				$this->Flash->error(__('Usuario-hijo no existe: ' . $arrayPromoter));
+				$result = $binnacles->add('controller', 'Users', 'removeSonTest', 'No existe el usuario-hijo: ' . $arrayPromoter);
+				$swError = 1;
+			}		
+		}
+		return $swError;
+	}
+	
+	public function removeGrandChildTest($idGrandchild = null)
+	{
+		$binnacles = new BinnaclesController;
+	
+		$arrayPromoters = [$idGrandchild];
+			
+		foreach ($arrayPromoters as $arrayPromoter)
+		{	
+			try 
+			{
+				$swError = 0;
+				
+				$userG = $this->Users->get($arrayPromoter);
+
+				$lastRecord = $this->Users->Employees->find('all')
+					->where(['Employees.user_id' => $userG->id])
+					->order(['Employees.created' => 'DESC']);
+
+				$employee = $lastRecord->first();
+			
+				if ($employee)
+				{
+					$employeeG = $this->Users->Employees->get($employee->id);
+					
+					if (!($this->Users->Employees->delete($employeeG))) 
+					{
+						if($employeeG->errors())
+						{
+							$error_msg = $this->arrayErrors($employeeG->errors());
+						}
+						else
+						{
+							$error_msg = ['Error desconocido'];
+						}
+						foreach($error_msg as $noveltys)
+						{
+							$result = $binnacles->add('controller', 'Users', 'removeGrandchildTest', $noveltys . ' empleado: ' . $employee->id);
+						}		
+						$this->Flash->error(__('No se pudo eliminar el empleado ' . $employee->id . ' debido a: ' . implode(' - ', $error_msg)));
+						$swError = 1;
+					}
+				}
+				
+				$childrens = $this->Users->find('all')->where
+					(['Users.parent_user' => $userG->id]);
+					
+				foreach ($childrens as $children)
+				{
+					if ($children->role == 'Paciente')
+					{
+						$swErrorPatient = $this->removePatientsTest($children->id);
+						if ($swErrorPatient == 1)
+						{
+							$swError = $swErrorPatient;
+						}
+					}
+				}
+				
+				if (!($this->Users->delete($userG))) 
+				{
+					if($userG->errors())
+					{
+						$error_msg = $this->arrayErrors($userG->errors());
+					}
+					else
+					{
+						$error_msg = ['Error desconocido'];
+					}
+					foreach($error_msg as $noveltys)
+					{
+						$result = $binnacles->add('controller', 'Users', 'removeGrandchildTest', $noveltys . ' usuario-promotor: ' . $userG->id);
+					}		
+					$this->Flash->error(__('No se pudo eliminar el usuario-nieto ' . $userG->id . ' debido a: ' . implode(' - ', $error_msg)));
+					$swError = 1;
+				}	
+				if ($swError == 0)
+				{
+					$this->Flash->success(__('El usuario-nieto ' . $userG->id . ' y todas sus dependencias fueron eliminadas satisfactoriamente'));
+				}
+			} 
+			catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) 
+			{
+				$this->Flash->error(__('Usuario-nieto no existe: ' . $arrayPromoter));
+				$result = $binnacles->add('controller', 'Users', 'removeGrandchildTest', 'No existe el usuario-nieto: ' . $arrayPromoter);
+				$swError = 1;
+			}		
+		}
+		return $swError;
+	}
+
+	public function removePatientsTest($requiredUser = null)
+	{
+		$binnacles = new BinnaclesController;
+
+		if (isset($requiredUser))
+		{
+			$arrayPatients = [$requiredUser];
+		}
+		else
+		{
+			$arrayPatients = [1246]; // Escribir los id de los pacientes a eliminar  
+		}
+			
+		foreach ($arrayPatients as $arrayPatient)
+		{	
+			try 
+			{
+				$swError = 0;
+				
+				$userG = $this->Users->get($arrayPatient);
+
+				$lastRecord = $this->Users->Patients->find('all')
+					->where(['Patients.user_id' => $userG->id])
+					->order(['Patients.created' => 'DESC']);
+
+				$patient = $lastRecord->first();
+			
+				if ($patient)
+				{
+					$patientG = $this->Users->Patients->get($patient->id);
+					
+					$budgets = $this->Users->Patients->Budgets->find('all')->where
+						(['Budgets.patient_id' => $patient->id]);
+						
+					foreach ($budgets as $budget)
+					{
+						$budgetG = $this->Users->Patients->Budgets->get($budget->id);
+						
+						$itemes = $this->Users->Patients->Budgets->Itemes->find('all')->where
+						(['Itemes.Budget_id' => $budget->id]);
+						
+						foreach ($itemes as $iteme)
+						{
+							$itemeG = $this->Users->Patients->Budgets->Itemes->get($iteme->id);
+							
+							if (!($this->Users->Patients->Budgets->Itemes->delete($itemeG))) 
+							{
+								if($itemeG->errors())
+								{
+									$error_msg = $this->arrayErrors($itemeG->errors());
+								}
+								else
+								{
+									$error_msg = ['Error desconocido'];
+								}
+								foreach($error_msg as $noveltys)
+								{
+									$result = $binnacles->add('controller', 'Users', 'removePatientsTest', $noveltys . ' item: ' . $iteme->id);
+								}		
+								$this->Flash->error(__('No se pudo eliminar el item ' . $iteme->id . ' debido a: ' . implode(' - ', $error_msg)));
+								$swError = 1;
+							}
+						}
+						
+						$diarypatients = $this->Users->Patients->Budgets->Diarypatients->find('all')->where
+						(['Diarypatients.Budget_id' => $budget->id]);
+						
+						foreach ($diarypatients as $diarypatient)
+						{
+							$diarypatientG = $this->Users->Patients->Budgets->Diarypatients->get($diarypatient->id);
+							
+							if (!($this->Users->Patients->Budgets->Diarypatients->delete($diarypatientG))) 
+							{
+								if($diarypatientG->errors())
+								{
+									$error_msg = $this->arrayErrors($diarypatientG->errors());
+								}
+								else
+								{
+									$error_msg = ['Error desconocido'];
+								}
+								foreach($error_msg as $noveltys)
+								{
+									$result = $binnacles->add('controller', 'Users', 'removePatientsTest', $noveltys . ' actividad: ' . $diarypatient->id);
+								}		
+								$this->Flash->error(__('No se pudo eliminar la actividad ' . $diarypatient->id . ' debido a: ' . implode(' - ', $error_msg)));
+								$swError = 1;
+							}
+						}
+						if (!($this->Users->Patients->Budgets->delete($budgetG))) 
+						{
+							if($budgetG->errors())
+							{
+								$error_msg = $this->arrayErrors($budgetG->errors());
+							}
+							else
+							{
+								$error_msg = ['Error desconocido'];
+							}
+							foreach($error_msg as $noveltys)
+							{
+								$result = $binnacles->add('controller', 'Users', 'removePatientsTest', $noveltys . ' presupuesto: ' . $budget->id);
+							}		
+							$this->Flash->error(__('No se pudo eliminar el presupuesto' . $budget->id . ' debido a: ' . implode(' - ', $error_msg)));
+							$swError = 1;
+						}
+					}
+					if (!($this->Users->Patients->delete($patientG))) 
+					{
+						if($patientG->errors())
+						{
+							$error_msg = $this->arrayErrors($patientG->errors());
+						}
+						else
+						{
+							$error_msg = ['Error desconocido'];
+						}
+						foreach($error_msg as $noveltys)
+						{
+							$result = $binnacles->add('controller', 'Users', 'removePatientsTest', $noveltys . ' paciente: ' . $patient->id);
+						}		
+						$this->Flash->error(__('No se pudo eliminar el paciente ' . $patient->id . ' debido a: ' . implode(' - ', $error_msg)));
+						$swError = 1;
+					}						
+				}
+				if (!($this->Users->delete($userG))) 
+				{
+					if($userG->errors())
+					{
+						$error_msg = $this->arrayErrors($userG->errors());
+					}
+					else
+					{
+						$error_msg = ['Error desconocido'];
+					}
+					foreach($error_msg as $noveltys)
+					{
+						$result = $binnacles->add('controller', 'Users', 'removePatientsTest', $noveltys . ' usuario-paciente: ' . $userG->id);
+					}		
+					$this->Flash->error(__('No se pudo eliminar el usuario-paciente ' . $userG->id . ' debido a: ' . implode(' - ', $error_msg)));
+					$swError = 1;
+				}	
+				if ($swError == 0)
+				{
+					$this->Flash->success(__('El usuario-paciente ' . $userG->id . ' y todas sus dependencias fueron eliminadas satisfactoriamente'));
+				}
+			} 
+			catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) 
+			{
+				$this->Flash->error(__('Usuario-paciente no existe: ' . $arrayPatient));
+				$result = $binnacles->add('controller', 'Users', 'removePatientsTest', 'No existe el usuario-paciente: ' . $arrayPatient);
+				$swError = 1;
+			}		
+		}
+		if (isset($requiredUser))
+		{
+			return $swError;
+		}
+		else
+		{
+			return;
+		}
 	}
 }

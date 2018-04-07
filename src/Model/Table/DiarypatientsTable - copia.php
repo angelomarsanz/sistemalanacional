@@ -59,7 +59,7 @@ class DiarypatientsTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
-            ->dateTime('activity_date')
+            ->date('activity_date')
             ->notEmpty('activity_date');
 
         $validator
@@ -72,7 +72,7 @@ class DiarypatientsTable extends Table
             ->allowEmpty('activity_comments');            
 
         $validator
-            ->dateTime('activity_date_next')
+            ->date('activity_date_next')
             ->notEmpty('activity_date_finish');
 
         $validator
@@ -83,6 +83,42 @@ class DiarypatientsTable extends Table
 
         $validator
             ->allowEmpty('status');
+			
+        $validator
+            ->allowEmpty('extra_column1');
+			
+		$validator
+			->allowEmpty('extra_column2');
+			
+		$validator
+			->allowEmpty('extra_column3');
+			
+		$validator
+			->allowEmpty('extra_column4');
+
+		$validator
+			->allowEmpty('extra_column5');
+			
+		$validator
+			->allowEmpty('extra_column6');
+			
+		$validator
+			->allowEmpty('extra_column7');
+			
+		$validator
+			->allowEmpty('extra_column8');
+			
+		$validator
+			->allowEmpty('extra_column9');
+			
+		$validator
+			->allowEmpty('extra_column10');
+
+		$validator
+			->allowEmpty('registration_status');
+			
+		$validator
+			->allowEmpty('reason_status');
             
         $validator
             ->allowEmpty('responsible_user');

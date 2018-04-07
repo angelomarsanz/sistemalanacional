@@ -73,7 +73,7 @@ class BinnaclesController extends AppController
 			$result = 1;
 		}
 		
-		return result;
+		return $result;
     }
 
     /**

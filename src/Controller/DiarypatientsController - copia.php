@@ -518,7 +518,7 @@ class DiarypatientsController extends AppController
 				}
 				if ($this->Diarypatients->Budgets->save($budget))
 				{
-					$this->Flash->S(__('El presupuesto se actualizó exitosamente'));
+					$this->Flash->success(__('El presupuesto se actualizó exitosamente'));
 				}
 				else
 				{
@@ -811,5 +811,173 @@ class DiarypatientsController extends AppController
 		unset($openActivities, $openActivity);
 		
 		return;
+	}
+	public function reportDiary()
+	{	
+        setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+        date_default_timezone_set('America/Caracas');
+		
+        $currentDate = Time::now();
+		
+		$currentDate->hour(23)
+		->minute(59)
+		->second(59);
+		
+		/* $binnacles = new BinnaclesController;
+
+	    if ($this->request->is('post')) 
+        {					
+			if (isset($_POST['columnsReport']))
+			{
+				$columnsReport = $_POST['columnsReport'];
+			}
+			else
+			{
+				$columnsReport = [];
+			}
+			
+			$arrayMark = $this->markColumns($columnsReport); */
+						
+			$diarypatients = TableRegistry::get('Diarypatients');
+		
+			$arrayResult = $diarypatients->find('report', ['conditions' => 
+				[['Diarypatients.id >' => 1],
+				['OR' => ['Diarypatients.deleted_record IS NULL', 'Diarypatients.deleted_record' => false]],
+				['OR' => ['Diarypatients.status IS NULL', 
+					'Diarypatients.status' => false, 
+					'Diarypatients.activity_next' => 'Cerrar (ya se practicó la cirugía o se ejecutó el servicio)',
+					'Diarypatients.activity_next' => 'Cerrar (el paciente ya no está interesado)'
+					]]]]);
+											
+			if ($arrayResult['indicator'] == 0)
+			{
+				$diary = $arrayResult['searchRequired'];
+				
+				$accountBudgets = $diary->count();
+				
+				$this->Flash->success(__('Total presupuestos seleccionados: ' . $accountBudgets));
+		
+				$additional = [];
+				$counter = [];
+				$counter['billedBudgets'] = 0;
+				$counter['closedBudgets'] = 0;
+				$counter['overdueBudgets'] = 0;
+				$counter['currentBudgets'] = 0;
+				$counter['closedActivities'] = 0;
+				$counter['pendingActivities'] = 0;
+				$counter['delayedActivities'] = 0;
+				$counter['bolivaresBudget'] = 0;
+				$counter['AmountBolivares'] = 0;
+				$counter['dollarsBudget'] = 0;
+				$counter['AmountDollars'] = 0;
+
+				foreach ($diary as $diarys)
+				{
+					$idPromoter = $diarys->budget->patient->user->parent_user;
+					
+					$userPromoter = $this->Diarypatients->Budgets->Patients->Users->get($idPromoter);
+					
+					$additional[$diarys->id]['namePromoter'] = $userPromoter->full_name;
+
+					$additional[$diarys->id]['cellPromoter'] = $userPromoter->cell_phone;
+
+					$additional[$diarys->id]['emailPromoter'] = $userPromoter->email;
+					
+					if ($diarys->budget->number_bill != null && $diarys->budget->amount_bill > 0)
+					{
+						$additional[$diarys->id]['budgetStatus'] = "Facturado";
+						$counter['billedBudgets']++;
+					}
+					else
+					{
+						if ($diarys->budget->activity_result == 'Cerrado')
+						{
+								$additional[$diarys->id]['budgetStatus'] = "Cerrado";
+								$counter['closedBudgets']++;
+						}
+						else
+						{
+							$diferentBudget = $diarys->budget->application_date->diff($currentDate)->d;
+	 
+							if ($diferentBudget > 3)
+							{
+								$additional[$diarys->id]['budgetStatus'] = "Vencido";
+								$counter['overdueBudgets']++;
+							}
+							else
+							{
+								$additional[$diarys->id]['budgetStatus'] = "Vigente";
+								$counter['currentBudgets']++;
+							}
+						}
+					}
+					if ($diarys->budget->coin == 'BOLIVAR')
+					{
+						$counter['bolivaresBudget']++;
+						$counter['AmountBolivares']+= $diarys->budget->amount_budget;
+					}
+					else
+					{
+						$counter['dollarsBudget']++;
+						$counter['AmountDollars']+= $diarys->budget->amount_budget;
+					}
+					if ($diarys->activity_next == 'Cerrar (ya se practicó la cirugía o se ejecutó el servicio)' ||
+						$diarys->activity_next == 'Cerrar (el paciente ya no está interesado)')
+					{
+						$additional[$diarys->id]['observationActivity'] = "Cerrada";
+						$counter['closedActivities']++;
+					}
+					else
+					{
+						$diferent = $diarys->activity_date->diff($currentDate)->d;
+			 
+						if ($diferent > 0)
+						{
+							$additional[$diarys->id]['observationActivity'] = "Atrasada";
+							$counter['delayedActivities']++;
+							
+						}
+						else
+						{
+							$additional[$diarys->id]['observationActivity'] = "Pendiente";
+							$counter['pendingActivities']++;
+						}
+					}
+				}
+			}
+			else
+			{
+				$this->Flash->error(__('No se encontraron actividades'));
+				return $this->redirect(['controller' => 'Users', 'action' => 'wait']);
+			}
+			$this->Flash->success(__('Presupuestos facturados: ' . $counter['billedBudgets']));
+			$this->Flash->success(__('Presupuestos vigentes: ' . $counter['currentBudgets']));
+			$this->Flash->success(__('Presupuestos vencidos : ' . $counter['overdueBudgets']));
+			$this->Flash->success(__('Actividades pendientes de la agenda: ' . $counter['pendingActivities']));
+			$this->Flash->success(__('Actividades atrasadas de la agenda: ' . $counter['delayedActivities']));
+			$this->Flash->success(__('Presupuesto en bolívares : ' . $counter['bolivaresBudget']));
+			$this->Flash->success(__('Monto presupuestos en bolívares: ' . $counter['AmountBolivares']));
+			$this->Flash->success(__('Presupuestos en dólares: ' . $counter['dollarsBudget']));
+			$this->Flash->success(__('Monto presupuestos en dólares: ' . $counter['AmountDollars']));
+						
+			/* $swImpresion = 1;
+							
+			$this->set(compact('swImpresion', 'diary', 'additional', 'currentDate', 'counter'));
+			$this->set('_serialize', ['swImpresion', 'diary', 'additional', 'currentDate', 'counter']); 
+		}
+		else
+		{
+			$swImpresion = 0;
+			$this->set(compact('swImpresion'));
+			$this->set('_serialize', ['swImpresion']); 
+		} */
+	}
+	public function markColumns($columnsReport = null)
+	{
+		$arrayMark = [];
+		
+		isset($columnsReport['Commissions.type_beneficiary']) ? $arrayMark['Commissions.type_beneficiary'] = 'siExl' : $arrayMark['Commissions.type_beneficiary'] = 'noExl';
+				
+		return $arrayMark;
 	}
 }

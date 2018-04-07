@@ -46,6 +46,7 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li><?=  $this->Html->link('Agenda del día', ['controller' => 'Diarypatients', 'action' => 'index']) ?></li>
                                 <li><?=  $this->Html->link('Agenda futura', ['controller' => 'Diarypatients', 'action' => 'indexMonth']) ?></li>
+								<li><?=  $this->Html->link('Reporte', ['controller' => 'Diarypatients', 'action' => 'reportDiary']) ?></li>
                            </ul>
                         </li>
 

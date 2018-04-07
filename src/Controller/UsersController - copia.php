@@ -3,6 +3,8 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 
+use App\Controller\BinnaclesController;
+
 use App\Controller\EmployeesController;
 
 use App\Controller\PatientsController;
@@ -1007,13 +1009,12 @@ class UsersController extends AppController
 						$idBudget = $arrayResult['id'];
 						
 						$result = $iteme->add($idBudget, $itemesBudget);
-
-						$result = $this->mailBudget($arrayMail);
 						
 						$result = $diarypatient->addAutomatic($idBudget);
 					
 						if ($result == 0)
 						{
+							$result = $this->mailBudget($arrayMail);
 							if ($this->Auth->user('username'))
 							{
 								$this->Flash->success(__('El paciente se creo exitosamente'));
@@ -1064,6 +1065,8 @@ class UsersController extends AppController
     public function addWebBasic()
     {
         $this->autoRender = false;
+		
+		$binnacles = new BinnaclesController;
 
         $patient = new PatientsController;
         
@@ -1112,10 +1115,17 @@ class UsersController extends AppController
             $password = substr($firstName, 0, 1) . substr($surname, 0, 1) . $currentDate->second . $currentDate->minute . '$';
             
             $birthdate = $_POST['birthdate'];
+			
+			if (isset($_POST['country']))
+			{			
+				$countryTrim = trim($_POST['country']);
             
-            $countryTrim = trim($_POST['country']);
-            
-            $country = strtoupper($countryTrim);
+				$country = strtoupper($countryTrim);
+			}
+			else
+			{
+				$country = 'VENEZUELA';
+			}
     
             $addressTrim = trim($_POST['address']);
             
@@ -1145,6 +1155,8 @@ class UsersController extends AppController
                                 
                 $jsondata['success'] = false;
                 $jsondata['data'] = 'El usuario ya existe con el id: ' . $row->id;
+				
+				$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'El usuario: ' . $user->username . 'ya existe');
             }
             else
             {
@@ -1163,6 +1175,8 @@ class UsersController extends AppController
                 $user->sex = $_POST['sex'];
                 $user->email = $email;
                 $user->cell_phone = $_POST['cellPhone'];
+				$user->status = "ACTIVO";
+				$user->date_status = $currentDate;
                 $user->responsible_user = 'clnacional2017';
                 
                 if ($this->Users->save($user)) 
@@ -1181,10 +1195,21 @@ class UsersController extends AppController
                 }
                 else
                 {
+					if($user->errors())
+					{
+						$error_msg = $this->arrayErrors($user->errors());
+					}
+					else
+					{
+						$error_msg = ['Error desconocido'];
+					}
                     $jsondata['success'] = false;
-                    $jsondata['data'] = 'No se pudo crear el usuario';
+                    $jsondata['data'] = "No se pudo crear el usuario " . $user->username . ' debido a: ' . implode(" - ", $error_msg);
+					foreach($error_msg as $noveltys)
+					{
+						$result = $binnacles->add('controller', 'Users', 'addWebBasic', $noveltys . 'username: ' . $user->username);
+					}
                 }
-
             }
         
             if (isset($idUser))
@@ -1241,12 +1266,11 @@ class UsersController extends AppController
                             
                             $result = $iteme->add($idBudget, $itemesBudget);
 
-                            $result = $this->mailBudget($arrayMail);
-
                             $result = $diarypatient->addWebDiary($idBudget);
     
-                            if ($result > 0)
+                            if ($result == 0)
                             {
+								$result = $this->mailBudget($arrayMail);
                                 $jsondata['success'] = true;
                                 $jsondata['data'] = 'El usuario, el paciente, presupuesto y agenda fueron creados exitosamente';
                             }
@@ -1254,25 +1278,28 @@ class UsersController extends AppController
                             {
                                 $jsondata['success'] = false;
                                 $jsondata['data'] = 'No se pudo crear la agenda del paciente';
+								$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear la agenda del paciente: ' . $user->username);
                             }
                         }
                         else
                         {
                             $jsondata['success'] = false;
                             $jsondata['data'] = 'No se pudo crear el presupuesto';
-                            
+							$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear el presupuesto del paciente: ' . $user->username);
                         }
                     }
                     else
                     {
                         $jsondata['success'] = false;
-                        $jsondata['data'] = 'No se pudo crear el presupuesto';
+                        $jsondata['data'] = 'No se encontró el servicio';
+						$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se encontró el servicio requerido por el paciente: ' . $user->username);
                     }
                 }
                 else
                 {
                     $jsondata['success'] = false;
                     $jsondata['data'] = 'No se pudo crear el paciente';
+					$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear el paciente: ' . $user->username);
                 }
             }
         
@@ -1337,7 +1364,9 @@ class UsersController extends AppController
 	el contenido de la función addWebBasic y se suprime la línea $this->autoRender = false; */
 
     public function addWebBasicF()
-    {
+    {	
+		$binnacles = new BinnaclesController;
+
         $patient = new PatientsController;
         
         $budget = new BudgetsController;
@@ -1385,10 +1414,17 @@ class UsersController extends AppController
             $password = substr($firstName, 0, 1) . substr($surname, 0, 1) . $currentDate->second . $currentDate->minute . '$';
             
             $birthdate = $_POST['birthdate'];
+			
+			if (isset($_POST['country']))
+			{			
+				$countryTrim = trim($_POST['country']);
             
-            $countryTrim = trim($_POST['country']);
-            
-            $country = strtoupper($countryTrim);
+				$country = strtoupper($countryTrim);
+			}
+			else
+			{
+				$country = 'VENEZUELA';
+			}
     
             $addressTrim = trim($_POST['address']);
             
@@ -1418,6 +1454,8 @@ class UsersController extends AppController
                                 
                 $jsondata['success'] = false;
                 $jsondata['data'] = 'El usuario ya existe con el id: ' . $row->id;
+				
+				$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'El usuario: ' . $user->username . 'ya existe');
             }
             else
             {
@@ -1436,6 +1474,8 @@ class UsersController extends AppController
                 $user->sex = $_POST['sex'];
                 $user->email = $email;
                 $user->cell_phone = $_POST['cellPhone'];
+				$user->status = "ACTIVO";
+				$user->date_status = $currentDate;
                 $user->responsible_user = 'clnacional2017';
                 
                 if ($this->Users->save($user)) 
@@ -1454,10 +1494,21 @@ class UsersController extends AppController
                 }
                 else
                 {
+					if($user->errors())
+					{
+						$error_msg = $this->arrayErrors($user->errors());
+					}
+					else
+					{
+						$error_msg = ['Error desconocido'];
+					}
                     $jsondata['success'] = false;
-                    $jsondata['data'] = 'No se pudo crear el usuario';
+                    $jsondata['data'] = "No se pudo crear el usuario " . $user->username . ' debido a: ' . implode(" - ", $error_msg);
+					foreach($error_msg as $noveltys)
+					{
+						$result = $binnacles->add('controller', 'Users', 'addWebBasic', $noveltys . 'username: ' . $user->username);
+					}
                 }
-
             }
         
             if (isset($idUser))
@@ -1514,12 +1565,11 @@ class UsersController extends AppController
                             
                             $result = $iteme->add($idBudget, $itemesBudget);
 
-                            $result = $this->mailBudget($arrayMail);
-
                             $result = $diarypatient->addWebDiary($idBudget);
     
-                            if ($result > 0)
+                            if ($result == 0)
                             {
+								$result = $this->mailBudget($arrayMail);
                                 $jsondata['success'] = true;
                                 $jsondata['data'] = 'El usuario, el paciente, presupuesto y agenda fueron creados exitosamente';
                             }
@@ -1527,30 +1577,33 @@ class UsersController extends AppController
                             {
                                 $jsondata['success'] = false;
                                 $jsondata['data'] = 'No se pudo crear la agenda del paciente';
+								$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear la agenda del paciente: ' . $user->username);
                             }
                         }
                         else
                         {
                             $jsondata['success'] = false;
                             $jsondata['data'] = 'No se pudo crear el presupuesto';
-                            
+							$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear el presupuesto del paciente: ' . $user->username);
                         }
                     }
                     else
                     {
                         $jsondata['success'] = false;
-                        $jsondata['data'] = 'No se pudo crear el presupuesto';
+                        $jsondata['data'] = 'No se encontró el servicio';
+						$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se encontró el servicio requerido por el paciente: ' . $user->username);
                     }
                 }
                 else
                 {
                     $jsondata['success'] = false;
                     $jsondata['data'] = 'No se pudo crear el paciente';
+					$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear el paciente: ' . $user->username);
                 }
             }
         
-            exit(json_encode($jsondata, JSON_FORCE_OBJECT));	
-		}
+            exit(json_encode($jsondata, JSON_FORCE_OBJECT));
+        }
     }
 
     /**
@@ -2333,4 +2386,163 @@ class UsersController extends AppController
 
         return $result;
     }
+	public function arrayErrors($arrayCake = null)
+	{
+		$error_msg = [];
+		
+		foreach($arrayCake as $errors)
+		{
+			if(is_array($errors))
+			{
+				foreach($errors as $error)
+				{
+					
+					$error_msg[] = $error;
+				}
+			}
+			else
+			{
+				$error_msg[] = $errors;
+			}
+		}
+		
+		return $error_msg;
+	}
+	public function removePatientsTest($requiredUser = null)
+	{
+		if (isset($requiredUser))
+		{
+			$arrayPatients = [$requiredUser];
+		}
+		else
+		{
+			$arrayPatients = [1246];
+		}
+			
+		foreach ($arrayPatients as $arrayPatient)
+		{
+            $userG = $this->Users->get($arrayPatient);
+			
+			if ($userG)
+			{
+				$lastRecord = $this->Users->Patients->find('all')
+					->where(['Patients.user_id' => $userG->id])
+					->order(['Patients.created' => 'DESC']);
+
+				$patient = $lastRecord->first();
+			
+				if ($patient)
+				{
+					$patientG = $this->Users->Patients->get($patient->id);
+					
+					$budgets = $this->Users->Patients->Budgets->find('all')->where
+						(['Budgets.patient_id' => $patient->id]);
+						
+					foreach ($budgets as $budget)
+					{
+						$budgetG = $this->Users->Patients->Budgets->get($budget->id);
+						
+						$itemes = $this->Users->Patients->Budgets->Itemes->find('all')->where
+						(['Itemes.Budget_id' => $budget->id]);
+						
+						foreach ($itemes as $iteme)
+						{
+							$itemeG = $this->Users->Patients->Budgets->Itemes->get($iteme->id);
+							
+							if (!($this->Users->Patients->Budgets->Itemes->delete($itemeG))) 
+							{
+								if($itemeG->errors())
+								{
+									$error_msg = $this->arrayErrors($itemeG->errors());
+								}
+								else
+								{
+									$error_msg = ['Error desconocido'];
+								}
+								foreach($error_msg as $noveltys)
+								{
+									$result = $binnacles->add('controller', 'Users', 'removePatientsTest', $noveltys . ' item: ' . $iteme->id);
+								}		
+								$this->Flash->success(__('No se pudo eliminar el item ' . $iteme->id . ' debido a: ' . implode(' - ', $error_msg)));
+							}
+						}
+						
+						$diarypatients = $this->Users->Patients->Budgets->Diarypatients->find('all')->where
+						(['Diarypatients.Budget_id' => $budget->id]);
+						
+						foreach ($diarypatients as $diarypatient)
+						{
+							$diarypatientG = $this->Users->Patients->Budgets->Diarypatients->get($diarypatient->id);
+							
+							if (!($this->Users->Patients->Budgets->Diarypatients->delete($diarypatientG))) 
+							{
+								if($diarypatientG->errors())
+								{
+									$error_msg = $this->arrayErrors($diarypatientG->errors());
+								}
+								else
+								{
+									$error_msg = ['Error desconocido'];
+								}
+								foreach($error_msg as $noveltys)
+								{
+									$result = $binnacles->add('controller', 'Users', 'removePatientsTest', $noveltys . ' actividad: ' . $diarypatient->id);
+								}		
+								$this->Flash->success(__('No se pudo eliminar la actividad ' . $diarypatient->id . ' debido a: ' . implode(' - ', $error_msg)));
+							}
+						}
+						if (!($this->Users->Patients->Budgets->delete($budgetG))) 
+						{
+							if($budgetG->errors())
+							{
+								$error_msg = $this->arrayErrors($budgetG->errors());
+							}
+							else
+							{
+								$error_msg = ['Error desconocido'];
+							}
+							foreach($error_msg as $noveltys)
+							{
+								$result = $binnacles->add('controller', 'Users', 'removePatientsTest', $noveltys . ' presupuesto: ' . $budget->id);
+							}		
+							$this->Flash->success(__('No se pudo eliminar el presupuesto' . $budget->id . ' debido a: ' . implode(' - ', $error_msg)));
+						}
+					}
+					if (!($this->Users->Patients->delete($patientG))) 
+					{
+						if($patientG->errors())
+						{
+							$error_msg = $this->arrayErrors($patientG->errors());
+						}
+						else
+						{
+							$error_msg = ['Error desconocido'];
+						}
+						foreach($error_msg as $noveltys)
+						{
+							$result = $binnacles->add('controller', 'Users', 'removePatientsTest', $noveltys . ' paciente: ' . $patient->id);
+						}		
+						$this->Flash->success(__('No se pudo eliminar el paciente ' . $patient->id . ' debido a: ' . implode(' - ', $error_msg)));
+					}						
+				}
+				if (!($this->Users->delete($userG))) 
+				{
+					if($userG->errors())
+					{
+						$error_msg = $this->arrayErrors($userG->errors());
+					}
+					else
+					{
+						$error_msg = ['Error desconocido'];
+					}
+					foreach($error_msg as $noveltys)
+					{
+						$result = $binnacles->add('controller', 'Users', 'removePatientsTest', $noveltys . ' usuario-paciente: ' . $user->id);
+					}		
+					$this->Flash->success(__('No se pudo eliminar el usuario ' . $user->id . ' debido a: ' . implode(' - ', $error_msg)));
+				}
+			}
+		}
+		return;
+	}
 }
