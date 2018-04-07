@@ -2412,7 +2412,7 @@ class UsersController extends AppController
 	{
 		$binnacles = new BinnaclesController;
 
-		$arrayPromoters = [1257]; // Escribir el id del promotor a eliminar
+		$arrayPromoters = [361, 1296, 1297]; // Escribir el id del promotor a eliminar
 			
 		foreach ($arrayPromoters as $arrayPromoter)
 		{	
@@ -2704,7 +2704,7 @@ class UsersController extends AppController
 		}
 		else
 		{
-			$arrayPatients = [1246]; // Escribir los id de los pacientes a eliminar  
+			$arrayPatients = [1103, 1105, 1242, 71, 512, 1246, 1248, 67, 1221, 1198, 915, 520]; // Escribir los id de los pacientes a eliminar  
 		}
 			
 		foreach ($arrayPatients as $arrayPatient)
@@ -2715,13 +2715,10 @@ class UsersController extends AppController
 				
 				$userG = $this->Users->get($arrayPatient);
 
-				$lastRecord = $this->Users->Patients->find('all')
-					->where(['Patients.user_id' => $userG->id])
-					->order(['Patients.created' => 'DESC']);
-
-				$patient = $lastRecord->first();
-			
-				if ($patient)
+				$patients = $this->Users->Patients->find('all')
+					->where(['Patients.user_id' => $userG->id]);
+		
+				foreach ($patients as $patient)
 				{
 					$patientG = $this->Users->Patients->get($patient->id);
 					

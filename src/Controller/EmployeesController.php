@@ -276,6 +276,8 @@ class EmployeesController extends AppController
         $currentDate = Time::now();
 		
 		$binnacles = new BinnaclesController;
+		
+		$role = $this->Auth->user('role');
 
 	    if ($this->request->is('post')) 
         {					
@@ -309,8 +311,8 @@ class EmployeesController extends AppController
 	
 			$swImpresion = 1;
 						
-			$this->set(compact('swImpresion', 'employeesUsers', 'arrayMark', 'currentDate'));
-			$this->set('_serialize', ['swImpresion', 'employeesUsers', 'arrayMark', 'currenDate']); 
+			$this->set(compact('swImpresion', 'employeesUsers', 'arrayMark', 'currentDate', 'role'));
+			$this->set('_serialize', ['swImpresion', 'employeesUsers', 'arrayMark', 'currenDate', 'role']); 
 		
 		}
 		else

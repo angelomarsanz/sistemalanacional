@@ -197,6 +197,9 @@
 						</tr>
 						<tr>
 							<th scope="col"><b>Nro.</b></th>
+							<?php if ($role == 'Desarrollador del sistema'): ?>
+								<th scope="col"><b>id</b></th>
+							<?php endif; ?>
 							<th scope="col"><b>Nombre</b></th>
 							<th scope="col"><b>Usuario</b></th>
 							<th scope="col"><b>Rol</b></th>
@@ -223,6 +226,9 @@
 					<tbody>
 						<tr>
 							<td><?= $accountRecords ?></td>
+							<?php if ($role == 'Desarrollador del sistema'): ?>
+								<td><?= $employeesUser->user->id ?></td>
+							<?php endif; ?>
 							<td><?= $employeesUser->user->full_name ?></td>
 							<td><?= $employeesUser->user->username ?></td>
 							<td><?= $employeesUser->user->role ?></td>
@@ -247,12 +253,15 @@
 							<td class=<?= $arrayMark['Employees.bank'] ?>><?= $employeesUser->bank ?></td>
 							<td class=<?= $arrayMark['Employees.bank_address'] ?>><?= $employeesUser->bank_address ?></td>
 							<td class=<?= $arrayMark['Employees.swif_bank'] ?>><?= $employeesUser->swif_bank ?></td>
-							<td class=<?= $arrayMark['Employees.aba_bank'] ?>><?= $employeesUser->aba_bank ?></td>							
+							<td class=<?= $arrayMark['Employees.aba_bank'] ?>><?= $employeesUser->aba_bank ?></td>	
 						</tr>
 			<?php else: ?>
 				<?php $accountRecords++; ?>
 				<tr>
 					<td><?= $accountRecords ?></td>
+					<?php if ($role == 'Desarrollador del sistema'): ?>
+						<td><?= $employeesUser->user->id ?></td>
+					<?php endif; ?>
 					<td><?= $employeesUser->user->full_name ?></td>
 					<td><?= $employeesUser->user->username ?></td>
 					<td><?= $employeesUser->user->role ?></td>
@@ -277,7 +286,7 @@
 					<td class=<?= $arrayMark['Employees.bank'] ?>><?= $employeesUser->bank ?></td>
 					<td class=<?= $arrayMark['Employees.bank_address'] ?>><?= $employeesUser->bank_address ?></td>
 					<td class=<?= $arrayMark['Employees.swif_bank'] ?>><?= $employeesUser->swif_bank ?></td>
-					<td class=<?= $arrayMark['Employees.aba_bank'] ?>><?= $employeesUser->aba_bank ?></td>							
+					<td class=<?= $arrayMark['Employees.aba_bank'] ?>><?= $employeesUser->aba_bank ?></td>						
 				</tr>
 			<?php endif; ?>
 		<?php endforeach ?>

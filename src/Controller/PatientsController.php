@@ -370,6 +370,8 @@ class PatientsController extends AppController
         $currentDate = Time::now();
 		
 		$binnacles = new BinnaclesController;
+		
+		$role = $this->Auth->user('role');
 
 	    if ($this->request->is('post')) 
         {					
@@ -403,8 +405,8 @@ class PatientsController extends AppController
 	
 			$swImpresion = 1;
 						
-			$this->set(compact('swImpresion', 'patientsUsers', 'arrayMark', 'currentDate'));
-			$this->set('_serialize', ['swImpresion', 'patientsUsers', 'arrayMark', 'currenDate']); 
+			$this->set(compact('swImpresion', 'patientsUsers', 'arrayMark', 'currentDate', 'role'));
+			$this->set('_serialize', ['swImpresion', 'patientsUsers', 'arrayMark', 'currenDate', 'role']); 
 		
 		}
 		else

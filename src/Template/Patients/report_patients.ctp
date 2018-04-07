@@ -217,6 +217,9 @@
 						</tr>
 						<tr>
 							<th scope="col"><b>Nro.</b></th>
+							<?php if ($role == 'Desarrollador del sistema'): ?>
+								<th scope="col"><b>id</b></th>
+							<?php endif; ?>
 							<th scope="col"><b>Nombre</b></th>
 							<th scope="col"><b>Usuario</b></th>
 							<th scope="col" class=<?= $arrayMark['Users.sex'] ?>><b>Sexo</b></th>
@@ -251,6 +254,9 @@
 					<tbody>
 						<tr>
 							<td><?= $accountRecords ?></td>
+							<?php if ($role == 'Desarrollador del sistema'): ?>
+								<td><?= $patientsUser->user->id ?></td>
+							<?php endif; ?>
 							<td><?= $patientsUser->user->full_name ?></td>
 							<td><?= $patientsUser->user->username ?></td>
 							<td class=<?= $arrayMark['Users.sex'] ?>><?= $patientsUser->user->sex ?></td>
@@ -289,6 +295,9 @@
 				<?php $accountRecords++; ?>
 				<tr>
 					<td><?= $accountRecords ?></td>
+					<?php if ($role == 'Desarrollador del sistema'): ?>
+						<td><?= $patientsUser->user->id ?></td>
+					<?php endif; ?>
 					<td><?= $patientsUser->user->full_name ?></td>
 					<td><?= $patientsUser->user->username ?></td>
 					<td class=<?= $arrayMark['Users.sex'] ?>><?= $patientsUser->user->sex ?></td>
