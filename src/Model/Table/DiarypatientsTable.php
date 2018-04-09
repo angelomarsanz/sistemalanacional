@@ -186,7 +186,7 @@ class DiarypatientsTable extends Table
         $arrayResult = [];
 	
         $query->contain(['Budgets' => ['Patients' => ['Users']]])
-            ->order(['Budgets.application_date' => 'DESC']);
+            ->order(['Users.surname' => 'ASC', 'Users.second_surname' => 'ASC', 'Users.first_name' => 'ASC', 'Users.second_name' => 'ASC']);
     
         if ($query)
         {

@@ -4,8 +4,8 @@
 ?>
 <div class="row">
     <div class="col-md-4">
+		<input type="hidden" id="ambiente" value=<?= $system->logo ?>>
     	<div class="page-header">
-            <p><?= $this->Html->link(__('Volver'), ['controller' => $controller, 'action' => $action], ['class' => 'btn btn-sm btn-default']) ?></p>
     		<h2>Enviar presupuesto actualizado</h2>
         </div>
 		<div>
@@ -29,10 +29,24 @@
 			<?php endif; ?>
 			<input id="controller" type="hidden" value=<?= $controller ?>>
 			<input id="action" type="hidden" value=<?= $action ?>>
+			<input id="id-budget" type="hidden" value=<?= $idBudget ?>>
+			<input id="id-promoter" type="hidden" value=<?= $promoter->id ?>>
+			<p><b>Paciente:</b></p>
+			<p><?= $user->full_name ?></p>
+			<p><b>Presupuesto solicitado originalmente:</b></P>
+			<p><?= $previousSurgery ?></p>
+			<br />
 			<?php
-				echo $this->Form->input('surgery', ['label' => 'Servicio médico: *', 'required' => 'true', 'options' => $services]);
+				echo $this->Form->input('surgery', ['label' => 'Por favor seleccione el servicio médico: *', 'required' => 'true', 'options' => $services]);
 			?>
-			<button id="aceptar" type="button" class="btn btn-success">Aceptar</button>
+			<button id="aceptar" type="button" title="Guardar" class="glyphicon glyphicon-floppy-disk btn btn-success"></button>
+			<?php if ($controller == 'Users' && $action == 'viewGlobal'): ?>
+				<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $user->id, 'Users', 'indexPatientUser', $promoter->id], ['class' => 'glyphicon glyphicon-remove btn btn-primary', 'title' => 'Cancelar']) ?>
+			<?php elseif ($controller == 'Budgets' && $action == 'mainBudget'): ?>
+				<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $idBudget], ['class' => 'glyphicon glyphicon-remove btn btn-primary', 'title' => 'Cancelar']) ?>				
+			<?php else: ?>
+				<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action], ['class' => 'glyphicon glyphicon-remove btn btn-primary', 'title' => 'Cancelar']) ?>			
+			<?php endif; ?>	
 		</div>
     </div>
 </div>
@@ -44,11 +58,23 @@
 		$('#aceptar').click(function(e)
 		{
 			e.preventDefault();
-			$.redirect('/sln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
-				firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
-				emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
-				surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
-				coin : $('#coin').val(), controller : $('#controller').val(), action : $('#action').val() }); 
+			
+			if ($('#ambiente').val() == 'Producción')
+			{
+				$.redirect('/sln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
+					firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
+					emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
+					surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
+					coin : $('#coin').val(), controller : $('#controller').val(), action : $('#action').val(), idPromoter : $('#id-promoter').val(), idBudget : $('#id-budget').val() });
+			}
+			else
+			{
+				$.redirect('/dsln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
+					firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
+					emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
+					surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
+					coin : $('#coin').val(), controller : $('#controller').val(), action : $('#action').val(), idPromoter : $('#id-promoter').val(), idBudget : $('#id-budget').val() });			
+			}
 		});		
     });
 </script>

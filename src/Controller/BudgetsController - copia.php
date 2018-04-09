@@ -15,6 +15,8 @@ use App\Controller\CommissionsController;
 
 use App\Controller\BinnaclesController;
 
+use App\Controller\SystemsController;
+
 use Cake\I18n\Time;
 
 use Cake\Mailer\Email;
@@ -75,17 +77,22 @@ class BudgetsController extends AppController
     
     public function testFunction()
     {
-        $budgets = TableRegistry::get('Budgets');
-        
-        $arrayResult = $budgets->find('only', ['patient_id' => '2', 'surgery' => 'Mastopexia + Dermolipectomía + Lipoescultura']);
-        
-        if ($arrayResult['indicator'] == 0)
-        {
-            $row = $arrayResult['searchRequired'];
-        }
-        
-        $this->Flash->success(__('responsible_user: ' . $row->responsible_user));
-    }
+		$budget = $this->Budgets->get(1737);
+		
+		$this->Flash->success(__('coin: ' . $budget->coin));
+		$this->Flash->success(__('coin_bill: ' . $budget->coin_bill));
+		
+		$budget->coin_bill = 'PRUEBA';
+		
+		if ($this->Budgets->save($budget)) 
+		{
+			$this->Flash->success(__('El presupuesto se actualizó'));
+		}
+		else
+		{
+			$this->Flash->error(__('El presupuesto no se actualizó'));
+		}
+	}
 
      /**
      * Index method
@@ -181,9 +188,9 @@ class BudgetsController extends AppController
 		
 		$budget->activity_date_finish = Time::now(); 
 		
-		$budget->activity_result = "SIN CONFIRMAR";
+		$budget->activity_result = "Verificar correo y teléfonos del paciente y confirmar presupuesto";
 		
-		$budget->detailed_result_activity = 'PRESUPUESTO NUEVO';
+		$budget->detailed_result_activity = 'Sin detalles';
 
 		$budget->date_budget = Time::now();
 		
@@ -291,9 +298,9 @@ class BudgetsController extends AppController
             
             $budget->activity_date_finish = Time::now(); 
             
-            $budget->activity_result = "SIN CONFIRMAR";
+            $budget->activity_result = "Verificar correo y teléfonos del paciente y confirmar presupuesto";
             
-            $budget->detailed_result_activity = 'PRESUPUESTO NUEVO';
+            $budget->detailed_result_activity = 'Sin detalles';
 
             $budget->date_budget = Time::now();
             
@@ -625,6 +632,7 @@ class BudgetsController extends AppController
             ['Budgets.id',
             'Budgets.number_budget', 
             'Budgets.surgery', 
+			'Budgets.coin',
             'Budgets.number_bill', 
             'Budgets.amount_bill', 
             'Patients.id',
@@ -684,6 +692,10 @@ class BudgetsController extends AppController
     }
     public function bill($idBudget = null, $budgetSurgery = null)
     {
+		$this->loadModel('Systems');
+
+		$system = $this->Systems->get(2);
+		
 		$commissions = new CommissionsController;
 		
 		$binnacles = new BinnaclesController;
@@ -703,11 +715,10 @@ class BudgetsController extends AppController
 					$budget->date_bill = null;
 					$budget->number_bill = null;				
 					$budget->amount_bill = null;
-					$budget->coin_bill = null;
 					$budget->bill = null;
 					$budget->bill_dir = null;
 					
-					$arrayResult = $commissions->add($_POST['promoter'], $budget->id, $budget->amount_bill, $budget->coin_bill, 1);
+					$arrayResult = $commissions->add($_POST['promoter'], $budget->id, $budget->amount_bill, $budget->coin, 1);
 										
 					if ($arrayResult['indicator'] == 0)
 					{
@@ -742,7 +753,7 @@ class BudgetsController extends AppController
 
                 $budget = $this->Budgets->patchEntity($budget, $this->request->data);
 										
-				$arrayResult = $commissions->add($budget->extra_column1, $budget->id, $budget->amount_bill, $budget->coin_bill, 0);
+				$arrayResult = $commissions->add($budget->extra_column1, $budget->id, $budget->amount_bill, $budget->coin, 0);
 				
 				if ($arrayResult['indicator'] == 0)
 				{				
@@ -792,15 +803,15 @@ class BudgetsController extends AppController
 
 			$currentView = 'bill';
 
-			$this->set(compact('currentView', 'budgetSurgery', 'budget', 'budgetQuery', 'promoter'));
-			$this->set('_serialize', ['currentView', 'budgetSurgery', 'budget', 'budgetQuery', 'promoter']);	
+			$this->set(compact('system', 'currentView', 'budgetSurgery', 'budget', 'budgetQuery', 'promoter'));
+			$this->set('_serialize', ['system', 'currentView', 'budgetSurgery', 'budget', 'budgetQuery', 'promoter']);	
 		}
 		else
 		{
             $currentView = 'bill';
 
-            $this->set(compact('currentView'));
-            $this->set('_serialize', ['currentView']);           
+            $this->set(compact('system', 'currentView'));
+            $this->set('_serialize', ['system', 'currentView']);           
         }
     }
     public function findBudget()

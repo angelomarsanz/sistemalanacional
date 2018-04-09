@@ -58,7 +58,7 @@
 	<div class="row">
 		<div class="col-md-12">
 			<div class="page-header">
-				<h2>Reporte de presupuestos y agenda</h2>
+				<h2>Reporte de presupuestos</h2>
 				<h4>Por favor seleccione las columnas a imprimir</h4>
 			</div>
 			<?= $this->Form->create() ?>
@@ -68,18 +68,18 @@
 						<h4>Datos de los presupuestos y agenda</h4>
 						<div class="row">
 							<div class="col-md-4">
+								<p><input class="column-mark" type="checkbox" name="columnsReport[Users.full_name]"> Nombre del paciente</p>
+								<p><input class="column-mark" type="checkbox" name="columnsReport[Users.cell_phone]"> celular</p>
+								<p><input class="column-mark" type="checkbox" name="columnsReport[Users.email]"> Email</p>
 								<p><input class="column-mark" type="checkbox" name="columnsReport[Budgets.coin]"> Moneda</p>
 								<p><input class="column-mark" type="checkbox" name="columnsReport[Budgets.amount_budget]"> Monto del presupuesto</p>
 								<p><input class="column-mark" type="checkbox" name="columnsReport[Budgets.number_bill]"> Número de la factura</p>
-								<p><input class="column-mark" type="checkbox" name="columnsReport[Budgets.amount_bill]"> Monto de la factura</p>
-								<p><input class="column-mark" type="checkbox" name="columnsReport[Users.full_name]"> Nombre del paciente</p>
-								<p><input class="column-mark" type="checkbox" name="columnsReport[Users.cell_phone]"> celular del paciente</p>
-								<p><input class="column-mark" type="checkbox" name="columnsReport[Users.email]"> Email del paciente</p>								
+								<p><input class="column-mark" type="checkbox" name="columnsReport[Budgets.amount_bill]"> Monto de la factura</p>								
 							</div>
 							<div class="col-md-4">
 								<p><input class="column-mark" type="checkbox" name="columnsReport[additional.namePromoter]"> Nombre del promotor</p>
-								<p><input class="column-mark" type="checkbox" name="columnsReport[additional.cellPromoter]"> Celular del promotor</p>
-								<p><input class="column-mark" type="checkbox" name="columnsReport[additional.emailPromoter]"> Email del promotor</p>
+								<p><input class="column-mark" type="checkbox" name="columnsReport[additional.cellPromoter]"> Celular</p>
+								<p><input class="column-mark" type="checkbox" name="columnsReport[additional.emailPromoter]"> Email</p>
 								<p><input class="column-mark" type="checkbox" name="columnsReport[Diarys.short_description_activity]"> Actividad de la agenda</p>
 								<p><input class="column-mark" type="checkbox" name="columnsReport[Diarys.activity_date]"> Fecha actividad</p>
 								<p><input class="column-mark" type="checkbox" name="columnsReport[additional.statusActivity]"> Estatus de la actividad</p>
@@ -98,7 +98,7 @@
 	</div>
 	<div id="menu-mas" style="display:none;" class="menumas nover">
 		<p>
-			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['id' => 'volver', 'class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'mainBudget'], ['id' => 'volver', 'class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
 			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['id' => 'cerrar', 'class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'cerrar vista']) ?>
 			
 			<button id="marcar-todos" class="glyphicon icon-checkbox-checked btn btn-danger" title="Marcar todos" style="padding: 8px 12px 10px 12px;"></button>
@@ -128,7 +128,7 @@
 						</tr>
 						<tr>
 							<th></th>
-							<th>Reporte de presupuestos y agenda</th>
+							<th>Reporte de presupuestos</th>
 						</tr>
 						<tr>
 							<th></th>
@@ -156,6 +156,11 @@
 							<th></th>
 							<th>Presupuestos vencidos:</th>
 							<th><?= $counter['overdueBudgets'] ?></th>
+						</tr>
+						<tr>
+							<th></th>
+							<th>Presupuestos no enviados:</th>
+							<th><?= $counter['notSend'] ?></th>
 						</tr>
 						<tr>
 							<th></th>
@@ -209,17 +214,17 @@
 						</tr>
 						<tr>
 							<th scope="col"><b>Nro.</b></th>
-							<th scope="col"><b>Fecha presupuesto</b></th>
+							<th scope="col" class=<?= $arrayMark['Users.full_name'] ?>><b>Nombre del paciente</b></th>
+							<th scope="col"><b>Cirugía</b></th>							
+							<th scope="col" class=<?= $arrayMark['Users.cell_phone'] ?>><b>Celular</b></th>
+							<th scope="col" class=<?= $arrayMark['Users.email'] ?>><b>Email</b></th>
+							<th scope="col"><b>Estatus del presupuesto</b></th>
+							<th scope="col"><b>Fecha de solicitud</b></th>							
 							<th scope="col"><b>Nro. presupuesto</b></th>
-							<th scope="col"><b>Cirugía</b></th>
-							<th scope="col"><b>Estatus</b></th>
 							<th scope="col" class=<?= $arrayMark['Budgets.coin'] ?>><b>Moneda</b></th>
 							<th scope="col" class=<?= $arrayMark['Budgets.amount_budget'] ?>><b>Monto presupuesto</b></th>
 							<th scope="col" class=<?= $arrayMark['Budgets.number_bill'] ?>><b>Nro. Factura</b></th>
 							<th scope="col" class=<?= $arrayMark['Budgets.amount_bill'] ?>><b>Monto factura</b></th>
-							<th scope="col" class=<?= $arrayMark['Users.full_name'] ?>><b>Nombre del paciente</b></th>
-							<th scope="col" class=<?= $arrayMark['Users.cell_name'] ?>><b>Celular</b></th>
-							<th scope="col" class=<?= $arrayMark['Users.email'] ?>><b>Email</b></th>
 							<th scope="col" class=<?= $arrayMark['additional.namePromoter'] ?>><b>Promotor responsable</b></th>
 							<th scope="col" class=<?= $arrayMark['additional.cellPromoter'] ?>><b>Celular</b></th>
 							<th scope="col" class=<?= $arrayMark['additional.emailPromoter'] ?>><b>Email</b></th>
@@ -231,17 +236,17 @@
 					<tbody>
 						<tr>
 							<td scope="col"><?= $accountRecords ?></td>
-							<td scope="col"><?= $diarys->budget->application_date->format('d-m-Y') ?></td>
-							<td scope="col"><?= $diarys->budget->number_budget ?></td>
+							<td scope="col" class=<?= $arrayMark['Users.full_name'] ?>><?= $diarys->budget->patient->user->full_name ?></td>
 							<td scope="col"><?= $diarys->budget->surgery ?></td>
+							<td scope="col" class=<?= $arrayMark['Users.cell_phone'] ?>><?= $diarys->budget->patient->user->cell_phone ?></td>
+							<td scope="col" class=<?= $arrayMark['Users.email'] ?>><?= $diarys->budget->patient->user->email?></td>							
 							<td scope="col"><?= $additional[$diarys->id]['budgetStatus'] ?></td>
+							<td scope="col"><?= $diarys->budget->application_date->format('d-m-Y') ?></td>							
+							<td scope="col"><?= $diarys->budget->number_budget ?></td>
 							<td scope="col" class=<?= $arrayMark['Budgets.coin'] ?>><?= $diarys->budget->coin ?></td>
 							<td scope="col" class=<?= $arrayMark['Budgets.amount_budget'] ?>><?= number_format($diarys->budget->amount_budget, 2, ",", ".") ?></td>
 							<td scope="col" class=<?= $arrayMark['Budgets.number_bill'] ?>><?= $diarys->budget->number_bill ?></td>
 							<td scope="col" class=<?= $arrayMark['Budgets.amount_bill'] ?>><?= number_format($diarys->budget->amount_bill, 2, ",", ".") ?></td>
-							<td scope="col" class=<?= $arrayMark['Users.full_name'] ?>><?= $diarys->budget->patient->user->full_name ?></td>
-							<td scope="col" class=<?= $arrayMark['Users.cell_name'] ?>><?= $diarys->budget->patient->user->cell_phone?>Celular</td>
-							<td scope="col" class=<?= $arrayMark['Users.email'] ?>><?= $diarys->budget->patient->user->email?></td>
 							<td scope="col" class=<?= $arrayMark['additional.namePromoter'] ?>><?= $additional[$diarys->id]['namePromoter'] ?></td>
 							<td scope="col" class=<?= $arrayMark['additional.cellPromoter'] ?>><?= $additional[$diarys->id]['cellPromoter'] ?></td>
 							<td scope="col" class=<?= $arrayMark['additional.emailPromoter'] ?>><?= $additional[$diarys->id]['emailPromoter'] ?></td>
@@ -252,17 +257,17 @@
 			<?php else: ?>
 				<tr>
 					<td scope="col"><?= $accountRecords ?></td>
-					<td scope="col"><?= $diarys->budget->application_date->format('d-m-Y') ?></td>
-					<td scope="col"><?= $diarys->budget->number_budget ?></td>
+					<td scope="col" class=<?= $arrayMark['Users.full_name'] ?>><?= $diarys->budget->patient->user->full_name ?></td>
 					<td scope="col"><?= $diarys->budget->surgery ?></td>
+					<td scope="col" class=<?= $arrayMark['Users.cell_phone'] ?>><?= $diarys->budget->patient->user->cell_phone ?></td>
+					<td scope="col" class=<?= $arrayMark['Users.email'] ?>><?= $diarys->budget->patient->user->email?></td>							
 					<td scope="col"><?= $additional[$diarys->id]['budgetStatus'] ?></td>
+					<td scope="col"><?= $diarys->budget->application_date->format('d-m-Y') ?></td>							
+					<td scope="col"><?= $diarys->budget->number_budget ?></td>
 					<td scope="col" class=<?= $arrayMark['Budgets.coin'] ?>><?= $diarys->budget->coin ?></td>
 					<td scope="col" class=<?= $arrayMark['Budgets.amount_budget'] ?>><?= number_format($diarys->budget->amount_budget, 2, ",", ".") ?></td>
 					<td scope="col" class=<?= $arrayMark['Budgets.number_bill'] ?>><?= $diarys->budget->number_bill ?></td>
 					<td scope="col" class=<?= $arrayMark['Budgets.amount_bill'] ?>><?= number_format($diarys->budget->amount_bill, 2, ",", ".") ?></td>
-					<td scope="col" class=<?= $arrayMark['Users.full_name'] ?>><?= $diarys->budget->patient->user->full_name ?></td>
-					<td scope="col" class=<?= $arrayMark['Users.cell_name'] ?>><?= $diarys->budget->patient->user->cell_phone?>Celular</td>
-					<td scope="col" class=<?= $arrayMark['Users.email'] ?>><?= $diarys->budget->patient->user->email?></td>
 					<td scope="col" class=<?= $arrayMark['additional.namePromoter'] ?>><?= $additional[$diarys->id]['namePromoter'] ?></td>
 					<td scope="col" class=<?= $arrayMark['additional.cellPromoter'] ?>><?= $additional[$diarys->id]['cellPromoter'] ?></td>
 					<td scope="col" class=<?= $arrayMark['additional.emailPromoter'] ?>><?= $additional[$diarys->id]['emailPromoter'] ?></td>
@@ -285,10 +290,10 @@
 	<div id="menu-mas" style="display:none;" class="menumas nover">
 		<p>
 			<?php if ($system->logo == 'Producción'): ?>
-				<a href="/sln/users/wait" id="volver" title="Volver" class='glyphicon glyphicon-chevron-left btn btn-danger'></a>
+				<a href="/sln/budgets/mainBudget" id="volver" title="Volver" class='glyphicon glyphicon-chevron-left btn btn-danger'></a>
 				<a href="/sln/users/wait" id="cerrar" title="Cerrar vista" class='glyphicon glyphicon-remove btn btn-danger'></a>
 			<?php else: ?>
-				<a href="/dsln/users/wait" id="volver" title="Volver" class='glyphicon glyphicon-chevron-left btn btn-danger'></a>
+				<a href="/dsln/budgets/mainBudget" id="volver" title="Volver" class='glyphicon glyphicon-chevron-left btn btn-danger'></a>
 				<a href="/dsln/users/wait" id="cerrar" title="Cerrar vista" class='glyphicon glyphicon-remove btn btn-danger'></a>
 			<?php endif; ?>
 			<a href='#' id="menos" title="Menos opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
@@ -340,6 +345,10 @@ $(document).ready(function(){
 		{ 
 			$(this).attr('checked', false);
 		});
+	});
+	$('#generar-reporte').click(function()
+	{			
+		alert('Estimado usuario, este reporte demorará unos segundos. Por favor pulse ** Aceptar ** para continuar');
 	});
 	
 });

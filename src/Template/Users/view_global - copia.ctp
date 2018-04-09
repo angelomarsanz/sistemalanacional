@@ -36,6 +36,7 @@
 </style>
 
 <div class="container">
+	<input type="hidden" id="ambiente" value=<?= $system->logo ?>>
     <div class="page-header">  
  	    <p>
 			<?php if (isset($action)): ?>
@@ -66,6 +67,7 @@
 		<?php else: ?>
 			<input id="coin" type="hidden" value="DOLLAR">
 		<?php endif; ?>
+		<input id="id-promoter" type="hidden" value=<?= $promoter->id ?>>
     </div>
     <div class="row">
         <div class="col col-sm-4">
@@ -135,30 +137,18 @@
                         <b>Nombre:</b>&nbsp;<?= $user->patients[0]['first_name_emergency'] . ' ' . $user->patients[0]['surname_emergency'] ?>
                     <br />
                     <br />
-                        <b>Nro. de identificación:</b>&nbsp;<?= $user->patients[0]['type_of_identification_emergency'] . '-' . $user->patients[0]['identidy_card_emergency'] ?>
-                    <br />
-                    <br />
-                        <b>Dirección:</b>&nbsp;<?= $user->patients[0]['address_emergency'] ?>
+                        <b>Celular:</b>&nbsp;<?= $user->patients[0]['cell_phone_emergency'] ?>
                     <br />
                     <br />
                         <b>Teléfono fijo:</b>&nbsp;<?= $user->patients[0]['landline_emergency'] ?>
                     <br />
                     <br />
-                        <h3>Datos del acompañante:</h3>
+                        <b>Email:</b>&nbsp;<?= $user->patients[0]['email_emergency'] ?>
+                    <br />
+                    <br />
+						<h3>Datos del acompañante:</h3>
                         <hr size="3" />
                         <b>Nombre:</b>&nbsp;<?= $user->patients[0]['first_name_companion'] . ' ' . $user->patients[0]['surname_companion'] ?>
-                    <br />
-                    <br />
-                        <b>Nro. de identificación:</b>&nbsp;<?= $user->patients[0]['type_of_identification_companion'] . '-' . $user->patients[0]['identidy_card_companion'] ?>
-                    <br />
-                    <br />
-                        <b>Dirección:</b>&nbsp;<?= $user->patients[0]['address_companion'] ?>
-                    <br />
-                    <br />
-                        <b>Email:</b>&nbsp;<?= $user->patients[0]['email_companion'] ?>
-                    <br />
-                    <br />
-                        <b>Teléfono fijo:</b>&nbsp;<?= $user->patients[0]['landline_companion'] ?>
                     <br />
                     <br />
                         <b>Celular:</b>&nbsp;<?= $user->patients[0]['cell_phone_companion'] ?>
@@ -251,7 +241,7 @@
 																endif;
 															?>													
 														</td>
-														<td><?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $budgets->id, 'Users', 'viewGlobal', $user->id, $user->patients[0]['id'], $user->parent_user], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar presupuesto']) ?></td> 
+														<td><?= $this->Html->link(__(''), ['controller' => 'budgets', 'action' => 'budget', $user->id, $user->patients[0]['id'], $user->parent_user, 'Users', 'viewGlobal', $budgets->id, $budgets->surgery], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar presupuesto']) ?></td> 
 														<td><?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $budgets->id, 'Users', 'viewGlobal', $user->id], ['confirm' => __('Está seguro de que desea eliminar el presupuesto?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar']) ?></td>
 													</tr>
 												<?php endif; ?>
@@ -393,8 +383,12 @@
         <a href="#" id="presupuestos" title="Ver presupuestos solicitados" class='glyphicon glyphicon-th-list btn btn-danger'></a>
         <a href="#" id="agenda-dia" title="Ver agenda del día" class='glyphicon glyphicon-calendar btn btn-danger'></a>
         <a href="#" id="agenda-futura" title="Ver agenda futura" class='glyphicon glyphicon-list-alt btn btn-danger'></a>  
-        <a href=<?= '/sln/users/editBasic/' . $user->id . '/Users/viewGlobal/' . $user->parent_user . '/' . $promoter->surname . ' ' . $promoter->first_name ?> id="editar-paciente" title="Modificar datos del paciente" class='glyphicon glyphicon-edit btn btn-danger'></a>
-        <?= $this->Form->postLink(__(''), ['action' => 'deleteBasic', $user->id, 'Users', 'indexPatientUser' ], ['confirm' => __('Está seguro de que desea eliminar el paciente?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar datos del paciente', 'style' => 'padding: 7px 12px;']) ?>
+		<?php if ($system->logo == 'Producción'): ?>
+			<a href=<?= '/sln/users/editBasic/' . $user->id . '/Users/viewGlobal/' . $user->parent_user . '/' . $promoter->surname . ' ' . $promoter->first_name ?> id="editar-paciente" title="Modificar datos del paciente" class='glyphicon glyphicon-edit btn btn-danger'></a>
+		<?php else: ?>
+			<a href=<?= '/dsln/users/editBasic/' . $user->id . '/Users/viewGlobal/' . $user->parent_user . '/' . $promoter->surname . ' ' . $promoter->first_name ?> id="editar-paciente" title="Modificar datos del paciente" class='glyphicon glyphicon-edit btn btn-danger'></a>		
+		<?php endif; ?>
+		<?= $this->Form->postLink(__(''), ['action' => 'deleteBasic', $user->id, 'Users', 'indexPatientUser' ], ['confirm' => __('Está seguro de que desea eliminar el paciente?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar datos del paciente', 'style' => 'padding: 7px 12px;']) ?>
         <a href="#" id="menu-menos" title="Cerrar opciones" class='glyphicon glyphicon-remove btn btn-danger'></a>
         </p>
     </div>
@@ -403,7 +397,14 @@
 	idService = 0;
     function log(id) 
     {
-        $.redirect('/sln/users/viewGlobal', { id : id, controller : 'Users', action : 'viewGlobal' }); 
+		if ($('#ambiente').val() == 'Producción')
+		{
+			$.redirect('/sln/users/viewGlobal', { id : id, controller : 'Users', action : 'viewGlobal' }); 
+		}
+		else
+		{
+			$.redirect('/dsln/users/viewGlobal', { id : id, controller : 'Users', action : 'viewGlobal' });
+		}
     }
 $(document).ready(function(){ 
     $('#mas-datos').on('click',function(){
@@ -438,11 +439,22 @@ $(document).ready(function(){
     {
         e.preventDefault();
 
-		$.redirect('/sln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
-			firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
-			emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
-			surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
-			coin : $('#coin').val(), controller : 'Users', action : 'viewGlobal' }); 
+		if ($('#ambiente').val() == 'Producción')
+		{
+			$.redirect('/sln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
+				firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
+				emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
+				surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
+				coin : $('#coin').val(), controller : 'Users', action : 'viewGlobal', idPromoter : $('#id-promoter').val() }); 
+		}
+		else
+		{
+			$.redirect('/dsln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
+				firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
+				emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
+				surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
+				coin : $('#coin').val(), controller : 'Users', action : 'viewGlobal', idPromoter : $('#id-promoter').val() });
+		}
 	});
 	
     $('#menu-mas').on('click',function()

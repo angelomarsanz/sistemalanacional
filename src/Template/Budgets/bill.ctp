@@ -164,7 +164,7 @@ $(document).ready(function()
     $('#number-budget-search').autocomplete(
     {
         source:'<?php echo Router::url(array("controller" => "Budgets", "action" => "findBudget")); ?>',
-        minLength: 3,             
+        minLength: 5,             
         select: function( event, ui ) {
             log(ui.item.id, ui.item.value);
           }

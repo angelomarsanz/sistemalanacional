@@ -180,5 +180,23 @@ class DiarypatientsTable extends Table
             $arrayResult['indicator'] = 1;
         }
         return $arrayResult;
+    }
+    public function findReport(Query $query, array $options)
+    {
+        $arrayResult = [];
+	
+        $query->contain(['Budgets' => ['Patients' => ['Users']]])
+            ->order(['Budgets.application_date' => 'DESC']);
+    
+        if ($query)
+        {
+            $arrayResult['indicator'] = 0;
+            $arrayResult['searchRequired'] = $query;
+        }
+        else
+        {
+            $arrayResult['indicator'] = 1;
+        }
+        return $arrayResult;
     }	
 }
