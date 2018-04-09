@@ -40,19 +40,20 @@
                         <li><?=  $this->Html->link('Multinivel', ['controller' => 'Budgets', 'action' => 'multilevel']) ?></li>
 
                         <li><?=  $this->Html->link('Pacientes', ['controller' => 'Users', 'action' => 'indexPatientUser']) ?></li>
+						
+						<li><?=  $this->Html->link('Presupuestos', ['controller' => 'Budgets', 'action' => 'mainBudget']) ?></li>
 
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Agenda <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
                                 <li><?=  $this->Html->link('Agenda del día', ['controller' => 'Diarypatients', 'action' => 'index']) ?></li>
                                 <li><?=  $this->Html->link('Agenda futura', ['controller' => 'Diarypatients', 'action' => 'indexMonth']) ?></li>
-								<li><?=  $this->Html->link('Reporte', ['controller' => 'Diarypatients', 'action' => 'reportDiary']) ?></li>
                            </ul>
                         </li>
 
-                        <li><?=  $this->Html->link('Servicios', ['controller' => 'Services', 'action' => 'index']) ?></li>
-
                         <li><?=  $this->Html->link('Comisiones', ['controller' => 'Budgets', 'action' => 'bill']) ?></li>
+						
+                        <li><?=  $this->Html->link('Servicios', ['controller' => 'Services', 'action' => 'index']) ?></li>
 
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Sistema <span class="caret"></span></a>
@@ -70,7 +71,7 @@
                                     </div>
                                 </form>
                             <?php endif; ?>
-                            <?php if ($currentView == 'bill'): ?>
+                            <?php if ($currentView == 'bill' || $currentView == 'mainBudget'): ?>
                                 <form class="navbar-form navbar-left" role="search">
                                     <div class="form-group">
                                         <input type="text" id="number-budget-search" class="form-control" placeholder="Buscar presupuesto..." title="Escriba el número del presupuesto"/>
@@ -110,13 +111,16 @@
                     <?php elseif ($current_user['role'] == 'Administrador del sistema' ||
                         $current_user['role'] == 'Titular del sistema' ||
                         $current_user['role'] == 'Auditor(a) externo' ||
-                        $current_user['role'] == 'Auditor(a) interno'): ?>
+                        $current_user['role'] == 'Auditor(a) interno' ||
+						$current_user['role'] == 'Administrador(a) de la clínica'): ?>
 
                         <li><?=  $this->Html->link('Usuarios', ['controller' => 'Users', 'action' => 'index']) ?></li>
 
                         <li><?=  $this->Html->link('Multinivel', ['controller' => 'Budgets', 'action' => 'multilevel']) ?></li>
 
                         <li><?=  $this->Html->link('Pacientes', ['controller' => 'Users', 'action' => 'indexPatientUser']) ?></li>
+						
+						<li><?=  $this->Html->link('Presupuestos', ['controller' => 'Budgets', 'action' => 'mainBudget']) ?></li>
 
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Agenda <span class="caret"></span></a>
@@ -126,9 +130,9 @@
                            </ul>
                         </li>
 
+                        <li><?=  $this->Html->link('Comisiones', ['controller' => 'Budgets', 'action' => 'bill']) ?></li>
+						
                         <li><?=  $this->Html->link('Servicios', ['controller' => 'Services', 'action' => 'index']) ?></li>
-
-                        <li><?=  $this->Html->link('Facturación', ['controller' => 'Budgets', 'action' => 'bill']) ?></li>
 
                         <?php if (isset($currentView)): ?>    
                             <?php if ($currentView == 'multilevel'): ?>
@@ -139,7 +143,7 @@
                                 </form>
                             <?php endif; ?>
 
-                            <?php if ($currentView == 'bill'): ?>
+                            <?php if ($currentView == 'bill' || $currentView == 'mainBudget'): ?>
                                 <form class="navbar-form navbar-left" role="search">
                                     <div class="form-group">
                                         <input type="text" id="number-budget-search" class="form-control" placeholder="Buscar presupuesto..." title="Escriba el número del presupuesto"/>
@@ -186,6 +190,8 @@
 
                         <li><?=  $this->Html->link('Pacientes', ['controller' => 'Users', 'action' => 'indexPatientUser']) ?></li>
 						
+						<li><?=  $this->Html->link('Presupuestos', ['controller' => 'Budgets', 'action' => 'mainBudget']) ?></li>
+						
 						<li><?=  $this->Html->link('Servicios', ['controller' => 'Services', 'action' => 'index']) ?></li>
                         
                         <li class="dropdown">
@@ -230,6 +236,13 @@
                                 <form class="navbar-form navbar-left" role="search">
                                     <div class="form-group">
                                         <input type="text" id="diary-promoter" class="form-control" placeholder="Promotor..." title="Escriba el nombre del promotor"/>
+                                    </div>
+                                </form>
+                            <?php endif; ?>
+                            <?php if ($currentView == 'mainBudget'): ?>
+                                <form class="navbar-form navbar-left" role="search">
+                                    <div class="form-group">
+                                        <input type="text" id="number-budget-search" class="form-control" placeholder="Buscar presupuesto..." title="Escriba el número del presupuesto"/>
                                     </div>
                                 </form>
                             <?php endif; ?>

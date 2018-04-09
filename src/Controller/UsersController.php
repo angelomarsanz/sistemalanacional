@@ -3,6 +3,8 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 
+use App\Controller\SystemsController;
+
 use App\Controller\BinnaclesController;
 
 use App\Controller\EmployeesController;
@@ -48,24 +50,32 @@ class UsersController extends AppController
     {
         if(isset($user['role']))
         {
-            if ($user['role'] == 'Auditor(a) externo' || $user['role'] == 'Auditor(a) interno' || $user['role'] == 'Coordinador(a)' )
+            if ($user['role'] == 'Auditor(a) externo' || $user['role'] == 'Auditor(a) interno' || $user['role'] == 'Administrador(a) de la clínica')
             {
                 if(in_array($this->request->action, ['home', 'addBasic', 'editBasic', 'indexPatientUser', 'view', 'viewBasic', 'editBasic', 'delete', 'deleteBasic', 'logout', 'checkUser', 'viewGlobal', 'confirmPatient', 'restore', 'wait', 'findPatient', 'index', 'add', 'edit', 'confirmUser', 'restoreUser', 'previousUser', 'findUser', 'findPromoter', 'indexBasic', 'reasignUser', 
-                       ]))
+                       'arrayErrors']))
                 {
                     return true;
                 }
-            }  
+            }
+            elseif ($user['role'] == 'Coordinador(a)')
+            {
+                if(in_array($this->request->action, ['home', 'addBasic', 'editBasic', 'indexPatientUser', 'view', 'viewBasic', 'editBasic', 'delete', 'deleteBasic', 'logout', 'checkUser', 'viewGlobal', 'confirmPatient', 'restore', 'wait', 'findPatient', 'index', 'add', 'edit', 'confirmUser', 'restoreUser', 'previousUser', 'findUser', 'findPromoter', 'indexBasic', 'reasignUser', 
+                       'arrayErrors']))
+                {
+                    return true;
+                }
+            }			
             elseif ($user['role'] === 'Promotor(a)' || $user['role'] === 'Promotor(a) independiente')
             {
-                if(in_array($this->request->action, ['home', 'addBasic', 'editBasic', 'indexPatientUser', 'view', 'viewBasic', 'editBasic', 'delete', 'deleteBasic', 'logout', 'checkUser', 'viewGlobal', 'confirmPatient', 'restore', 'wait', 'findPatient', 'index', 'add', 'edit', 'confirmUser', 'restoreUser']))
+                if(in_array($this->request->action, ['home', 'addBasic', 'editBasic', 'indexPatientUser', 'view', 'viewBasic', 'editBasic', 'delete', 'deleteBasic', 'logout', 'checkUser', 'viewGlobal', 'confirmPatient', 'restore', 'wait', 'findPatient', 'index', 'add', 'edit', 'confirmUser', 'restoreUser', 'arrayErrors']))
                 {
                     return true;
                 }                
             }
             elseif ($user['role'] === 'Call center')
             {
-                if(in_array($this->request->action, ['home', 'addBasic', 'editBasic', 'indexPatientUser', 'view', 'viewBasic', 'editBasic', 'delete', 'deleteBasic', 'logout', 'checkUser', 'viewGlobal', 'confirmPatient', 'restore', 'wait']))
+                if(in_array($this->request->action, ['home', 'addBasic', 'editBasic', 'indexPatientUser', 'view', 'viewBasic', 'editBasic', 'delete', 'deleteBasic', 'logout', 'checkUser', 'viewGlobal', 'confirmPatient', 'restore', 'wait', 'arrayErrors']))
                 {
                     return true;
                 }                
@@ -1156,7 +1166,7 @@ class UsersController extends AppController
                 $jsondata['success'] = false;
                 $jsondata['data'] = 'El usuario ya existe con el id: ' . $row->id;
 				
-				$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'El usuario: ' . $user->username . 'ya existe');
+				$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'El usuario ya existe con el id: ' . $row->id);
             }
             else
             {
@@ -1285,7 +1295,7 @@ class UsersController extends AppController
                         {
                             $jsondata['success'] = false;
                             $jsondata['data'] = 'No se pudo crear el presupuesto';
-							$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear el presupuesto del paciente: ' . $user->username);
+							$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear el presupuesto del paciente id: ' . $idPatient);
                         }
                     }
                     else
@@ -1365,245 +1375,6 @@ class UsersController extends AppController
 
     public function addWebBasicF()
     {	
-		$binnacles = new BinnaclesController;
-
-        $patient = new PatientsController;
-        
-        $budget = new BudgetsController;
-        
-        $diarypatient = new DiarypatientsController;
-        
-        $service = new ServicesController;
-        
-        $iteme = new ItemesController;
-
-        if ($this->request->is('post')) 
-        {
-            setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
-            date_default_timezone_set('America/Caracas');
-
-            $currentDate = time::now();
-
-            $jsondata = [];
-            
-            $firstNameTrim = trim($_POST['firstName']);
-            
-            $firstName = strtoupper($firstNameTrim);
-
-            $surnameTrim = trim($_POST['surname']);
-            
-            $surname = strtoupper($surnameTrim);
-            
-            $firstNameSurname = strtolower($firstName) . strtolower($surname);
-            
-            $users = TableRegistry::get('Users');
-            
-            $arrayResult = $users->find('username', ['firstname_surname' => $firstNameSurname]);
-            
-            if ($arrayResult['indicator'] == 0)
-            {
-                $consecutive = $arrayResult['searchRequired'] + 1;  
-                
-                $username = $firstNameSurname . $consecutive;
-            }
-            else 
-            {
-                $username = $firstNameSurname . '1';
-            }
-            
-            $password = substr($firstName, 0, 1) . substr($surname, 0, 1) . $currentDate->second . $currentDate->minute . '$';
-            
-            $birthdate = $_POST['birthdate'];
-			
-			if (isset($_POST['country']))
-			{			
-				$countryTrim = trim($_POST['country']);
-            
-				$country = strtoupper($countryTrim);
-			}
-			else
-			{
-				$country = 'VENEZUELA';
-			}
-    
-            $addressTrim = trim($_POST['address']);
-            
-            $address = strtoupper($addressTrim);
-            
-            $surgeryTrim = trim($_POST['surgery']);
-            
-            $surgery = strtoupper($surgeryTrim);
-            
-            $emailTrim = trim($_POST['email']);
-            
-            $email = strtolower($emailTrim);
-		    
-            $lastRecord = $this->Users->find('all', ['conditions' => [['Users.role' => 'Paciente'], ['Users.email' => $email]], 
-                'order' => ['Users.created' => 'DESC']]);
-            
-            $row = $lastRecord->first();
-                
-            if ($row)
-            {
-                $idUser = $row->id;
-                
-                if ($row->user_status != 'ACTIVO' || $row->deleted_record == true)
-                {
-                    $this->restore($idUser, 'Users', 'addWebBasic');                                            
-                }
-                                
-                $jsondata['success'] = false;
-                $jsondata['data'] = 'El usuario ya existe con el id: ' . $row->id;
-				
-				$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'El usuario: ' . $user->username . 'ya existe');
-            }
-            else
-            {
-                $user = $this->Users->newEntity();
-            
-                $user->parent_user = 1;
-                $user->username = $username;
-                $user->password = $password;
-                $user->type_of_identification = $_POST['typeOfIdentification'];
-                $user->identidy_card = $_POST['identidyCard'];
-                $user->role = 'Paciente';
-                $user->first_name = $firstName;
-                $user->second_name = '';
-                $user->surname = $surname;
-                $user->second_surname = '';
-                $user->sex = $_POST['sex'];
-                $user->email = $email;
-                $user->cell_phone = $_POST['cellPhone'];
-				$user->status = "ACTIVO";
-				$user->date_status = $currentDate;
-                $user->responsible_user = 'clnacional2017';
-                
-                if ($this->Users->save($user)) 
-                {
-                    $lastRecord = $this->Users->find('all', ['conditions' => ['Users.username' => $username], 
-                        'order' => ['Users.created' => 'DESC']]);
-            
-                    $row = $lastRecord->first();
-                
-                    if ($row)
-                    {
-                        $idUser = $row->id;
-                        $jsondata['success'] = false;
-                        $jsondata['data'] = 'El usuario se creó con el id: ' . $row->id;
-                    }
-                }
-                else
-                {
-					if($user->errors())
-					{
-						$error_msg = $this->arrayErrors($user->errors());
-					}
-					else
-					{
-						$error_msg = ['Error desconocido'];
-					}
-                    $jsondata['success'] = false;
-                    $jsondata['data'] = "No se pudo crear el usuario " . $user->username . ' debido a: ' . implode(" - ", $error_msg);
-					foreach($error_msg as $noveltys)
-					{
-						$result = $binnacles->add('controller', 'Users', 'addWebBasic', $noveltys . 'username: ' . $user->username);
-					}
-                }
-            }
-        
-            if (isset($idUser))
-            {
-                $idPatient = $patient->addWebPatient($idUser, $birthdate, $country, $address);
-
-                if ($idPatient > 0)
-                {
-                    $jsondata['success'] = true;
-                    $jsondata['data'] = 'El usuario y el paciente se crearon exitosamente';
-                    
-                    $arrayMail = [];
-
-                    $arrayResult = $service->searchService($surgery);
-
-                    if ($arrayResult['indicator'] == 0)
-                    {
-                        $arrayMail['mail'] = $email;
-						$arrayMail['surgery'] = $surgery;
-                        $arrayMail['costBolivars'] = $arrayResult['costBolivars'];
-                        $arrayMail['costDollars'] = $arrayResult['costDollars'];
-                        $arrayMail['itemes'] = nl2br(htmlentities($arrayResult['itemes']));
-                        $itemesBudget = $arrayResult['itemes'];
-
-                        if ($country == 'VENEZUELA')
-                        {
-                            $arrayResult = $budget->addWebBudget($idPatient, $surgery, 'BOLIVAR', $arrayMail['costBolivars']);                            
-                        }
-                        else
-                        {
-                            $arrayResult = $budget->addWebBudget($idPatient, $surgery, 'DOLLAR', $arrayMail['costDollars']);                            
-                        }
-
-                        if($arrayResult['indicator'] == 0)
-                        {
-                            $jsondata['success'] = true;
-                            $jsondata['data'] = 'El usuario, el paciente y el presupuesto se crearon exitosamente';
-                        
-                            $arrayMail['subject'] = 'Presupuesto ' . $arrayResult['codeBudget']; 
-                            $arrayMail['firstName'] = $firstName;
-                            $arrayMail['surname'] = $surname;
-                            $arrayMail['identidy'] = $_POST['typeOfIdentification'] . '-' . $_POST['identidyCard'];
-                            $arrayMail['phone'] = $_POST['cellPhone'];
-                            $arrayMail['address'] = $address;
-                            $arrayMail['country'] = $country;
-                            $arrayMail['codeBudget'] = $arrayResult['codeBudget']; 
-                            $arrayMail['dateBudget'] = $arrayResult['dateBudget'];
-                            $arrayMail['expirationDate'] = $arrayResult['expirationDate'];						
-							$arrayMail['namePromoter'] = 'Sitio web';
-							$arrayMail['mailPromoter'] = 'angelomarsanz@gmail.com';
-							$arrayMail['phonePromoter'] = '+58-0241-835-2284';
-                            
-                            $idBudget = $arrayResult['id'];
-                            
-                            $result = $iteme->add($idBudget, $itemesBudget);
-
-                            $result = $diarypatient->addWebDiary($idBudget);
-    
-                            if ($result == 0)
-                            {
-								$result = $this->mailBudget($arrayMail);
-                                $jsondata['success'] = true;
-                                $jsondata['data'] = 'El usuario, el paciente, presupuesto y agenda fueron creados exitosamente';
-                            }
-                            else
-                            {
-                                $jsondata['success'] = false;
-                                $jsondata['data'] = 'No se pudo crear la agenda del paciente';
-								$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear la agenda del paciente: ' . $user->username);
-                            }
-                        }
-                        else
-                        {
-                            $jsondata['success'] = false;
-                            $jsondata['data'] = 'No se pudo crear el presupuesto';
-							$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear el presupuesto del paciente: ' . $user->username);
-                        }
-                    }
-                    else
-                    {
-                        $jsondata['success'] = false;
-                        $jsondata['data'] = 'No se encontró el servicio';
-						$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se encontró el servicio requerido por el paciente: ' . $user->username);
-                    }
-                }
-                else
-                {
-                    $jsondata['success'] = false;
-                    $jsondata['data'] = 'No se pudo crear el paciente';
-					$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'No se pudo crear el paciente: ' . $user->username);
-                }
-            }
-        
-            exit(json_encode($jsondata, JSON_FORCE_OBJECT));
-        }
     }
 
     /**
@@ -2182,6 +1953,10 @@ class UsersController extends AppController
 
     public function viewGlobal($id = null, $controller = null, $action = null, $idPromoter = null)
     {
+		$this->loadModel('Systems');
+
+		$system = $this->Systems->get(2);
+	
         if ($this->request->is('post'))
         {
             $id = $_POST['id'];
@@ -2211,8 +1986,8 @@ class UsersController extends AppController
 
         $this->set('user', $user);
         $this->set('promoter', $promoter);
-        $this->set(compact('id', 'controller', 'action', 'currentView', 'idPromoter', 'services'));
-        $this->set('_serialize', ['user', 'promoter', 'id', 'controller', 'action', 'currentView', 'idPromoter', 'services']);
+        $this->set(compact('id', 'controller', 'action', 'currentView', 'idPromoter', 'services', 'system'));
+        $this->set('_serialize', ['user', 'promoter', 'id', 'controller', 'action', 'currentView', 'idPromoter', 'services', 'system']);
     }
     public function confirmPatient($id = null, $controller = null, $action = null)
     {
@@ -2704,7 +2479,7 @@ class UsersController extends AppController
 		}
 		else
 		{
-			$arrayPatients = [1103, 1105, 1242, 71, 512, 1246, 1248, 67, 1221, 1198, 915, 520]; // Escribir los id de los pacientes a eliminar  
+			$arrayPatients = []; // Escribir los id de los pacientes a eliminar  
 		}
 			
 		foreach ($arrayPatients as $arrayPatient)

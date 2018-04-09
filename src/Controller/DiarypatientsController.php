@@ -28,13 +28,20 @@ class DiarypatientsController extends AppController
     {
         if(isset($user['role']))
         {
-            if ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Coordinador(a)' )
+            if ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Administrador(a) de la clínica' )
+            {
+                if(in_array($this->request->action, ['index', 'edit', 'indexMonth', 'restore', 'reasign', 'reportDiary', 'markColumns']))
+                {
+                    return true;
+                }
+            }
+            elseif ($user['role'] === 'Coordinador(a)')
             {
                 if(in_array($this->request->action, ['index', 'edit', 'indexMonth', 'restore', 'reasign']))
                 {
                     return true;
                 }
-            }  
+            }			
             elseif ($user['role'] === 'Promotor(a)' || $user['role'] === 'Promotor(a) independiente')
             {
                 if(in_array($this->request->action, ['index', 'edit', 'indexMonth', 'restore']))
@@ -78,6 +85,10 @@ class DiarypatientsController extends AppController
      */
     public function index()
     {
+		$this->loadModel('Systems');
+
+		$system = $this->Systems->get(2);
+	
         $diarypatients = TableRegistry::get('Diarypatients');
         
         setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
@@ -151,8 +162,8 @@ class DiarypatientsController extends AppController
 		       
 		$currentView = 'DiarypatientsIndex';
 		       
-        $this->set(compact('diary', 'currentDate', 'promoter', 'currentView', 'namePromoter'));
-        $this->set('_serialize', ['diary', 'currentDate', 'promoter', 'currentView', 'namePromoter']);
+        $this->set(compact('system', 'diary', 'currentDate', 'promoter', 'currentView', 'namePromoter'));
+        $this->set('_serialize', ['system', 'diary', 'currentDate', 'promoter', 'currentView', 'namePromoter']);
     }
     public function indexMonth()
     {
@@ -649,9 +660,7 @@ class DiarypatientsController extends AppController
 			->order(['Budgets.id' => 'ASC']); 
 			
 		$accountOpen = $openBudgets->count();
-		
-		$this->Flash->success(__('Presupuestos abiertos: ' . $accountOpen));
-		
+				
 		$accountWithActivity = 0;
 		$accountWithoutActivity = 0;
 		
@@ -679,14 +688,17 @@ class DiarypatientsController extends AppController
 				date_default_timezone_set('America/Caracas');
 
 				$currentDate = Time::now();
-				
-				$currentDate->hour(23)
+											
+				$currentDate->year($openBudget->created->year)
+					->month($openBudget->created->month)
+					->day($openBudget->created->day)
+					->hour(23)
 					->minute(59)
 					->second(59);
-					
+										
 				$currentDateProx = $currentDate;
 
-				$diarypatient->activity_date = $currentDate;  
+				$diarypatient->activity_date = $currentDate;
 				
 				$diarypatient->short_description_activity = "Verificar correo y teléfonos del paciente y confirmar presupuesto";
 				
@@ -702,15 +714,13 @@ class DiarypatientsController extends AppController
 				
 				$diarypatient->responsible_user = 'clnacional2017';
 
-				if (!($this->Diarypatients->save($diarypatient))) 
+				if ($this->Diarypatients->save($diarypatient)) 
 				{
-					$binnacles->add('controller', 'Diarypatients', 'budgetsWithoutActivity', 'Presupuesto sin actividad id: ' . $openBudget->id);
-				} 
+					$binnacles->add('controller', 'Diarypatients', 'budgetsWithoutActivity', 'Se creó actividad a presupuesto que no tenía. id: ' . $openBudget->id);
+				}
 			}
 		}
-		$this->Flash->success(__('Presupuestos con actividad: ' . $accountWithActivity));
-		$this->Flash->success(__('Presupuestos sin actividad: ' . $accountWithoutActivity));
-		
+				
 		unset($openBudgets, $openBudget);
 		
 		return;
@@ -815,10 +825,11 @@ class DiarypatientsController extends AppController
 		return;
 	}
 	public function reportDiary()
-	{	
+	{					
 		$this->loadModel('Systems');
 
 		$system = $this->Systems->get(2);
+		
         setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
         date_default_timezone_set('America/Caracas');
 		
@@ -831,7 +842,9 @@ class DiarypatientsController extends AppController
 		$binnacles = new BinnaclesController;
 
 	    if ($this->request->is('post')) 
-        {					
+        {		
+			$this->budgetsWithoutActivity();
+
 			if (isset($_POST['columnsReport']))
 			{
 				$columnsReport = $_POST['columnsReport'];
@@ -859,15 +872,14 @@ class DiarypatientsController extends AppController
 				$diary = $arrayResult['searchRequired'];
 				
 				$accountBudgets = $diary->count();
-				
-				// $this->Flash->success(__('Total presupuestos seleccionados: ' . $accountBudgets));
-		
+						
 				$additional = [];
 				$counter = [];
 				$counter['billedBudgets'] = 0;
 				$counter['closedBudgets'] = 0;
 				$counter['overdueBudgets'] = 0;
 				$counter['currentBudgets'] = 0;
+				$counter['notSend'] = 0;
 				$counter['closedActivities'] = 0;
 				$counter['pendingActivities'] = 0;
 				$counter['delayedActivities'] = 0;
@@ -899,6 +911,11 @@ class DiarypatientsController extends AppController
 						{
 								$additional[$diarys->id]['budgetStatus'] = "Cerrado";
 								$counter['closedBudgets']++;
+						}
+						elseif ($diarys->budget->number_budget == null)
+						{
+							$additional[$diarys->id]['budgetStatus'] = "No enviado";
+							$counter['notSend']++;							
 						}
 						else
 						{
@@ -955,17 +972,7 @@ class DiarypatientsController extends AppController
 				$this->Flash->error(__('No se encontraron actividades'));
 				return $this->redirect(['controller' => 'Users', 'action' => 'wait']);
 			}
-			/*
-			$this->Flash->success(__('Presupuestos facturados: ' . $counter['billedBudgets']));
-			$this->Flash->success(__('Presupuestos vigentes: ' . $counter['currentBudgets']));
-			$this->Flash->success(__('Presupuestos vencidos : ' . $counter['overdueBudgets']));
-			$this->Flash->success(__('Actividades pendientes de la agenda: ' . $counter['pendingActivities']));
-			$this->Flash->success(__('Actividades atrasadas de la agenda: ' . $counter['delayedActivities']));
-			$this->Flash->success(__('Presupuesto en bolívares : ' . $counter['bolivaresBudget']));
-			$this->Flash->success(__('Monto presupuestos en bolívares: ' . $counter['AmountBolivares']));
-			$this->Flash->success(__('Presupuestos en dólares: ' . $counter['dollarsBudget']));
-			$this->Flash->success(__('Monto presupuestos en dólares: ' . $counter['AmountDollars']));
-			*/			
+			
 			$swImpresion = 1;
 							
 			$this->set(compact('system', 'swImpresion', 'diary', 'additional', 'currentDate', 'counter', 'arrayMark'));
@@ -982,13 +989,13 @@ class DiarypatientsController extends AppController
 	{
 		$arrayMark = [];
 		
+		isset($columnsReport['Users.full_name']) ? $arrayMark['Users.full_name'] = 'siExl' : $arrayMark['Users.full_name'] = 'noExl';
+		isset($columnsReport['Users.cell_phone']) ? $arrayMark['Users.cell_phone'] = 'siExl' : $arrayMark['Users.cell_phone'] = 'noExl';
+		isset($columnsReport['Users.email']) ? $arrayMark['Users.email'] = 'siExl' : $arrayMark['Users.email'] = 'noExl';
 		isset($columnsReport['Budgets.coin']) ? $arrayMark['Budgets.coin'] = 'siExl' : $arrayMark['Budgets.coin'] = 'noExl';
 		isset($columnsReport['Budgets.amount_budget']) ? $arrayMark['Budgets.amount_budget'] = 'siExl' : $arrayMark['Budgets.amount_budget'] = 'noExl';
 		isset($columnsReport['Budgets.number_bill']) ? $arrayMark['Budgets.number_bill'] = 'siExl' : $arrayMark['Budgets.number_bill'] = 'noExl';
 		isset($columnsReport['Budgets.amount_bill']) ? $arrayMark['Budgets.amount_bill'] = 'siExl' : $arrayMark['Budgets.amount_bill'] = 'noExl';
-		isset($columnsReport['Users.full_name']) ? $arrayMark['Users.full_name'] = 'siExl' : $arrayMark['Users.full_name'] = 'noExl';
-		isset($columnsReport['Users.cell_name']) ? $arrayMark['Users.cell_name'] = 'siExl' : $arrayMark['Users.cell_name'] = 'noExl';
-		isset($columnsReport['Users.email']) ? $arrayMark['Users.email'] = 'siExl' : $arrayMark['Users.email'] = 'noExl';
 		isset($columnsReport['additional.namePromoter']) ? $arrayMark['additional.namePromoter'] = 'siExl' : $arrayMark['additional.namePromoter'] = 'noExl';
 		isset($columnsReport['additional.cellPromoter']) ? $arrayMark['additional.cellPromoter'] = 'siExl' : $arrayMark['additional.cellPromoter'] = 'noExl';
 		isset($columnsReport['additional.emailPromoter']) ? $arrayMark['additional.emailPromoter'] = 'siExl' : $arrayMark['additional.emailPromoter'] = 'noExl';
