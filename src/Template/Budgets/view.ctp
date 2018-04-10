@@ -97,20 +97,23 @@
 <div id="menu-mas-budget" style="display:none;" class="menumas">
 	<p>
 		<?php if ($controller == null): ?>
-			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger']) ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'Cerrar']) ?>
 		<?php elseif ($controller == 'Users' && $action == 'viewGlobal'): ?>
-			<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $idUser, 'Users', 'indexPatientUser', $idPromoter], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger']) ?>
+			<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $idUser, 'Users', 'indexPatientUser', $idPromoter], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'Cerrar']) ?>
 		<?php elseif ($controller == 'Budgets' && $action == 'bill'): ?>
 			<?php $budgetSurgery = $budget->number_budget . ' - ' . $budget->surgery; ?>
-			<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $budget->id, $budgetSurgery], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger']) ?>
+			<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $budget->id, $budgetSurgery], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'Cerrar']) ?>
 		<?php elseif ($controller == 'Budgets' && $action == 'mainBudget'): ?>
-			<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger']) ?>
-			<?= $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'budget', $idUser, $budget->patient->id, $idPromoter, 'Budgets', 'mainBudget', $budget->id, $budget->surgery], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar presupuesto']) ?> 
-			<?= $this->Form->postLink(__(''), ['controller' => 'Budgets', 'action' => 'delete', $budget->id, 'Budgets', 'mainBudget'], ['confirm' => __('Está seguro de que desea eliminar el presupuesto?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar']) ?>
+			<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'Cerrar']) ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'budget', $idUser, $budget->patient->id, $idPromoter, 'Budgets', 'mainBudget', $budget->id, $budget->surgery], ['class' => 'glyphicon glyphicon-edit btn btn-danger', 'title' => 'Modificar presupuesto']) ?> 
+			<?= $this->Form->postLink(__(''), ['controller' => 'Budgets', 'action' => 'delete', $budget->id, 'Budgets', 'mainBudget'], ['confirm' => __('Está seguro de que desea eliminar el presupuesto?'), 'class' => 'glyphicon glyphicon-trash btn btn-danger', 'title' => 'Eliminar']) ?>
 			<?php else: ?>
 			<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger']) ?>
 		<?php endif; ?>
-		<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'Cerrar']) ?>
 		<a href="#" id="menu-menos" title="Cerrar opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
 	</p>
 </div>

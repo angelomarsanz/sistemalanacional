@@ -185,6 +185,10 @@ class UsersController extends AppController
 
     public function indexPatientUser($idPromoter = null, $controller = null, $action = null, $promoter = null)
     {
+		$this->loadModel('Systems');
+
+		$system = $this->Systems->get(2);
+				
         if ($this->request->is('post')) 
         {
             $users = $this->Users->find('all')->where
@@ -218,8 +222,8 @@ class UsersController extends AppController
 		
         $currentView = 'indexPatientUser';
         
-        $this->set(compact('users', 'promoter', 'currentView'));
-        $this->set('_serialize', ['users', 'promoter', 'currentView']);
+        $this->set(compact('system', 'users', 'promoter', 'currentView'));
+        $this->set('_serialize', ['system', 'users', 'promoter', 'currentView']);
     }
 
     public function indexBasic()

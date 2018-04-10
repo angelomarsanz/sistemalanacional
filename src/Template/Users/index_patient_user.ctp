@@ -64,6 +64,7 @@
 
 <div class="row">
     <div class="col-md-8">
+		<input type="hidden" id="ambiente" value=<?= $system->logo ?>>
     	<div class="page-header">
     	    <p>
     	    <?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'addBasic', 'Users', 'indexPatientUser'], ['class' => 'glyphicon glyphicon-plus btn btn-sm btn-default', 'title' => 'Agregar paciente', 'style' => 'color: #9494b8']) ?>
@@ -125,11 +126,25 @@
 <script>
     function log(id, promoter) 
     {
-        $.redirect('/sln/users/indexPatientUser', { id : id, controller : 'Users', action : 'wait', name : promoter, }); 
+		if ($('#ambiente').val() == 'Producción')
+		{
+			$.redirect('/sln/users/indexPatientUser', { id : id, controller : 'Users', action : 'wait', name : promoter, }); 
+		}
+		else
+		{
+			$.redirect('/dsln/users/indexPatientUser', { id : id, controller : 'Users', action : 'wait', name : promoter, });
+		}
     }
     function logPatient(id) 
     {
-        $.redirect('/sln/users/viewGlobal', { id : id, controller : 'Users', action : 'indexPatientUser' }); 
+		if ($('#ambiente').val() == 'Producción')
+		{
+			$.redirect('/sln/users/viewGlobal', { id : id, controller : 'Users', action : 'indexPatientUser' }); 
+		}
+		else
+		{
+			$.redirect('/dsln/users/viewGlobal', { id : id, controller : 'Users', action : 'indexPatientUser' }); 
+		}
     }
     $(document).ready(function(){ 
         $('#promoter').autocomplete(

@@ -1,3 +1,5 @@
 Lista de programas que usan POST:
 Por ahora se usará el campo: logo de system, hasta que se libere el cache
 /template/budgets/bill.ctp
+/template/users/index_patient_user.ctp
+/template/users/view_global.ctp

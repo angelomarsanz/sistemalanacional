@@ -57,7 +57,7 @@
 		<?php else: ?>
 			<input id="coin" type="hidden" value="DOLLAR">
 		<?php endif; ?>
-		<input id="id-promoter" type="hidden" value=<?= $promoter->id ?>>
+		<input id="id-promoter" type="hidden" value=<?= $idPromoter ?>>
     </div>
     <div class="row">
         <div class="col col-sm-4">
@@ -208,7 +208,7 @@
 																		$user->full_name,
 																		$promoter->full_name, 
 																		$promoter->cell_phone, 
-																		$promoter->email, 'Users', 'viewGlobal', $user->id, $promoter->id], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto']);
+																		$promoter->email, 'Users', 'viewGlobal', $user->id, $idPromoter], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto']);
 																else: 
 																	$pdf = ".pdf";
 																	$pos = strpos($budgets->initial_budget, $pdf);
@@ -225,13 +225,13 @@
 																			$user->full_name,
 																			$promoter->full_name, 
 																			$promoter->cell_phone, 
-																			$promoter->email, 'Users', 'viewGlobal', $user->id, $promoter->id], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto']);
+																			$promoter->email, 'Users', 'viewGlobal', $user->id, $idPromoter], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto']);
 																	   endif;
 																	endif;
 																endif;
 															?>													
 														</td>
-														<td><?= $this->Html->link(__(''), ['controller' => 'budgets', 'action' => 'budget', $user->id, $user->patients[0]['id'], $user->parent_user, 'Users', 'viewGlobal', $budgets->id, $budgets->surgery], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar presupuesto']) ?></td> 
+														<td><?= $this->Html->link(__(''), ['controller' => 'budgets', 'action' => 'budget', $user->id, $user->patients[0]['id'], $idPromoter, 'Users', 'viewGlobal', $budgets->id, $budgets->surgery], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar presupuesto']) ?></td> 
 														<td><?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $budgets->id, 'Users', 'viewGlobal', $user->id, $idPromoter], ['confirm' => __('Está seguro de que desea eliminar el presupuesto?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar']) ?></td>
 													</tr>
 												<?php endif; ?>
@@ -392,7 +392,7 @@
 			<a href=<?= '/dsln/users/editBasic/' . $user->id . '/Users/viewGlobal/' . $user->parent_user . '/' . $promoter->surname . ' ' . $promoter->first_name ?> id="editar-paciente" title="Modificar datos del paciente" class='glyphicon glyphicon-edit btn btn-danger'></a>		
 		<?php endif; ?>
 		<?= $this->Form->postLink(__(''), ['action' => 'deleteBasic', $user->id, 'Users', 'indexPatientUser' ], ['confirm' => __('Está seguro de que desea eliminar el paciente?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar datos del paciente', 'style' => 'padding: 7px 12px;']) ?>
-        <a href="#" id="menu-menos" title="Cerrar opciones" class='glyphicon glyphicon-remove btn btn-danger'></a>
+        <a href="#" id="menu-menos" title="Menos opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
         </p>
     </div>
 </div>

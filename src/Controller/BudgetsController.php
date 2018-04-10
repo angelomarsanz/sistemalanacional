@@ -496,14 +496,14 @@ class BudgetsController extends AppController
 		
 		$user = $this->Budgets->Patients->Users->get($idUser);
 		
-		$promoter = $this->Budgets->Patients->Users->get($idPromoter);
+		$promoter = $this->Budgets->Patients->Users->get($user->parent_user);
 		
 		$this->loadModel('Services');		
 		
 		$services = $this->Services->find('list', ['limit' => 200, 'conditions' => [['Services.registration_status' => 'ACTIVO'], ['OR' => [['Services.cost_bolivars >' => 0], ['Services.cost_dollars >' => 0]]]], 'order' => ['Services.service_description' => 'ASC']]);
               
-        $this->set(compact('system', 'patient', 'user', 'promoter', 'controller', 'action', 'services', 'idBudget', 'previousSurgery'));
-        $this->set('_serialize', ['system', 'patient', 'user', 'promoter', 'controller', 'action', 'services', 'idBudget', 'previousSurgery']);
+        $this->set(compact('system', 'patient', 'user', 'promoter', 'controller', 'action', 'services', 'idBudget', 'previousSurgery', 'idPromoter'));
+        $this->set('_serialize', ['system', 'patient', 'user', 'promoter', 'controller', 'action', 'services', 'idBudget', 'previousSurgery', 'idPromoter']);
     }
     public function correo()
     {
@@ -624,7 +624,7 @@ class BudgetsController extends AppController
 			}
 			elseif ($controller == 'Budgets' && $action == 'mainBudget')  
 			{
-				return $this->redirect(['controller' => $controller, 'action' => $action, $_POST['idBudget']]);
+				return $this->redirect(['controller' => $controller, 'action' => $action, $arrayResult['id']]);
 			}
         }           
     }
@@ -852,7 +852,9 @@ class BudgetsController extends AppController
             
             $name = $this->request->query['term'];
             $results = $this->Budgets->find('all', [
-                'conditions' => ['Budgets.number_budget LIKE' => $name . '%']]);
+                'conditions' => 
+					[['Budgets.number_budget LIKE' => $name . '%'],
+					['OR' => ['Budgets.deleted_record IS NULL', 'Budgets.deleted_record' => false]]]]);
             $resultsArr = [];
             foreach ($results as $result) 
             {

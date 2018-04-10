@@ -30,7 +30,7 @@
 			<input id="controller" type="hidden" value=<?= $controller ?>>
 			<input id="action" type="hidden" value=<?= $action ?>>
 			<input id="id-budget" type="hidden" value=<?= $idBudget ?>>
-			<input id="id-promoter" type="hidden" value=<?= $promoter->id ?>>
+			<input id="id-promoter" type="hidden" value=<?= $idPromoter ?>>
 			<p><b>Paciente:</b></p>
 			<p><?= $user->full_name ?></p>
 			<p><b>Presupuesto solicitado originalmente:</b></P>
@@ -41,7 +41,7 @@
 			?>
 			<button id="aceptar" type="button" title="Guardar" class="glyphicon glyphicon-floppy-disk btn btn-success"></button>
 			<?php if ($controller == 'Users' && $action == 'viewGlobal'): ?>
-				<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $user->id, 'Users', 'indexPatientUser', $promoter->id], ['class' => 'glyphicon glyphicon-remove btn btn-primary', 'title' => 'Cancelar']) ?>
+				<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $user->id, 'Users', 'indexPatientUser', $idPromoter], ['class' => 'glyphicon glyphicon-remove btn btn-primary', 'title' => 'Cancelar']) ?>
 			<?php elseif ($controller == 'Budgets' && $action == 'mainBudget'): ?>
 				<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $idBudget], ['class' => 'glyphicon glyphicon-remove btn btn-primary', 'title' => 'Cancelar']) ?>				
 			<?php else: ?>
