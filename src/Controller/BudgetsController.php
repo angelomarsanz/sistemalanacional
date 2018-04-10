@@ -44,7 +44,7 @@ class BudgetsController extends AppController
         {
             if ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Administrador(a) de la clínica' )
             {
-                if(in_array($this->request->action, ['edit', 'view', 'budget', 'multilevel', 'addBudget', 'restore', 'delete', 'mainBudget', 'bill']))
+                if(in_array($this->request->action, ['edit', 'view', 'budget', 'multilevel', 'addBudget', 'restore', 'delete', 'mainBudget', 'bill', 'findBudget']))
                 {
                     return true;
                 }

@@ -26,7 +26,17 @@ class CommissionsController extends AppController
         {
             if ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Administrador(a) de la clínica')
             {
-                if(in_array($this->request->action, ['add', 'addCommission']))
+                if(in_array($this->request->action, 
+					['index', 
+					'add',
+					'addCommisions',
+					'edit',
+					'delete',
+					'arrayErrors',
+					'reportCommissions',
+					'markColumns',
+					'mailCommissions'
+					]))
                 {
                     return true;
                 }

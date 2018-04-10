@@ -25,13 +25,20 @@ class EmployeesController extends AppController
     {
         if(isset($user['role']))
         {
-            if ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Coordinador(a)' )
+            if ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Administrador(a) de la clínica' )
+            {
+                if(in_array($this->request->action, ['add', 'edit', 'restore', 'reportEmployees', 'markColumns']))
+                {
+                    return true;
+                }
+            }
+            if ($user['role'] === 'Coordinador(a)' )
             {
                 if(in_array($this->request->action, ['add', 'edit', 'restore']))
                 {
                     return true;
                 }
-            }  
+            }			
             if ($user['role'] === 'Promotor(a)' || $user['role'] === 'Promotor(a) independiente')
             {
                 if(in_array($this->request->action, ['addAutomatic', 'edit', 'restore']))

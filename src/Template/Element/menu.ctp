@@ -203,14 +203,6 @@
                         </li>
 
                         <?php if (isset($currentView)): ?>    
-                            <?php if ($currentView == 'multilevel'): ?>
-                                <form class="navbar-form navbar-left" role="search">
-                                    <div class="form-group">
-                                        <input type="text" id="promoter" class="form-control" placeholder="Buscar promotor..." title="Escriba el primer apellido del promotor"/>
-                                    </div>
-                                </form>
-                            <?php endif; ?>
-
                             <?php if ($currentView == 'usersViewGlobal' || $currentView == 'indexPatientUser'): ?>
                                 <form class="navbar-form navbar-left" role="search">
                                     <div class="form-group">
