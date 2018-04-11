@@ -2633,4 +2633,7 @@ class UsersController extends AppController
 			return;
 		}
 	}
+	public function redetronic()
+	{
+	}
 }

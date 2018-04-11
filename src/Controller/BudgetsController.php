@@ -672,7 +672,8 @@ class BudgetsController extends AppController
             'Users.second_surname',
             'Users.role'])
             ->contain(['Patients' => ['Users']])
-            ->where(['OR' => ['Users.deleted_record IS NULL', 'Users.deleted_record' => false]])
+            ->where([['OR' => ['Users.deleted_record IS NULL', 'Users.deleted_record' => false]],
+				['OR' => ['Budgets.deleted_record IS NULL', 'Budgets.deleted_record' => false]]])
             ->order(['Users.surname' => 'ASC', 'Users.second_surname' => 'ASC', 'Users.first_name' => 'ASC', 'Users.second_name' => 'ASC', 'Budgets.application_date' => 'DESC']);
 
         $commissions = TableRegistry::get('Commissions');
