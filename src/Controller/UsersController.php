@@ -198,6 +198,7 @@ class UsersController extends AppController
                 ->order(['Users.surname' => 'ASC', 'Users.second_surname' => 'ASC', 'Users.first_name' => 'ASC', 'Users.second_name' => 'ASC']);
 
             $promoter = $_POST['name'];
+			$idPromoter = $_POST['id'];
         }
         else
         {
@@ -222,8 +223,8 @@ class UsersController extends AppController
 		
         $currentView = 'indexPatientUser';
         
-        $this->set(compact('system', 'users', 'promoter', 'currentView'));
-        $this->set('_serialize', ['system', 'users', 'promoter', 'currentView']);
+        $this->set(compact('system', 'users', 'promoter', 'currentView', 'idPromoter'));
+        $this->set('_serialize', ['system', 'users', 'promoter', 'currentView', 'idPromoter']);
     }
 
     public function indexBasic()
@@ -1716,7 +1717,7 @@ class UsersController extends AppController
             {
                 $this->Flash->error(__('El paciente no pudo ser restaurado'));
             }
-            return $this->redirect(['controller' => $controller, 'action' => $action, $id, 'Users', 'home']);
+            return $this->redirect(['controller' => $controller, 'action' => $action]);
         }
     }
 

@@ -386,11 +386,7 @@
         <a href="#" id="presupuestos" title="Ver presupuestos solicitados" class='glyphicon glyphicon-th-list btn btn-danger'></a>
         <a href="#" id="agenda-dia" title="Ver agenda del día" class='glyphicon glyphicon-calendar btn btn-danger'></a>
         <a href="#" id="agenda-futura" title="Ver agenda futura" class='glyphicon glyphicon-list-alt btn btn-danger'></a>  
-		<?php if ($system->logo == 'Producción'): ?>
-			<a href=<?= '/sln/users/editBasic/' . $user->id . '/Users/viewGlobal/' . $user->parent_user . '/' . $promoter->surname . ' ' . $promoter->first_name ?> id="editar-paciente" title="Modificar datos del paciente" class='glyphicon glyphicon-edit btn btn-danger'></a>
-		<?php else: ?>
-			<a href=<?= '/dsln/users/editBasic/' . $user->id . '/Users/viewGlobal/' . $user->parent_user . '/' . $promoter->surname . ' ' . $promoter->first_name ?> id="editar-paciente" title="Modificar datos del paciente" class='glyphicon glyphicon-edit btn btn-danger'></a>		
-		<?php endif; ?>
+		<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'editBasic', $user->id, 'Users', 'viewGlobal', $idPromoter, $promoter->surname . ' ' . $promoter->first_name], ['id' => 'editar-paciente', 'class' => 'glyphicon glyphicon-edit btn btn-danger', 'title' => 'Modificar datos del paciente']) ?>
 		<?= $this->Form->postLink(__(''), ['action' => 'deleteBasic', $user->id, 'Users', 'indexPatientUser' ], ['confirm' => __('Está seguro de que desea eliminar el paciente?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar datos del paciente', 'style' => 'padding: 7px 12px;']) ?>
         <a href="#" id="menu-menos" title="Menos opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
         </p>

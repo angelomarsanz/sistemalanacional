@@ -96,8 +96,8 @@
 						<tr>
 							<td><?= h($user->full_name) ?></td>
 							<td class="actions">
-								<?= $this->Html->link('', ['controller' => 'Users', 'action' => 'viewGlobal', $user->id, 'Users', 'indexPatientUser', $user->parent_user], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver']) ?>
-								<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'editBasic', $user->id, 'Users', 'indexPatientUser', $user->parent_user, $promoter], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar']) ?>
+								<?= $this->Html->link('', ['controller' => 'Users', 'action' => 'viewGlobal', $user->id, 'Users', 'indexPatientUser', $idPromoter], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver']) ?>
+								<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'editBasic', $user->id, 'Users', 'indexPatientUser', $idPromoter, $promoter], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar']) ?>
 								<?= $this->Form->postLink(__(''), ['action' => 'deleteBasic', $user->id, 'Users', 'indexPatientUser' ], ['confirm' => __('Está seguro de que desea eliminar el paciente?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar']) ?>
 							</td>
 						</tr>
