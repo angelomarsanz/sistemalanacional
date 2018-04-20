@@ -61,9 +61,14 @@
     </div>
     <div class="row">
         <div class="col col-sm-4">
-            <?= $this->Html->image('../files/users/profile_photo/' . $user->profile_photo_dir . '/'. $user->profile_photo, ['url' => ['controller' => 'users', 'action' => 'view', $current_user['id']], 'class' => 'img-thumbnail img-responsive']) ?>
-        </div>
+			<?php if (isset($user->profile_photo_dir)): ?>
+				<?= $this->Html->image('../files/users/profile_photo/' . $user->profile_photo_dir . '/'. $user->profile_photo, ['url' => ['controller' => 'users', 'action' => 'view', $current_user['id']], 'class' => 'img-thumbnail img-responsive']) ?>
+			<?php endif; ?>
+		</div>
         <div class="col col-sm-8">    
+            <br />
+                <b>Nro. de identificación del paciente:</b>&nbsp;<?= h($user->type_of_identification . '-' . $user->identidy_card) ?>
+            <br />		
             <br />
                 <b>Teléfono del paciente:</b>&nbsp;<?= h($user->cell_phone) ?>
             <br />
@@ -74,7 +79,10 @@
                 <b>Promotor responsable de este paciente:</b>&nbsp;<?= h($promoter->full_name) ?>
             <br />
             <br />
-                <b>Teléfono del promotor responsable:</b>&nbsp;<?= h($promoter->cell_phone) ?>
+                <b>Teléfono del promotor:</b>&nbsp;<?= h($promoter->cell_phone) ?>
+            <br />
+            <br />
+                <b>Email del promotor:</b>&nbsp;<?= h($promoter->email) ?>
             <br />
             <br />
 
@@ -456,16 +464,20 @@ $(document).ready(function(){
 		}
 	});
 	
-    $('#menu-mas').on('click',function()
+    $('#menu-mas').click(function(e)
     {
-        $('#menu-menos-paciente').hide();
-        $('#menu-mas-paciente').show();
-    });
-    $('#menu-menos').on('click',function()
+		e.preventDefault();
+        $('#menu-menos-paciente').toggle();
+		$('#menu-mas-paciente').toggle();        
+	});
+	
+    $('#menu-menos').click(function(e)
     {
-        $('#menu-mas-paciente').hide();
-        $('#menu-menos-paciente').show();
+		e.preventDefault();
+        $('#menu-mas-paciente').toggle();
+		$('#menu-menos-paciente').toggle();
     });
+	
     $('#patient').autocomplete(
     {
         source:'<?php echo Router::url(array("controller" => "Users", "action" => "findPatient")); ?>',
