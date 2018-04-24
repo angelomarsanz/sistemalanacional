@@ -487,4 +487,96 @@ $(document).ready(function(){
 		<button type="button" id="menu-menos" title="Menos opciones" class="glyphicon glyphicon-minus btn btn-danger" onclick="mostrarMenos()"></button>
         </p>
     </div>
+<<<<<<< HEAD
 </div>
+=======
+</div>
+<script>
+	idService = 0;
+    function log(id) 
+    {
+		if ($('#ambiente').val() == 'Producción')
+		{
+			$.redirect('/sln/users/viewGlobal', { id : id, controller : 'Users', action : 'viewGlobal' }); 
+		}
+		else
+		{
+			$.redirect('/dsln/users/viewGlobal', { id : id, controller : 'Users', action : 'viewGlobal' });
+		}
+    }
+$(document).ready(function(){ 
+    $('#mas-datos').on('click',function(){
+        $('#presupuestos-solicitados').slideUp();
+        $('#agenda-dia-paciente').slideUp();
+        $('#agenda-futura-paciente').slideUp();
+        $('#mas-datos-paciente').toggle('slow');
+    });
+    $('#presupuestos').on('click',function(){
+        $('#mas-datos-paciente').slideUp();
+        $('#agenda-dia-paciente').slideUp();
+        $('#agenda-futura-paciente').slideUp();
+        $('#presupuestos-solicitados').toggle('slow');
+    });
+    $('#agenda-dia').on('click',function(){
+        $('#mas-datos-paciente').slideUp();
+        $('#presupuestos-solicitados').slideUp();
+        $('#agenda-futura-paciente').slideUp();
+        $('#agenda-dia-paciente').toggle('slow');
+    });
+    $('#agenda-futura').on('click',function(){
+        $('#mas-datos-paciente').slideUp();
+        $('#presupuestos-solicitados').slideUp();
+        $('#agenda-dia-paciente').slideUp();
+        $('#agenda-futura-paciente').toggle('slow');
+    });
+    $('#agregar-presupuesto').on('click',function(){
+        $('#agregar-presupuesto-paciente').toggle('slow');
+    });
+
+    $('#aceptar').click(function(e)
+    {
+        e.preventDefault();
+
+		if ($('#ambiente').val() == 'Producción')
+		{
+			$.redirect('/sln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
+				firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
+				emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
+				surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
+				coin : $('#coin').val(), controller : 'Users', action : 'viewGlobal', idPromoter : $('#id-promoter').val() }); 
+		}
+		else
+		{
+			$.redirect('/dsln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
+				firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
+				emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
+				surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
+				coin : $('#coin').val(), controller : 'Users', action : 'viewGlobal', idPromoter : $('#id-promoter').val() });
+		}
+	});
+	
+    $('#menu-mas').click(function(e)
+    {
+		e.preventDefault();
+        $('#menu-menos-paciente').toggle();
+		$('#menu-mas-paciente').toggle();        
+	});
+	
+    $('#menu-menos').click(function(e)
+    {
+		e.preventDefault();
+        $('#menu-mas-paciente').toggle();
+		$('#menu-menos-paciente').toggle();
+    });
+	
+    $('#patient').autocomplete(
+    {
+        source:'<?php echo Router::url(array("controller" => "Users", "action" => "findPatient")); ?>',
+        minLength: 3,             
+        select: function( event, ui ) {
+            log(ui.item.id);
+          }
+    });
+});
+</script>
+>>>>>>> origin/master

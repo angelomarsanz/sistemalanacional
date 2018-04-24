@@ -466,6 +466,7 @@ $(document).ready(function(){
 	
     $('#menu-mas').click(function(e)
     {
+<<<<<<< HEAD
 		e.preventDefault();
         $('#menu-menos-paciente').toggle();
 		$('#menu-mas-paciente').toggle();        
@@ -476,6 +477,15 @@ $(document).ready(function(){
 		e.preventDefault();
         $('#menu-mas-paciente').toggle();
 		$('#menu-menos-paciente').toggle();
+=======
+        $('#menu-menos-paciente').toggle();
+        $('#menu-mas-paciente').toggle();
+    });
+    $('#menu-menos').on('click',function()
+    {
+        $('#menu-mas-paciente').toggle();
+        $('#menu-menos-paciente').toggle();
+>>>>>>> origin/master
     });
 	
     $('#patient').autocomplete(

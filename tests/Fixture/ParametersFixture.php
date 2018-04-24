@@ -98,10 +98,17 @@ class ParametersFixture extends TestFixture
             'extra_column20' => 'Lorem ipsum dolor sit amet',
             'registration_status' => 'Lorem ipsum dolor sit amet',
             'reason_status' => 'Lorem ipsum dolor sit amet',
+<<<<<<< HEAD
             'date_status' => '2018-04-20 21:19:17',
             'responsible_user' => 'Lorem ipsum dolor sit amet',
             'created' => '2018-04-20 21:19:17',
             'modified' => '2018-04-20 21:19:17'
+=======
+            'date_status' => '2018-04-20 19:47:14',
+            'responsible_user' => 'Lorem ipsum dolor sit amet',
+            'created' => '2018-04-20 19:47:14',
+            'modified' => '2018-04-20 19:47:14'
+>>>>>>> origin/master
         ],
     ];
 }
