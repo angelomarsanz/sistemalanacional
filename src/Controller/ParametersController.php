@@ -3,11 +3,8 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 
-<<<<<<< HEAD
 use App\Controller\BinnaclesController;
 
-=======
->>>>>>> origin/master
 /**
  * Parameters Controller
  *
@@ -15,7 +12,6 @@ use App\Controller\BinnaclesController;
  */
 class ParametersController extends AppController
 {
-<<<<<<< HEAD
     public function isAuthorized($user)
     {
         if(isset($user['role']))
@@ -30,8 +26,6 @@ class ParametersController extends AppController
         }
         return parent::isAuthorized($user);
     }
-=======
->>>>>>> origin/master
 
     /**
      * Index method
@@ -91,21 +85,15 @@ class ParametersController extends AppController
      * @return \Cake\Network\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-<<<<<<< HEAD
     public function edit($id = null, $controller = null, $action = null)
     {
 		$binnacles = new BinnaclesController;
 		
-=======
-    public function edit($id = null)
-    {
->>>>>>> origin/master
         $parameter = $this->Parameters->get($id, [
             'contain' => []
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $parameter = $this->Parameters->patchEntity($parameter, $this->request->data);
-<<<<<<< HEAD
 			
 			$dollarPromoterPercentage = $parameter->dollar_promoter_percentage;
 			$parameter->dollar_promoter_percentage = $dollarPromoterPercentage;
@@ -157,17 +145,6 @@ class ParametersController extends AppController
         }
         $this->set(compact('parameter', 'controller', 'action'));
         $this->set('_serialize', ['parameter', 'controller', 'action']);
-=======
-            if ($this->Parameters->save($parameter)) {
-                $this->Flash->success(__('The parameter has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The parameter could not be saved. Please, try again.'));
-        }
-        $this->set(compact('parameter'));
-        $this->set('_serialize', ['parameter']);
->>>>>>> origin/master
     }
 
     /**
@@ -189,7 +166,6 @@ class ParametersController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
-<<<<<<< HEAD
 	
 	public function arrayErrors($arrayCake = null)
 	{
@@ -213,6 +189,4 @@ class ParametersController extends AppController
 		
 		return $error_msg;
 	}
-=======
->>>>>>> origin/master
 }
