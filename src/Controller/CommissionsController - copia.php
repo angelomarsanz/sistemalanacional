@@ -26,7 +26,17 @@ class CommissionsController extends AppController
         {
             if ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Administrador(a) de la clínica')
             {
-                if(in_array($this->request->action, ['add', 'addCommission']))
+                if(in_array($this->request->action, 
+					['index', 
+					'add',
+					'addCommisions',
+					'edit',
+					'delete',
+					'arrayErrors',
+					'reportCommissions',
+					'markColumns',
+					'mailCommissions'
+					]))
                 {
                     return true;
                 }
@@ -246,15 +256,36 @@ class CommissionsController extends AppController
 			
 			if ($typeBeneficiary == 'PROMOTOR')
 			{
-				$commission->amount = $amount * 0.03;
+				if ($coin == 'BOLIVAR')
+				{
+					$commission->amount = ($amount * $parameter->bolivar_promoter_percentage)/100;
+				}
+				else
+				{
+					$commission->amount = ($amount * $parameter->dollar_promoter_percentage)/100;
+				}
 			}
 			elseif ($typeBeneficiary == 'PROMOTOR-PADRE')
 			{
-				$commission->amount = $amount * 0.015;
+				if ($coin == 'BOLIVAR')
+				{
+					$commission->amount = ($amount * $parameter->bolivar_father_percentage)/100;
+				}
+				else
+				{
+					$commission->amount = ($amount * $parameter->dollar_father_percentage)/100;
+				}
 			}
 			else
 			{
-				$commission->amount = $amount * 0.005;
+				if ($coin == 'BOLIVAR')
+				{
+					$commission->amount = ($amount * $parameter->bolivar_grandfather_percentage)/100;
+				}
+				else
+				{
+					$commission->amount = ($amount * $parameter->dollar_grandfather_percentage)/100;
+				}
 			}
 			
 			$commission->coin = $coin;
@@ -299,188 +330,96 @@ class CommissionsController extends AppController
      * @return \Cake\Network\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($idBudget = null, $controller = null, $action = null)
+    public function edit($idCommission = null, $controller = null, $action = null)
     {
 		setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
 		date_default_timezone_set('America/Caracas');
 		
 		$binnacles = new BinnaclesController;
-		
-		$this->loadModel('Employees');
-		
+			
+		$commission = $this->Commissions->get($idCommission, [
+			'contain' => ['Users' => ['Employees'], 'Budgets']]);	
+						
 		if ($this->request->is(['patch', 'post', 'put'])) 
-		{
-			if (isset($_POST['id']))
-			{					
-				$this->Flash->success(__('id: ' . $_POST['id']));
-				
-				$commission = $this->Commissions->get($_POST['id'], [
-					'contain' => ['Users', 'Budgets']]);
-					
-				$previousCommission = $commission->toArray();
-																									
-				if (isset($_POST['swDelete']))
-				{						
-					$idBudget = $commission->budget_id;
-					$controller = 'Budgets';
-					$action = 'bill';
-					$commission->payment_method = null;
-					$commission->bank = null;
-					$commission->account = null;
-					$commission->account_type = null;
-					$commission->bank_address = null;
-					$commission->swif_bank = null;
-					$commission->aba_bank = null;
-					$commission->reference = null;
-					$commission->pay_day = null;
-					$commission->voucher = null;
-					$commission->voucher_dir = null;
-					$commission->status_commission = 'PENDIENTE DE PAGO';	
-				}
-				else
-				{
-					$idBudget = $commission->budget_id;
-					$controller = 'Budgets';
-					$action = 'bill';
-					$commission = $this->Commissions->patchEntity($commission, $this->request->data);
-											
-					$tmpTime = new Time();
-				
-					$tmpTime
-						->year($commission->pay_day->year)
-						->month($commission->pay_day->month)
-						->day($commission->pay_day->day)
-						->hour(23)
-						->minute(59)
-						->second(59);
+		{				
+			$previousCommission = $commission->toArray();
+																								
+			$commission = $this->Commissions->patchEntity($commission, $this->request->data);
 									
-					$commission->pay_day = $tmpTime;
-									
-					$commission->status_commission = 'PAGADA';
-				}
+			$tmpTime = new Time();
+		
+			$tmpTime
+				->year($commission->pay_day->year)
+				->month($commission->pay_day->month)
+				->day($commission->pay_day->day)
+				->hour(23)
+				->minute(59)
+				->second(59);
 							
-				if ($this->Commissions->save($commission)) 
-				{	
-					$arrayMail = [];
+			$commission->pay_day = $tmpTime;
+							
+			$commission->status_commission = 'PAGADA';
+						
+			if ($this->Commissions->save($commission)) 
+			{	
+				$arrayMail = [];
 
-					$arrayMail['mail'] = $commission->user->email;
-																				
-					if (isset($_POST['swDelete']))
-					{
-						$arrayMail['typeEmail'] = 'Eliminación';
-						$arrayMail['subject'] = '** Anulación ** pago de comisión presupuesto ' . $commission->budget->number_budget . ' - ' . $commission->budget->surgery;					
-						$arrayMail['promoter'] = $commission->user->full_name;
-						$arrayMail['identification'] = $commission->user->type_of_identification . '-' . $commission->user->identidy_card;
-						$arrayMail['coin'] = $commission->coin;
-						$arrayMail['amount'] = $commission->amount;
-						$arrayMail['budgetService'] = $commission->budget->number_budget . ' - ' . $commission->budget->surgery;
-						$arrayMail['account'] = $previousCommission['account'];
-						$arrayMail['reference'] = $previousCommission['reference'];
-						$arrayMail['date'] = $previousCommission['pay_day'];
-					}
-					else
-					{
-						if ($previousCommission['status_commission'] == 'PAGADA')
-						{ 
-							$arrayMail['typeEmail'] = 'Modificación';
-							$arrayMail['subject'] = '** Corrección ** pago de comisión presupuesto ' . $commission->budget->number_budget . ' - ' . $commission->budget->surgery;
-						}
-						else
-						{
-							$arrayMail['typeEmail'] = 'Original';
-							$arrayMail['subject'] = 'Pago de comisión presupuesto ' . $commission->budget->number_budget . ' - ' . $commission->budget->surgery;
-						}
-						$arrayMail['promoter'] = $commission->user->full_name;
-						$arrayMail['identification'] = $commission->user->type_of_identification . '-' . $commission->user->identidy_card;
-						$arrayMail['coin'] = $commission->coin;
-						$arrayMail['amount'] = $commission->amount;
-						$arrayMail['budgetService'] = $commission->budget->number_budget . ' - ' . $commission->budget->surgery;
-						$arrayMail['account'] = $commission->account;
-						$arrayMail['reference'] = $commission->reference;
-						$arrayMail['date'] = $commission->pay_day;
-					}
-														
-					$result = $this->mailCommission($arrayMail);
-					
-					if ($result == 0)
-					{
-						$this->Flash->success(__('Los datos del recibo de pago se registraron y el correo fue enviado exitosamente'));
-					}
-					else
-					{
-						$this->Flash->error(__('No se pudo enviar el correo al promotor'));
-						$binnacles->add('controller', 'Commissions', 'edit', 'No se pudo enviar el correo al promotor  ' . $commission->user->full_name);
-					}   
+				$arrayMail['mail'] = $commission->user->email;
+																			
+				if ($previousCommission['status_commission'] == 'PAGADA')
+				{ 
+					$arrayMail['typeEmail'] = 'Modificación';
+					$arrayMail['subject'] = '** Corrección ** pago de comisión presupuesto ' . $commission->budget->number_budget . ' - ' . $commission->budget->surgery;
 				}
 				else
 				{
-					if($commission->errors())
-					{
-						$error_msg = $this->arrayErrors($commission->errors());
-					}
-					else
-					{
-						$error_msg = ['Error desconocido'];
-					}
-					$this->Flash->error(__("No se pudo registrar el pago debido a: " . implode(" - ", $error_msg)));
-
-					foreach($error_msg as $noveltys)
-					{
-						$binnacles->add('controller', 'Commissions', 'edit', $noveltys . 'id ' . $_POST['id']);
-					}
+					$arrayMail['typeEmail'] = 'Original';
+					$arrayMail['subject'] = 'Pago de comisión presupuesto ' . $commission->budget->number_budget . ' - ' . $commission->budget->surgery;
 				}
+				
+				$arrayMail['promoter'] = $commission->user->full_name;
+				$arrayMail['identification'] = $commission->user->type_of_identification . '-' . $commission->user->identidy_card;
+				$arrayMail['coin'] = $commission->coin;
+				$arrayMail['amount'] = $commission->amount;
+				$arrayMail['budgetService'] = $commission->budget->number_budget . ' - ' . $commission->budget->surgery;
+				$arrayMail['account'] = $commission->account;
+				$arrayMail['reference'] = $commission->reference;
+				$arrayMail['date'] = $commission->pay_day;
+																
+				$result = $this->mailCommission($arrayMail);
+				
+				if ($result == 0)
+				{
+					$this->Flash->success(__('Los datos del recibo de pago se registraron y el correo fue enviado exitosamente'));
+				}
+				else
+				{
+					$this->Flash->error(__('No se pudo enviar el correo al promotor'));
+					$binnacles->add('controller', 'Commissions', 'edit', 'No se pudo enviar el correo al promotor  ' . $commission->user->full_name);
+				}    
 			}
 			else
 			{
-				$this->Flash->error(__('No se pudo registrar el pago'));
-				$binnacles->add('controller', 'Commissions', 'edit', 'No se pudo actualizar el pago del presupuesto ' . $idBudget);
-			}
-		}
-		
-		$budget = $this->Commissions->Budgets->get($idBudget);
+				if($commission->errors())
+				{
+					$error_msg = $this->arrayErrors($commission->errors());
+				}
+				else
+				{
+					$error_msg = ['Error desconocido'];
+				}
+				$this->Flash->error(__("No se pudo registrar el pago debido a: " . implode(" - ", $error_msg)));
 
-		$commissions = $this->Commissions->find('all', ['conditions' => ['Commissions.budget_id' => $idBudget], 
-				'order' => ['Commissions.id' => 'ASC'] ]);
-
-		foreach ($commissions as $commission)
-		{
-			if ($commission->type_beneficiary == 'PROMOTOR')
-			{
-				$cPromoter = $this->Commissions->get($commission->id);
-							
-				$promoters = $this->Employees->find('all', 
-					['conditions' => ['Employees.user_id' => $commission->user_id],					
-					'contain' => ['Users'],
-					'order' => ['Employees.created' => 'DESC']]);
-					
-				$promoterUser = $promoters->first();	
+				foreach($error_msg as $noveltys)
+				{
+					$binnacles->add('controller', 'Commissions', 'edit', $noveltys . 'id ' . $commission->id);
+				}
 			}
-			elseif ($commission->type_beneficiary == 'PROMOTOR-PADRE')
-			{
-				$cFather = $this->Commissions->get($commission->id);
-							
-				$parents = $this->Employees->find('all', 
-					['conditions' => ['Employees.user_id' => $commission->user_id],					
-					'contain' => ['Users'],
-					'order' => ['Employees.created' => 'DESC']]);
-					
-				$fatherUser = $parents->first();	
-			}
-			elseif ($commission->type_beneficiary == 'PROMOTOR-ABUELO')
-			{
-				$cGrandfather = $this->Commissions->get($commission->id);
-							
-				$grandparents = $this->Employees->find('all', 
-					['conditions' => ['Employees.user_id' => $commission->user_id],					
-					'contain' => ['Users'],
-					'order' => ['Employees.created' => 'DESC']]);
-					
-				$grandfatherUser = $grandparents->first();	
-			}
+			return $this->redirect(['controller' => 'Commissions', 'action' => 'index', $commission->budget_id, 'Budgets', 'bill']);
 		}
 				
-        $this->set(compact('budget', 'cPromoter', 'promoterUser', 'cFather', 'fatherUser', 'cGrandfather', 'grandfatherUser', 'controller', 'action'));
-        $this->set('_serialize', ['budget', 'cPromoter', 'promoterUser', 'cFather', 'fatherUser', 'cGrandfather', 'grandfatherUser', 'controller', 'action']);
+        $this->set(compact('commission', 'controller', 'action'));
+        $this->set('_serialize', ['commission', 'controller', 'action']);
     }
 
     /**
@@ -490,17 +429,80 @@ class CommissionsController extends AppController
      * @return \Cake\Network\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($idCommission = null, $controller = null, $action = null)
     {
         $this->request->allowMethod(['post', 'delete']);
-        $commission = $this->Commissions->get($id);
-        if ($this->Commissions->delete($commission)) {
-            $this->Flash->success(__('The commission has been deleted.'));
-        } else {
-            $this->Flash->error(__('The commission could not be deleted. Please, try again.'));
-        }
+		
+		$commission = $this->Commissions->get($idCommission, [
+			'contain' => ['Users' => ['Employees'], 'Budgets']]);	
+		
+		setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+		date_default_timezone_set('America/Caracas');
+		
+		$binnacles = new BinnaclesController;
+	
+		$previousCommission = $commission->toArray();
+																									
+		$commission->payment_method = null;
+		$commission->bank = null;
+		$commission->account = null;
+		$commission->account_type = null;
+		$commission->bank_address = null;
+		$commission->swif_bank = null;
+		$commission->aba_bank = null;
+		$commission->reference = null;
+		$commission->pay_day = null;
+		$commission->voucher = null;
+		$commission->voucher_dir = null;
+		$commission->status_commission = 'PENDIENTE DE PAGO';	
+							
+		if ($this->Commissions->save($commission)) 
+		{	
+			$arrayMail = [];
 
-        return $this->redirect(['action' => 'index']);
+			$arrayMail['mail'] = $commission->user->email;
+																		
+			$arrayMail['typeEmail'] = 'Eliminación';
+			$arrayMail['subject'] = '** Anulación ** pago de comisión presupuesto ' . $commission->budget->number_budget . ' - ' . $commission->budget->surgery;					
+			$arrayMail['promoter'] = $commission->user->full_name;
+			$arrayMail['identification'] = $commission->user->type_of_identification . '-' . $commission->user->identidy_card;
+			$arrayMail['coin'] = $commission->coin;
+			$arrayMail['amount'] = $commission->amount;
+			$arrayMail['budgetService'] = $commission->budget->number_budget . ' - ' . $commission->budget->surgery;
+			$arrayMail['account'] = $previousCommission['account'];
+			$arrayMail['reference'] = $previousCommission['reference'];
+			$arrayMail['date'] = $previousCommission['pay_day'];
+														
+			$result = $this->mailCommission($arrayMail);
+					
+			if ($result == 0)
+			{
+				$this->Flash->success(__('Los datos del recibo de pago se registraron y el correo fue enviado exitosamente'));
+			}
+			else
+			{
+				$this->Flash->error(__('No se pudo enviar el correo al promotor'));
+				$binnacles->add('controller', 'Commissions', 'edit', 'No se pudo enviar el correo al promotor  ' . $commission->user->full_name);
+			}  
+		}
+		else
+		{
+			if($commission->errors())
+			{
+				$error_msg = $this->arrayErrors($commission->errors());
+			}
+			else
+			{
+				$error_msg = ['Error desconocido'];
+			}
+			$this->Flash->error(__("No se pudo registrar el pago debido a: " . implode(" - ", $error_msg)));
+
+			foreach($error_msg as $noveltys)
+			{
+				$binnacles->add('controller', 'Commissions', 'edit', $noveltys . 'id ' . $commission->id);
+			}
+		}
+		return $this->redirect(['controller' => $controller, 'action' => $action, $commission->budget_id, 'Budgets', 'bill']);
     }
 	
 	public function arrayErrors($arrayCake = null)

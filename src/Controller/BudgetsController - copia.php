@@ -42,13 +42,20 @@ class BudgetsController extends AppController
     {
         if(isset($user['role']))
         {
-            if ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Coordinador(a)' )
+            if ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Administrador(a) de la clínica' )
             {
-                if(in_array($this->request->action, ['edit', 'view', 'budget', 'multilevel', 'addBudget', 'restore', 'delete']))
+                if(in_array($this->request->action, ['edit', 'view', 'budget', 'multilevel', 'addBudget', 'restore', 'delete', 'mainBudget', 'bill', 'findBudget']))
                 {
                     return true;
                 }
-            }  
+            }
+            elseif ($user['role'] === 'Coordinador(a)' )
+            {
+                if(in_array($this->request->action, ['edit', 'view', 'budget', 'multilevel', 'addBudget', 'restore', 'delete', 'mainBudget']))
+                {
+                    return true;
+                }
+            }			
             elseif ($user['role'] === 'Promotor(a)' || $user['role'] === 'Promotor(a) independiente')
             {
                 if(in_array($this->request->action, ['edit', 'view', 'budget', 'multilevel', 'addBudget', 'restore', 'delete']))
@@ -63,14 +70,6 @@ class BudgetsController extends AppController
                     return true;
                 }                
             }
-            elseif ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Administrador(a) de la clínica')
-            {
-                if(in_array($this->request->action, ['bill']))
-                {
-                    return true;
-                }                
-            }
-
         }
         return parent::isAuthorized($user);
     }
@@ -381,7 +380,7 @@ class BudgetsController extends AppController
      * @return \Cake\Network\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null, $controller = null, $action = null, $idUser = null, $idPatient = null, $idPromoter = null)
+    public function delete($id = null, $controller = null, $action = null, $idUser = null, $idPromoter = null)
     {
         $diarypatient = new DiarypatientsController;
         
@@ -418,26 +417,31 @@ class BudgetsController extends AppController
         {
             $result = 1;
         }
-
-        if (isset($controller))
-		{	
-			if ($controller == 'Diarypatients' && $action == 'index')
-			{ 
-				return $this->redirect(['controller' => 'Budgets', 'action' => 'budget', $idUser, $idPatient, $idPromoter, $controller, $action]);
+		
+		if (isset($controller))
+		{
+			if ($result == 0)
+			{
+				$this->Flash->success(__('El presupuesto fue eliminado exitosamente'));
 			}
-			elseif ($controller == 'Users' && $action == 'viewGlobal')
+			else
+			{
+				$this->Flash->error(__('No se pudo eliminar el presupuesto'));
+			}
+		
+			if ($controller == 'Users' && $action == 'viewGlobal')
 			{ 
-				if (isset($idPatient))
-				{
-					return $this->redirect(['controller' => 'Budgets', 'action' => 'budget', $idUser, $idPatient, $idPromoter, $controller, $action]);
-				}
-				else
-				{
+				return $this->redirect(['controller' => $controller, 'action' => $action, $idUser, 'Users', 'indexPatientUser', $idPromoter]);
+			}
+			else
+			{
 				return $this->redirect(['controller' => $controller, 'action' => $action, $idUser]);	
-				}
 			}
         }
-        return $result;
+		else
+		{
+			return $result;
+		}
     }
 
     public function restore($id = null)
@@ -482,20 +486,24 @@ class BudgetsController extends AppController
         return $result;
     }
 
-    public function budget($idUser = null, $idPatient = null, $idPromoter = null, $controller = null, $action = null)
-    {       
+    public function budget($idUser = null, $idPatient = null, $idPromoter = null, $controller = null, $action = null, $idBudget = null, $previousSurgery = null)
+    {   
+		$this->loadModel('Systems');
+
+		$system = $this->Systems->get(2);
+    
         $patient = $this->Budgets->Patients->get($idPatient);
 		
 		$user = $this->Budgets->Patients->Users->get($idUser);
 		
-		$promoter = $this->Budgets->Patients->Users->get($idPromoter);
+		$promoter = $this->Budgets->Patients->Users->get($user->parent_user);
 		
 		$this->loadModel('Services');		
 		
 		$services = $this->Services->find('list', ['limit' => 200, 'conditions' => [['Services.registration_status' => 'ACTIVO'], ['OR' => [['Services.cost_bolivars >' => 0], ['Services.cost_dollars >' => 0]]]], 'order' => ['Services.service_description' => 'ASC']]);
               
-        $this->set(compact('patient', 'user', 'promoter', 'controller', 'action', 'services'));
-        $this->set('_serialize', ['patient', 'user', 'promoter', 'controller', 'action', 'services']);
+        $this->set(compact('system', 'patient', 'user', 'promoter', 'controller', 'action', 'services', 'idBudget', 'previousSurgery', 'idPromoter'));
+        $this->set('_serialize', ['system', 'patient', 'user', 'promoter', 'controller', 'action', 'services', 'idBudget', 'previousSurgery', 'idPromoter']);
     }
     public function correo()
     {
@@ -505,7 +513,7 @@ class BudgetsController extends AppController
             ->subject('Presupuesto solicitado')
             ->send('Presupuesto');
     }
-    public function addBudget($id = null, $controller = null, $action = null)
+    public function addBudget()
     {       
         $this->autoRender = false;
 		
@@ -521,68 +529,84 @@ class BudgetsController extends AppController
 			
             $diarypatient = new DiarypatientsController;
 			
-            $arrayResult = $service->getService($_POST['service']);
-
-			$arrayMail['mail'] = $_POST['emailPatient'];
-			$arrayMail['surgery'] = $arrayResult['serviceDescription'];
-			$arrayMail['costBolivars'] = $arrayResult['costBolivars'];
-			$arrayMail['costDollars'] = $arrayResult['costDollars'];
-			$arrayMail['itemes'] = nl2br(htmlentities($arrayResult['itemes']));
-			$itemesBudget = $arrayResult['itemes'];
-		      
-			if (strtoupper($_POST['countryPatient']) == 'VENEZUELA')
+			if (isset($_POST['idBudget']))
 			{
-				$arrayResult = $this->addAutomatic($_POST['idPatient'], $arrayResult['serviceDescription'], 'BOLIVAR', $arrayMail['costBolivars']);                            
+				$result = $this->delete($_POST['idBudget']);
 			}
 			else
 			{
-				$arrayResult = $this->addAutomatic($_POST['idPatient'], $arrayResult['serviceDescription'], 'DOLLAR', $arrayMail['costDollars']);                            
+				$result = 0;
 			}
-
-			if($arrayResult['indicator'] == 0)
-			{				
-				$arrayMail['subject'] = 'Presupuesto ' . $arrayResult['codeBudget']; 
-				$arrayMail['firstName'] = $_POST['firstName'];
-				$arrayMail['surname'] = $_POST['surname'];
-				$arrayMail['identidy'] = $_POST['identificationPatient'];
-				$arrayMail['phone'] = $_POST['cellPatient'];
-				$arrayMail['address'] = $_POST['addressPatient'];
-				$arrayMail['country'] = $_POST['countryPatient'];
-				$arrayMail['codeBudget'] = $arrayResult['codeBudget']; 
-				$arrayMail['dateBudget'] = $arrayResult['dateBudget'];
-				$arrayMail['expirationDate'] = $arrayResult['expirationDate'];
-				$arrayMail['mailPromoter'] = $_POST['emailPromoter'];			
-				$arrayMail['namePromoter'] = $_POST['namePromoter'] . ' ' . $_POST['namePromoter'];
-				$arrayMail['phonePromoter'] = $_POST['cellPromoter'];
-				
-				$idBudget = $arrayResult['id'];
-				
-				$result = $iteme->add($idBudget, $itemesBudget);
-
-				$result = $user->mailBudget($arrayMail);
-				
-				$result = $diarypatient->addAutomatic($idBudget);
 			
-				if ($result == 0)
+			if ($result == 0)
+			{
+				$arrayResult = $service->getService($_POST['service']);
+
+				$arrayMail['mail'] = $_POST['emailPatient'];
+				$arrayMail['surgery'] = $arrayResult['serviceDescription'];
+				$arrayMail['costBolivars'] = $arrayResult['costBolivars'];
+				$arrayMail['costDollars'] = $arrayResult['costDollars'];
+				$arrayMail['itemes'] = nl2br(htmlentities($arrayResult['itemes']));
+				$itemesBudget = $arrayResult['itemes'];
+				  
+				if (strtoupper($_POST['countryPatient']) == 'VENEZUELA')
 				{
-					if ($this->Auth->user('username'))
+					$arrayResult = $this->addAutomatic($_POST['idPatient'], $arrayResult['serviceDescription'], 'BOLIVAR', $arrayMail['costBolivars']);                            
+				}
+				else
+				{
+					$arrayResult = $this->addAutomatic($_POST['idPatient'], $arrayResult['serviceDescription'], 'DOLLAR', $arrayMail['costDollars']);                            
+				}
+
+				if($arrayResult['indicator'] == 0)
+				{				
+					$arrayMail['subject'] = 'Presupuesto ' . $arrayResult['codeBudget']; 
+					$arrayMail['firstName'] = $_POST['firstName'];
+					$arrayMail['surname'] = $_POST['surname'];
+					$arrayMail['identidy'] = $_POST['identificationPatient'];
+					$arrayMail['phone'] = $_POST['cellPatient'];
+					$arrayMail['address'] = $_POST['addressPatient'];
+					$arrayMail['country'] = $_POST['countryPatient'];
+					$arrayMail['codeBudget'] = $arrayResult['codeBudget']; 
+					$arrayMail['dateBudget'] = $arrayResult['dateBudget'];
+					$arrayMail['expirationDate'] = $arrayResult['expirationDate'];
+					$arrayMail['mailPromoter'] = $_POST['emailPromoter'];			
+					$arrayMail['namePromoter'] = $_POST['namePromoter'] . ' ' . $_POST['namePromoter'];
+					$arrayMail['phonePromoter'] = $_POST['cellPromoter'];
+					
+					$idBudget = $arrayResult['id'];
+					
+					$result = $iteme->add($idBudget, $itemesBudget);
+					
+					$result = $diarypatient->addAutomatic($idBudget);
+									
+					if ($result == 0)
 					{
-						$this->Flash->success(__('El presupuesto se creo exitosamente'));
+						$result = $user->mailBudget($arrayMail);
+
+						if ($this->Auth->user('username'))
+						{
+							$this->Flash->success(__('El presupuesto se creo exitosamente'));
+						}
+						else
+						{
+							$this->Flash->success(__('Los datos se guardaron correctamente, por favor escriba su usuario, la contraseña y pulsa el botón ACCEDER'));
+							return $this->redirect(['action' => 'login']);                      
+						}
 					}
 					else
 					{
-						$this->Flash->success(__('Los datos se guardaron correctamente, por favor escriba su usuario, la contraseña y pulsa el botón ACCEDER'));
-						return $this->redirect(['action' => 'login']);                      
+						$this->Flash->error(__('No se pudo crear la agenda del paciente'));
 					}
 				}
 				else
 				{
-					$this->Flash->error(__('No se pudo crear la agenda del paciente'));
+					$this->Flash->error(__('No se pudieron registrar los datos del presupuesto solicitado'));
 				}
 			}
 			else
 			{
-				$this->Flash->error(__('No se pudieron registrar los datos del presupuesto solicitado'));
+				$this->Flash->error(__('No se pudo enviar el presupuesto'));
 			}
 		
             if (isset($_POST['controller']))
@@ -592,11 +616,15 @@ class BudgetsController extends AppController
             }
             if ($controller == 'Users' && $action == 'viewGlobal')  
 			{
-				return $this->redirect(['controller' => $controller, 'action' => $action, $_POST['idUser'], 'Users', 'indexPatientUser']);
+				return $this->redirect(['controller' => $controller, 'action' => $action, $_POST['idUser'], 'Users', 'indexPatientUser', $_POST['idPromoter']]);
 			}
 			elseif ($controller == 'Diarypatients' && $action == 'index')  
 			{
 				return $this->redirect(['controller' => $controller, 'action' => $action]);
+			}
+			elseif ($controller == 'Budgets' && $action == 'mainBudget')  
+			{
+				return $this->redirect(['controller' => $controller, 'action' => $action, $arrayResult['id']]);
 			}
         }           
     }
@@ -644,7 +672,8 @@ class BudgetsController extends AppController
             'Users.second_surname',
             'Users.role'])
             ->contain(['Patients' => ['Users']])
-            ->where(['OR' => ['Users.deleted_record IS NULL', 'Users.deleted_record' => false]])
+            ->where([['OR' => ['Users.deleted_record IS NULL', 'Users.deleted_record' => false]],
+				['OR' => ['Budgets.deleted_record IS NULL', 'Budgets.deleted_record' => false]]])
             ->order(['Users.surname' => 'ASC', 'Users.second_surname' => 'ASC', 'Users.first_name' => 'ASC', 'Users.second_name' => 'ASC', 'Budgets.application_date' => 'DESC']);
 
         $commissions = TableRegistry::get('Commissions');
@@ -824,7 +853,9 @@ class BudgetsController extends AppController
             
             $name = $this->request->query['term'];
             $results = $this->Budgets->find('all', [
-                'conditions' => ['Budgets.number_budget LIKE' => $name . '%']]);
+                'conditions' => 
+					[['Budgets.number_budget LIKE' => $name . '%'],
+					['OR' => ['Budgets.deleted_record IS NULL', 'Budgets.deleted_record' => false]]]]);
             $resultsArr = [];
             foreach ($results as $result) 
             {
@@ -834,4 +865,42 @@ class BudgetsController extends AppController
             exit(json_encode($resultsArr, JSON_FORCE_OBJECT));
         }
     }
+	public function mainBudget($idBudget = null)
+	{
+		$this->loadModel('Systems');
+
+		$system = $this->Systems->get(2);
+		
+		$currentView = 'mainBudget';
+		
+		if ($this->request->is(['patch', 'post', 'put']))
+        {      
+            if (isset($_POST['idBudget']))
+            {		
+				$idBudget = $_POST['idBudget'];
+			}
+		}
+		
+		if (isset($idBudget))
+		{
+			$budget = $this->Budgets->get($idBudget, 
+				['contain' => ['Patients' => ['Users']]]);
+									
+			$promoter = $this->Budgets->Patients->Users->get($budget->patient->user->parent_user);
+			
+			return $this->redirect(['controller' => 'Budgets', 'action' => 'view',
+				$idBudget,
+				$budget->patient->user->full_name,
+				$promoter->full_name,
+				$promoter->cell_phone,
+				$promoter->email,
+				'Budgets',
+				'mainBudget',
+				$budget->patient->user->id,
+				$promoter->id]);				
+		}
+
+        $this->set(compact('system', 'currentView'));
+        $this->set('_serialize', ['system', 'currentView']); 
+	}
 }

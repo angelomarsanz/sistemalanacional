@@ -686,7 +686,7 @@ class BudgetsController extends AppController
 		foreach ($vCommissions as $vCommission)
 		{
 			$keyArray = 'u' . $vCommission->user_id . 'b' . $vCommission->budget_id;
-			$arrayCommissions[$keyArray] = $vCommission->status_commission;
+			$arrayCommissions[$keyArray] = $vCommission->amount;
 		}	
 			
         $users = TableRegistry::get('Users');
@@ -724,7 +724,7 @@ class BudgetsController extends AppController
 		$this->loadModel('Systems');
 
 		$system = $this->Systems->get(2);
-		
+				
 		$commissions = new CommissionsController;
 		
 		$binnacles = new BinnaclesController;

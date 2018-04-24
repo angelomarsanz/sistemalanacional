@@ -7,6 +7,8 @@ use App\Controller\EmployeesController;
 
 use App\Controller\BinnaclesController;
 
+use App\Controller\ParametersController;
+
 use Cake\ORM\TableRegistry;
 
 use Cake\I18n\Time;
@@ -212,7 +214,11 @@ class CommissionsController extends AppController
 	public function addCommission($employeePromoter = null, $typeBeneficiary = null, $idBudget = null, $amount = null, $coin, $swDelete = null)
 	{
 		$this->autoRender = false;
-		
+
+		$this->loadModel('Parameters');
+
+		$parameter = $this->Parameters->get(2);		
+
 		$arrayResult = [];
 		
         setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
@@ -256,15 +262,36 @@ class CommissionsController extends AppController
 			
 			if ($typeBeneficiary == 'PROMOTOR')
 			{
-				$commission->amount = $amount * 0.03;
+				if ($coin == 'BOLIVAR')
+				{
+					$commission->amount = ($amount * $parameter->bolivar_promoter_percentage)/100;
+				}
+				else
+				{
+					$commission->amount = ($amount * $parameter->dollar_promoter_percentage)/100;
+				}
 			}
 			elseif ($typeBeneficiary == 'PROMOTOR-PADRE')
 			{
-				$commission->amount = $amount * 0.015;
+				if ($coin == 'BOLIVAR')
+				{
+					$commission->amount = ($amount * $parameter->bolivar_father_percentage)/100;
+				}
+				else
+				{
+					$commission->amount = ($amount * $parameter->dollar_father_percentage)/100;
+				}
 			}
 			else
 			{
-				$commission->amount = $amount * 0.005;
+				if ($coin == 'BOLIVAR')
+				{
+					$commission->amount = ($amount * $parameter->bolivar_grandfather_percentage)/100;
+				}
+				else
+				{
+					$commission->amount = ($amount * $parameter->dollar_grandfather_percentage)/100;
+				}
 			}
 			
 			$commission->coin = $coin;

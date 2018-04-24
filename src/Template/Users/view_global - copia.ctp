@@ -38,16 +38,6 @@
 <div class="container">
 	<input type="hidden" id="ambiente" value=<?= $system->logo ?>>
     <div class="page-header">  
- 	    <p>
-			<?php if (isset($action)): ?>
-				<?php if ($action == 'indexPatientUser'): ?>
-					<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $idPromoter, 'Users', 'wait', $promoter->surname . ' ' . $promoter->first_name], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>
-				<?php endif; ?>
-			<?php else: ?>
-				<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'indexPatientUser'], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>				
-			<?php endif; ?>
-			<?= $this->Html->link(__(''), ['controller' => 'users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-sm btn-default', 'title' => 'Cerrar vista', 'style' => 'color: #9494b8']) ?>
-        </p>
         <h1>Paciente:&nbsp;<?= h($user->full_name) ?></h1>
         <input id="id-user" type="hidden" value=<?= $user->id ?>>
 		<input id="first-name" type="hidden" value=<?= $user->first_name ?>>
@@ -67,13 +57,18 @@
 		<?php else: ?>
 			<input id="coin" type="hidden" value="DOLLAR">
 		<?php endif; ?>
-		<input id="id-promoter" type="hidden" value=<?= $promoter->id ?>>
+		<input id="id-promoter" type="hidden" value=<?= $idPromoter ?>>
     </div>
     <div class="row">
         <div class="col col-sm-4">
-            <?= $this->Html->image('../files/users/profile_photo/' . $user->profile_photo_dir . '/'. $user->profile_photo, ['url' => ['controller' => 'users', 'action' => 'view', $current_user['id']], 'class' => 'img-thumbnail img-responsive']) ?>
-        </div>
+			<?php if (isset($user->profile_photo_dir)): ?>
+				<?= $this->Html->image('../files/users/profile_photo/' . $user->profile_photo_dir . '/'. $user->profile_photo, ['url' => ['controller' => 'users', 'action' => 'view', $current_user['id']], 'class' => 'img-thumbnail img-responsive']) ?>
+			<?php endif; ?>
+		</div>
         <div class="col col-sm-8">    
+            <br />
+                <b>Nro. de identificación del paciente:</b>&nbsp;<?= h($user->type_of_identification . '-' . $user->identidy_card) ?>
+            <br />		
             <br />
                 <b>Teléfono del paciente:</b>&nbsp;<?= h($user->cell_phone) ?>
             <br />
@@ -84,7 +79,10 @@
                 <b>Promotor responsable de este paciente:</b>&nbsp;<?= h($promoter->full_name) ?>
             <br />
             <br />
-                <b>Teléfono del promotor responsable:</b>&nbsp;<?= h($promoter->cell_phone) ?>
+                <b>Teléfono del promotor:</b>&nbsp;<?= h($promoter->cell_phone) ?>
+            <br />
+            <br />
+                <b>Email del promotor:</b>&nbsp;<?= h($promoter->email) ?>
             <br />
             <br />
 
@@ -186,7 +184,7 @@
                 <div class="row">
                     <div class="col col-sm-8">
                         <h3>Presupuestos solicitados por el paciente</h3>
-                        <p><a href="#" id="agregar-presupuesto" title="Agregar nuevo presupuesto" class='glyphicon glyphicon-list btn btn-primary'></a></p>
+                        <p><a href="#" id="agregar-presupuesto" title="Agregar nuevo presupuesto" class='glyphicon glyphicon-plus btn btn-primary'></a></p>
                         <div id="agregar-presupuesto-paciente" style="display:none">   
                             <?php
 								echo $this->Form->input('surgery', ['label' => 'Servicio médico: *', 'required' => 'true', 'options' => $services]); 
@@ -218,7 +216,7 @@
 																		$user->full_name,
 																		$promoter->full_name, 
 																		$promoter->cell_phone, 
-																		$promoter->email, 'Users', 'viewGlobal', $user->id, $promoter->id], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto']);
+																		$promoter->email, 'Users', 'viewGlobal', $user->id, $idPromoter], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto']);
 																else: 
 																	$pdf = ".pdf";
 																	$pos = strpos($budgets->initial_budget, $pdf);
@@ -235,14 +233,14 @@
 																			$user->full_name,
 																			$promoter->full_name, 
 																			$promoter->cell_phone, 
-																			$promoter->email, 'Users', 'viewGlobal', $user->id, $promoter->id], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto']);
+																			$promoter->email, 'Users', 'viewGlobal', $user->id, $idPromoter], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver presupuesto']);
 																	   endif;
 																	endif;
 																endif;
 															?>													
 														</td>
-														<td><?= $this->Html->link(__(''), ['controller' => 'budgets', 'action' => 'budget', $user->id, $user->patients[0]['id'], $user->parent_user, 'Users', 'viewGlobal', $budgets->id, $budgets->surgery], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar presupuesto']) ?></td> 
-														<td><?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $budgets->id, 'Users', 'viewGlobal', $user->id], ['confirm' => __('Está seguro de que desea eliminar el presupuesto?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar']) ?></td>
+														<td><?= $this->Html->link(__(''), ['controller' => 'budgets', 'action' => 'budget', $user->id, $user->patients[0]['id'], $idPromoter, 'Users', 'viewGlobal', $budgets->id, $budgets->surgery], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar presupuesto']) ?></td> 
+														<td><?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $budgets->id, 'Users', 'viewGlobal', $user->id, $idPromoter], ['confirm' => __('Está seguro de que desea eliminar el presupuesto?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar']) ?></td>
 													</tr>
 												<?php endif; ?>
                                             <?php endif; ?>
@@ -379,17 +377,26 @@
     </div>
     <div id="menu-mas-paciente" style="display:none;" class="menumas">
         <p>
+		<?php if (isset($action)): ?>
+			<?php if ($action == 'indexPatientUser'): ?>
+				<?php if ($idPromoter == $current_user['id']): ?>
+					<?php $namePromoter = $current_user['surname'] . ' ' . $current_user['first_name']; ?>
+				<?php else: ?>
+					<?php $namePromoter = $promoter->surname . ' ' . $promoter->first_name; ?>
+				<?php endif; ?>
+				<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $idPromoter, 'Users', 'wait', $namePromoter], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
+			<?php endif; ?>
+		<?php else: ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'indexPatientUser'], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>				
+		<?php endif; ?>
+		<?= $this->Html->link(__(''), ['controller' => 'users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'Cerrar vista']) ?>
         <a href="#" id="mas-datos" title="Ver datos adicionales" class='glyphicon glyphicon-user btn btn-danger'></a>
         <a href="#" id="presupuestos" title="Ver presupuestos solicitados" class='glyphicon glyphicon-th-list btn btn-danger'></a>
         <a href="#" id="agenda-dia" title="Ver agenda del día" class='glyphicon glyphicon-calendar btn btn-danger'></a>
         <a href="#" id="agenda-futura" title="Ver agenda futura" class='glyphicon glyphicon-list-alt btn btn-danger'></a>  
-		<?php if ($system->logo == 'Producción'): ?>
-			<a href=<?= '/sln/users/editBasic/' . $user->id . '/Users/viewGlobal/' . $user->parent_user . '/' . $promoter->surname . ' ' . $promoter->first_name ?> id="editar-paciente" title="Modificar datos del paciente" class='glyphicon glyphicon-edit btn btn-danger'></a>
-		<?php else: ?>
-			<a href=<?= '/dsln/users/editBasic/' . $user->id . '/Users/viewGlobal/' . $user->parent_user . '/' . $promoter->surname . ' ' . $promoter->first_name ?> id="editar-paciente" title="Modificar datos del paciente" class='glyphicon glyphicon-edit btn btn-danger'></a>		
-		<?php endif; ?>
+		<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'editBasic', $user->id, 'Users', 'viewGlobal', $idPromoter, $promoter->surname . ' ' . $promoter->first_name], ['id' => 'editar-paciente', 'class' => 'glyphicon glyphicon-edit btn btn-danger', 'title' => 'Modificar datos del paciente']) ?>
 		<?= $this->Form->postLink(__(''), ['action' => 'deleteBasic', $user->id, 'Users', 'indexPatientUser' ], ['confirm' => __('Está seguro de que desea eliminar el paciente?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar datos del paciente', 'style' => 'padding: 7px 12px;']) ?>
-        <a href="#" id="menu-menos" title="Cerrar opciones" class='glyphicon glyphicon-remove btn btn-danger'></a>
+        <a href="#" id="menu-menos" title="Menos opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
         </p>
     </div>
 </div>
@@ -457,16 +464,20 @@ $(document).ready(function(){
 		}
 	});
 	
-    $('#menu-mas').on('click',function()
+    $('#menu-mas').click(function(e)
     {
-        $('#menu-menos-paciente').hide();
-        $('#menu-mas-paciente').show();
-    });
-    $('#menu-menos').on('click',function()
+		e.preventDefault();
+        $('#menu-menos-paciente').toggle();
+		$('#menu-mas-paciente').toggle();        
+	});
+	
+    $('#menu-menos').click(function(e)
     {
-        $('#menu-mas-paciente').hide();
-        $('#menu-menos-paciente').show();
+		e.preventDefault();
+        $('#menu-mas-paciente').toggle();
+		$('#menu-menos-paciente').toggle();
     });
+	
     $('#patient').autocomplete(
     {
         source:'<?php echo Router::url(array("controller" => "Users", "action" => "findPatient")); ?>',

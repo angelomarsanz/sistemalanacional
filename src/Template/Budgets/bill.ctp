@@ -62,6 +62,71 @@
 }
 </style>
 
+<script>
+function log(id, budgetSurgery) 
+{
+	if ($('#ambiente').val() == 'Producción')
+	{
+		$.redirect('/sln/budgets/bill', { idBudget : id, budgetSurgery : budgetSurgery });
+	}
+	else
+	{
+		$.redirect('/dsln/budgets/bill', { idBudget : id, budgetSurgery : budgetSurgery });
+	}
+}
+
+function mostrarMas()
+{
+    $('#menu-menos').toggle();
+    $('#menu-mas').toggle();
+}
+
+function mostrarMenos()
+{
+	$('#menu-mas').toggle();
+	$('#menu-menos').toggle();
+}
+
+$(document).ready(function()
+{ 
+    $(".decimal-2-places").numeric({ decimalPlaces: 2 });
+    $('#number-budget-search').autocomplete(
+    {
+        source:'<?php echo Router::url(array("controller" => "Budgets", "action" => "findBudget")); ?>',
+        minLength: 5,             
+        select: function( event, ui ) {
+            log(ui.item.id, ui.item.value);
+          }
+    });
+	
+    $('#ver-cargar-modificar-factura').on('click',function(){
+        $('#cargar-modificar-factura').toggle('slow');
+    });
+	
+    $('#eliminar-factura').on('click',function(e){
+	
+		e.preventDefault();
+	
+		var r= confirm('¿Está seguro de que desea eliminar esta factura?');
+		if (r == false)
+		{
+			return false;
+		}
+	
+		budgetSurgery = $('#number-budget').val() + ' - ' + $('#surgery').val();
+
+		if ($('#ambiente').val() == 'Producción')
+		{
+			$.redirect('/sln/budgets/bill', { idBudget : $('#id').val(), budgetSurgery : budgetSurgery, swDelete : 1, promoter : $('#extra-column1').val() }); 
+		}
+		else
+		{
+			$.redirect('/dsln/budgets/bill', { idBudget : $('#id').val(), budgetSurgery : budgetSurgery, swDelete : 1, promoter : $('#extra-column1').val() });		
+		}
+	});
+});
+</script>
+
 <div class="row">
     <div class="col-md-12">
     	<div class="page-header">
@@ -134,78 +199,16 @@
 </div>
 <div id="menu-menos" class="menumenos nover">
 	<p>
-	<a href="#" id="mas" title="Más opciones" class='glyphicon glyphicon-plus btn btn-danger'></a>
+		<button type="button" id="mas" title="Más opciones" class="glyphicon glyphicon-plus btn btn-danger" onclick="mostrarMas()"></button>
 	</p>
 </div>
 <div id="menu-mas" style="display:none;" class="menumas nover">
 	<p>
 		<?= $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'bill'], ['id' => 'volver', 'class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
 		<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['id' => 'cerrar', 'class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'cerrar vista']) ?>
-		<?= $this->Html->link(__(''), ['controller' => 'Commissions', 'action' => 'reportCommissions'], ['id' => 'report-commissions', 'class' => 'glyphicon glyphicon-th-list btn btn-danger', 'title' => 'Reporte de comisiones']) ?>		
+		<?= $this->Html->link(__(''), ['controller' => 'Commissions', 'action' => 'reportCommissions'], ['id' => 'report-commissions', 'class' => 'glyphicon glyphicon-th-list btn btn-danger', 'title' => 'Reporte de comisiones']) ?>	
+		<?= $this->Html->link(__(''), ['controller' => 'Parameters', 'action' => 'edit', 2, 'Budgets', 'bill'], ['id' => 'report-commissions', 'class' => 'glyphicon icon-ISLR btn btn-danger', 'title' => 'Porcentaje comisiones', 'style' => 'padding: 8px 12px 10px 12px;']) ?>			
 	
-		<a href='#' id="menos" title="Menos opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
+		<button type="button" id="menos" title="Menos opciones" class="glyphicon glyphicon-minus btn btn-danger" onclick="mostrarMenos()"></button>
 	</p>
 </div>
-<script>
-function log(id, budgetSurgery) 
-{
-	if ($('#ambiente').val() == 'Producción')
-	{
-		$.redirect('/sln/budgets/bill', { idBudget : id, budgetSurgery : budgetSurgery });
-	}
-	else
-	{
-		$.redirect('/dsln/budgets/bill', { idBudget : id, budgetSurgery : budgetSurgery });
-	}
-}
-$(document).ready(function()
-{ 
-    $(".decimal-2-places").numeric({ decimalPlaces: 2 });
-    $('#number-budget-search').autocomplete(
-    {
-        source:'<?php echo Router::url(array("controller" => "Budgets", "action" => "findBudget")); ?>',
-        minLength: 5,             
-        select: function( event, ui ) {
-            log(ui.item.id, ui.item.value);
-          }
-    });
-	
-    $('#ver-cargar-modificar-factura').on('click',function(){
-        $('#cargar-modificar-factura').toggle('slow');
-    });
-	
-    $('#eliminar-factura').on('click',function(e){
-	
-		e.preventDefault();
-	
-		var r= confirm('¿Está seguro de que desea eliminar esta factura?');
-		if (r == false)
-		{
-			return false;
-		}
-	
-		budgetSurgery = $('#number-budget').val() + ' - ' + $('#surgery').val();
-
-		if ($('#ambiente').val() == 'Producción')
-		{
-			$.redirect('/sln/budgets/bill', { idBudget : $('#id').val(), budgetSurgery : budgetSurgery, swDelete : 1, promoter : $('#extra-column1').val() }); 
-		}
-		else
-		{
-			$.redirect('/dsln/budgets/bill', { idBudget : $('#id').val(), budgetSurgery : budgetSurgery, swDelete : 1, promoter : $('#extra-column1').val() });		
-		}
-	});
-
-	$('#mas').on('click',function()
-    {
-        $('#menu-menos').hide();
-        $('#menu-mas').show();
-    });
-    
-    $('#menos').on('click',function()
-    {
-        $('#menu-mas').hide();
-        $('#menu-menos').show();
-    });
-});
-</script>

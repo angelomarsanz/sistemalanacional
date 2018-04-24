@@ -65,6 +65,7 @@
 <div class="row">
     <div class="col-md-12">
     	<div class="page-header">
+			<input type="hidden" id="ambiente" value=<?= $system->logo ?>>
 			<h3>Comisiones</h3>
             <?php if (isset($budgetSurgery)): ?>
                 <h4>Presupuesto: <?= $budgetSurgery ?></h4>
@@ -102,7 +103,7 @@
 		?>		
 			<button id="ver-cargar-modificar-factura" class="glyphicon glyphicon-open btn btn-primary" title="Cargar o modificar la factura"></button>
 			<button id="eliminar-factura" class="glyphicon glyphicon-trash btn btn-danger" title="Eliminar factura"></button>
-			<?= $this->Html->link(__(''), ['controller' => 'Commissions', 'action' => 'edit', $budget->id, 'Budgets', 'bill'], ['id' => 'pagar-comisiones', 'class' => 'glyphicon glyphicon-usd btn btn-primary', 'title' => 'Pagar comisiones']) ?>	
+			<?= $this->Html->link(__(''), ['controller' => 'Commissions', 'action' => 'index', $budget->id, 'Budgets', 'bill'], ['id' => 'pagar-comisiones', 'class' => 'glyphicon glyphicon-usd btn btn-primary', 'title' => 'Pagar comisiones']) ?>	
 			
 			<br />
 			<br />
@@ -116,7 +117,8 @@
 									echo $this->Form->input('surgery', ['type' => 'hidden']);
 									echo $this->Form->input('number_budget', ['type' => 'hidden']);
 									echo $this->Form->input('date_bill', ['type' => 'date', 'required' => 'true', 'label' => 'Fecha de la factura: *']);
-									echo $this->Form->input('number_bill', ['type' => 'number', 'required' => 'true', 'label' => 'Número de la factura: *']);
+									echo $this->Form->input('number_bill', ['required' => 'true', 'label' => 'Número de la factura: *']);
+									echo $this->Form->input('coin', ['disabled' => 'true', 'label' => 'Moneda:']);
 									echo $this->Form->input('amount_bill', ['class' => 'decimal-2-places', 'required' => 'true', 'label' => 'Monto de la factura: *']);
 									echo $this->Form->input('bill', array('type' => 'file', 'label' => 'Factura:'));
 									echo $this->Form->input('extra_column1', ['type' => 'hidden', 'value' => $promoter->id]);
@@ -147,15 +149,22 @@
 <script>
 function log(id, budgetSurgery) 
 {
-    $.redirect('/sln/budgets/bill', { idBudget : id, budgetSurgery : budgetSurgery }); 
+	if ($('#ambiente').val() == 'Producción')
+	{
+		$.redirect('/sln/budgets/bill', { idBudget : id, budgetSurgery : budgetSurgery });
+	}
+	else
+	{
+		$.redirect('/dsln/budgets/bill', { idBudget : id, budgetSurgery : budgetSurgery });
+	}
 }
 $(document).ready(function()
 { 
     $(".decimal-2-places").numeric({ decimalPlaces: 2 });
-    $('#number-budget').autocomplete(
+    $('#number-budget-search').autocomplete(
     {
         source:'<?php echo Router::url(array("controller" => "Budgets", "action" => "findBudget")); ?>',
-        minLength: 3,             
+        minLength: 5,             
         select: function( event, ui ) {
             log(ui.item.id, ui.item.value);
           }
@@ -169,10 +178,23 @@ $(document).ready(function()
 	
 		e.preventDefault();
 	
-		budgetSurgery = $('#number_budget').val() + ' - ' + $('#surgery').val();
-		
-		$.redirect('/sln/budgets/bill', { idBudget : $('#id').val(), budgetSurgery : budgetSurgery, swDelete : 1, promoter : $('#extra-column1').val() }); 
-    });
+		var r= confirm('¿Está seguro de que desea eliminar esta factura?');
+		if (r == false)
+		{
+			return false;
+		}
+	
+		budgetSurgery = $('#number-budget').val() + ' - ' + $('#surgery').val();
+
+		if ($('#ambiente').val() == 'Producción')
+		{
+			$.redirect('/sln/budgets/bill', { idBudget : $('#id').val(), budgetSurgery : budgetSurgery, swDelete : 1, promoter : $('#extra-column1').val() }); 
+		}
+		else
+		{
+			$.redirect('/dsln/budgets/bill', { idBudget : $('#id').val(), budgetSurgery : budgetSurgery, swDelete : 1, promoter : $('#extra-column1').val() });		
+		}
+	});
 
 	$('#mas').on('click',function()
     {
