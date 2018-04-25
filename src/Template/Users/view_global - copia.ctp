@@ -35,6 +35,94 @@
 }
 </style>
 
+<script>
+idService = 0;
+function log(id) 
+{
+	if ($('#ambiente').val() == 'Producción')
+	{
+		$.redirect('/sln/users/viewGlobal', { id : id, controller : 'Users', action : 'viewGlobal' }); 
+	}
+	else
+	{
+		$.redirect('/dsln/users/viewGlobal', { id : id, controller : 'Users', action : 'viewGlobal' });
+	}
+}
+
+function mostrarMas()
+{
+	$('#menu-menos-paciente').toggle();
+	$('#menu-mas-paciente').toggle();        
+}
+
+function mostrarMenos()
+{
+	$('#menu-mas-paciente').toggle();
+	$('#menu-menos-paciente').toggle();
+}
+
+$(document).ready(function(){ 
+    $('#mas-datos').on('click',function(){
+        $('#presupuestos-solicitados').slideUp();
+        $('#agenda-dia-paciente').slideUp();
+        $('#agenda-futura-paciente').slideUp();
+        $('#mas-datos-paciente').toggle('slow');
+    });
+    $('#presupuestos').on('click',function(){
+        $('#mas-datos-paciente').slideUp();
+        $('#agenda-dia-paciente').slideUp();
+        $('#agenda-futura-paciente').slideUp();
+        $('#presupuestos-solicitados').toggle('slow');
+    });
+    $('#agenda-dia').on('click',function(){
+        $('#mas-datos-paciente').slideUp();
+        $('#presupuestos-solicitados').slideUp();
+        $('#agenda-futura-paciente').slideUp();
+        $('#agenda-dia-paciente').toggle('slow');
+    });
+    $('#agenda-futura').on('click',function(){
+        $('#mas-datos-paciente').slideUp();
+        $('#presupuestos-solicitados').slideUp();
+        $('#agenda-dia-paciente').slideUp();
+        $('#agenda-futura-paciente').toggle('slow');
+    });
+    $('#agregar-presupuesto').on('click',function(){
+        $('#agregar-presupuesto-paciente').toggle('slow');
+    });
+
+    $('#aceptar').click(function(e)
+    {
+        e.preventDefault();
+
+		if ($('#ambiente').val() == 'Producción')
+		{
+			$.redirect('/sln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
+				firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
+				emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
+				surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
+				coin : $('#coin').val(), controller : 'Users', action : 'viewGlobal', idPromoter : $('#id-promoter').val() }); 
+		}
+		else
+		{
+			$.redirect('/dsln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
+				firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
+				emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
+				surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
+				coin : $('#coin').val(), controller : 'Users', action : 'viewGlobal', idPromoter : $('#id-promoter').val() });
+		}
+	});
+		
+    $('#patient').autocomplete(
+    {
+        source:'<?php echo Router::url(array("controller" => "Users", "action" => "findPatient")); ?>',
+        minLength: 3,             
+        select: function( event, ui ) {
+            log(ui.item.id);
+          }
+    });
+});
+</script>
+
 <div class="container">
 	<input type="hidden" id="ambiente" value=<?= $system->logo ?>>
     <div class="page-header">  
@@ -372,7 +460,7 @@
     </div>
     <div id="menu-menos-paciente" class="menumenos">
         <p>
-        <a href="#" id="menu-mas" title="Más opciones" class='glyphicon glyphicon-plus btn btn-danger'></a>
+		<button type="button" id="menu-mas" title="Más opciones" class="glyphicon glyphicon-plus btn btn-danger" onclick="mostrarMas()"></button>
         </p>
     </div>
     <div id="menu-mas-paciente" style="display:none;" class="menumas">
@@ -396,105 +484,7 @@
         <a href="#" id="agenda-futura" title="Ver agenda futura" class='glyphicon glyphicon-list-alt btn btn-danger'></a>  
 		<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'editBasic', $user->id, 'Users', 'viewGlobal', $idPromoter, $promoter->surname . ' ' . $promoter->first_name], ['id' => 'editar-paciente', 'class' => 'glyphicon glyphicon-edit btn btn-danger', 'title' => 'Modificar datos del paciente']) ?>
 		<?= $this->Form->postLink(__(''), ['action' => 'deleteBasic', $user->id, 'Users', 'indexPatientUser' ], ['confirm' => __('Está seguro de que desea eliminar el paciente?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar datos del paciente', 'style' => 'padding: 7px 12px;']) ?>
-        <a href="#" id="menu-menos" title="Menos opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
+		<button type="button" id="menu-menos" title="Menos opciones" class="glyphicon glyphicon-minus btn btn-danger" onclick="mostrarMenos()"></button>
         </p>
     </div>
 </div>
-<script>
-	idService = 0;
-    function log(id) 
-    {
-		if ($('#ambiente').val() == 'Producción')
-		{
-			$.redirect('/sln/users/viewGlobal', { id : id, controller : 'Users', action : 'viewGlobal' }); 
-		}
-		else
-		{
-			$.redirect('/dsln/users/viewGlobal', { id : id, controller : 'Users', action : 'viewGlobal' });
-		}
-    }
-$(document).ready(function(){ 
-    $('#mas-datos').on('click',function(){
-        $('#presupuestos-solicitados').slideUp();
-        $('#agenda-dia-paciente').slideUp();
-        $('#agenda-futura-paciente').slideUp();
-        $('#mas-datos-paciente').toggle('slow');
-    });
-    $('#presupuestos').on('click',function(){
-        $('#mas-datos-paciente').slideUp();
-        $('#agenda-dia-paciente').slideUp();
-        $('#agenda-futura-paciente').slideUp();
-        $('#presupuestos-solicitados').toggle('slow');
-    });
-    $('#agenda-dia').on('click',function(){
-        $('#mas-datos-paciente').slideUp();
-        $('#presupuestos-solicitados').slideUp();
-        $('#agenda-futura-paciente').slideUp();
-        $('#agenda-dia-paciente').toggle('slow');
-    });
-    $('#agenda-futura').on('click',function(){
-        $('#mas-datos-paciente').slideUp();
-        $('#presupuestos-solicitados').slideUp();
-        $('#agenda-dia-paciente').slideUp();
-        $('#agenda-futura-paciente').toggle('slow');
-    });
-    $('#agregar-presupuesto').on('click',function(){
-        $('#agregar-presupuesto-paciente').toggle('slow');
-    });
-
-    $('#aceptar').click(function(e)
-    {
-        e.preventDefault();
-
-		if ($('#ambiente').val() == 'Producción')
-		{
-			$.redirect('/sln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
-				firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
-				emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
-				surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
-				coin : $('#coin').val(), controller : 'Users', action : 'viewGlobal', idPromoter : $('#id-promoter').val() }); 
-		}
-		else
-		{
-			$.redirect('/dsln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
-				firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
-				emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
-				surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
-				coin : $('#coin').val(), controller : 'Users', action : 'viewGlobal', idPromoter : $('#id-promoter').val() });
-		}
-	});
-	
-    $('#menu-mas').click(function(e)
-    {
-<<<<<<< HEAD
-		e.preventDefault();
-        $('#menu-menos-paciente').toggle();
-		$('#menu-mas-paciente').toggle();        
-	});
-	
-    $('#menu-menos').click(function(e)
-    {
-		e.preventDefault();
-        $('#menu-mas-paciente').toggle();
-		$('#menu-menos-paciente').toggle();
-=======
-        $('#menu-menos-paciente').toggle();
-        $('#menu-mas-paciente').toggle();
-    });
-    $('#menu-menos').on('click',function()
-    {
-        $('#menu-mas-paciente').toggle();
-        $('#menu-menos-paciente').toggle();
->>>>>>> origin/master
-    });
-	
-    $('#patient').autocomplete(
-    {
-        source:'<?php echo Router::url(array("controller" => "Users", "action" => "findPatient")); ?>',
-        minLength: 3,             
-        select: function( event, ui ) {
-            log(ui.item.id);
-          }
-    });
-});
-</script>
