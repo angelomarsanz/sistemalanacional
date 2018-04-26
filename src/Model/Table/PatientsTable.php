@@ -227,6 +227,10 @@ class PatientsTable extends Table
 			
         $validator
             ->allowEmpty('reason_status');
+			
+        $validator
+            ->date('date_status')
+            ->allowEmpty('date_status');
 
         $validator
             ->allowEmpty('responsible_user');

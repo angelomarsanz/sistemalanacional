@@ -1,17 +1,54 @@
+<style>
+@media screen
+{
+    .menumenos
+    {
+        display:scroll;
+        position:fixed;
+        bottom: 5%;
+        right: 1%;
+        opacity: 0.5;
+        text-align: right;
+    }
+    .menumas 
+    {
+        display:scroll;
+        position:fixed;
+        bottom: 5%;
+        right: 1%;
+        opacity: 0.5;
+        text-align: right;
+    }
+    .botonMenu
+    {
+        margin-bottom: 5 px;
+    }
+    .ui-autocomplete 
+    {
+        z-index: 2000;
+    }
+}
+</style>
+
+<script>
+function mostrarMas()
+{
+	$('#menu-menos-opciones').toggle();
+	$('#menu-mas-opciones').toogle();        
+}
+
+function mostrarMenos()
+{
+	$('#menu-mas-opciones').toggle();
+	$('#menu-menos-opciones').toggle();
+}
+</script>
+
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
     	<div class="page-header">
  	    <p>
-		<?php if (isset($action)): ?>
-			<?php if ($action == 'indexPatientUser'): ?>	
-				<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $idPromoter, $controller, $action, $promoter], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>
-			<?php elseif ($action == 'viewGlobal'): ?>
-				<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $idUser, 'Users', 'indexPatientUser', $idPromoter], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>		
-			<?php endif; ?>
-		<?php else: ?>	
-			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'indexPatientUser'], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>
-        <?php endif; ?>
-	    <?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-sm btn-default', 'title' => 'Cerrar vista', 'style' => 'color: #9494b8']) ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Patients', 'action' => 'edit', $patient->id, $controller, $action,  $idUser, $idPromoter, $promoter], ['class' => 'glyphicon glyphicon-repeat btn btn-sm btn-default', 'title' => 'Recargar página', 'style' => 'color: #9494b8']) ?>
         </p>
 		<h2>Por favor actualice estos otros datos:</h2>
         </div>
@@ -232,41 +269,19 @@
                     <h3>Datos de la persona de contacto en caso de emergencia: </h3>
                     <hr size="3" />
                 <?php    
-                    echo $this->Form->input('first_name_emergency', ['label' => 'Primer nombre: ']);
-                    echo $this->Form->input('second_name_emergency', ['label' => 'Segundo nombre: ']);
-                    echo $this->Form->input('surname_emergency', ['label' => 'Primer apellido: ']);
-                    echo $this->Form->input('second_surname_emergency', ['label' => 'Segundo apellido: ']);
-                    echo $this->Form->input('type_of_identification_emergency', 
-                        ['options' => 
-                        [null => ' ',
-                        'V' => 'Cédula venezolano',
-                        'E' => 'Cédula extranjero',
-                        'P' => 'Pasaporte'],
-                        'label' => 'Tipo de documento de identificación: ']);
-                    echo $this->Form->input('identidy_card_emergency', ['label' => 'Cédula: ']);
-                    echo $this->Form->input('address_emergency', ['label' => 'Dirección completa (urbanización o barrio, calle o avenida, Nro. de casa, edificio, piso, Nro. de apartamento, sector y punto de referencia): *']);
-                    echo $this->Form->input('email_emergency', ['label' => 'email: ']);
+                    echo $this->Form->input('first_name_emergency', ['label' => 'Nombre: ']);
+                    echo $this->Form->input('surname_emergency', ['label' => 'Apellido: ']);
+                    echo $this->Form->input('cell_phone_emergency', ['label' => 'Celular: ']);
                     echo $this->Form->input('landline_emergency', ['label' => 'Teléfono fijo: ']);
-                    echo $this->Form->input('cell_phone_emergency', ['label' => 'Celular: ']); ?>
+					echo $this->Form->input('email_emergency', ['label' => 'email: ']);
+				?>
                     <h3>Datos del acompañante: </h3>
                     <hr size="3" />
                 <?php 
-                    echo $this->Form->input('first_name_companion', ['label' => 'Primer nombre: ']);
-                    echo $this->Form->input('second_name_companion', ['label' => 'Segundo nombre: ']);
-                    echo $this->Form->input('surname_companion', ['label' => 'Primer apellido: ']);
-                    echo $this->Form->input('second_surname_companion', ['label' => 'Segundo apellido: ']);
-                    echo $this->Form->input('type_of_identification_companion', 
-                        ['options' => 
-                        [null => ' ',
-                        'V' => 'Cédula venezolano',
-                        'E' => 'Cédula extranjero',
-                        'P' => 'Pasaporte'],
-                        'label' => 'Tipo de documento de identificación: ']);
-                    echo $this->Form->input('identidy_card_companion', ['label' => 'Cédula: ']);
-                    echo $this->Form->input('address_companion', ['label' => 'Dirección completa (urbanización o barrio, calle o avenida, Nro. de casa, edificio, piso, Nro. de apartamento, sector y punto de referencia): *']);
-                    echo $this->Form->input('email_companion', ['label' => 'email: ']);
-                    echo $this->Form->input('landline_companion', ['label' => 'Teléfono fijo: ']);
-                    echo $this->Form->input('cell_phone_companion', ['label' => 'Celular: ']); ?>
+                    echo $this->Form->input('first_name_companion', ['label' => 'Nombre: ']);
+                    echo $this->Form->input('surname_companion', ['label' => 'Apellido: ']);
+					echo $this->Form->input('cell_phone_companion', ['label' => 'Celular: ']);
+				?>
                     <h3>Datos de la persona o institución responsable del pago de la cirugía: </h3>
                     <hr size="3" />
                 <?php
@@ -288,4 +303,24 @@
         <?= $this->Form->button(__('Siguiente'), ['class' =>'btn btn-success']) ?>
         <?= $this->Form->end() ?>
     </div>
+</div>
+<div id="menu-menos-opciones" class="menumenos">
+	<p>
+		<button type="button" id="menu-mas" title="Más opciones" class="glyphicon glyphicon-plus btn btn-danger" onclick="mostrarMas()"></button>
+	</p>
+</div>
+<div id="menu-mas-opciones" style="display:none;" class="menumas">
+	<p>
+		<?php if (isset($controller) && isset($action)): ?>
+			<?php if ($action == 'indexPatientUser'): ?>	
+				<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $idPromoter, $controller, $action, $promoter], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-danger', 'title' => 'Volver']) ?>
+			<?php elseif ($action == 'viewGlobal'): ?>
+				<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $idUser, 'Users', 'indexPatientUser', $idPromoter], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-danger', 'title' => 'Volver']) ?>		
+			<?php endif; ?>
+		<?php else: ?>	
+			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'indexPatientUser'], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-danger', 'title' => 'Volver']) ?>
+        <?php endif; ?>
+	    <?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-sm btn-default', 'title' => 'Cerrar vista']) ?>
+		<button type="button" id="menu-menos" title="Menos opciones" class="glyphicon glyphicon-minus btn btn-danger" onclick="mostrarMenos()"></button>
+	</p>
 </div>

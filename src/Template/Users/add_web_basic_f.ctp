@@ -25,7 +25,7 @@
                         <p><input id="firstName" name="firstName" type='text' class='form-control' value='SISTEMA'><p>
 
                         <label class="control-label" for="surname">Primer apellido: </label>
-                        <p><input id="surname" name="surname" type='text' class='form-control' value='PRUEBA'><p>												
+                        <p><input id="surname" name="surname" type='text' class='form-control' value='PRUEBAS'><p>												
 						
                         <label class="control-label" for="sex">Sexo: </label>
                         <p><input id="sex" name="sex" type='text' class='form-control' value='MASCULINO'><p>
@@ -46,7 +46,7 @@
                         <p><input id="address" name="address" type='text' class='form-control' value='LOS CERRITOS'><p>
 
                         <label class="control-label" for="surgery">Servicio: </label>
-                        <p><input id="surgery" name="surgery" type='text' class='form-control' value='DERMOLIPECTOMIA + LIPOTRANSFERENCIA O LIPOFILLING'><p>
+                        <p><input id="surgery" name="surgery" type='text' class='form-control' value='APENDICECTOMIA'><p>
 
                         <label class="control-label" for="coin">Moneda: </label>
                         <p><input id="coin" name="coin" type='text' class='form-control' value='BOLIVAR'><p>
