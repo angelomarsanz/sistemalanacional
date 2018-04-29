@@ -296,6 +296,10 @@ class UsersController extends AppController
      */
     public function add($controller = null, $action = null)
     {
+		$this->loadModel('Systems');
+
+		$system = $this->Systems->get(2);
+		
         $employee = new EmployeesController;
         	
 		setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
@@ -410,8 +414,8 @@ class UsersController extends AppController
             }
         }
         
-        $this->set(compact('user', 'controller', 'action'));
-        $this->set('_serialize', ['user', 'controller', 'action']);
+        $this->set(compact('system', 'user', 'controller', 'action'));
+        $this->set('_serialize', ['system', 'user', 'controller', 'action']);
     }
 
     public function addWeb()

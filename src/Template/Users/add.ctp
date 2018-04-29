@@ -11,6 +11,7 @@
     	    </p>
     	    <h2>Agregar usuario</h2>
         </div>
+			<input type="hidden" id="ambiente" value=<?= $system->ambient ?>>
             <?= $this->Form->create($user, ['type' => 'file']) ?>
             <fieldset>
 <!--
@@ -70,13 +71,26 @@
 <script>
     $(document).ready(function() 
     {
+		if ($('#ambiente').val() == 'Producción')
+		{
+			checkUser = '/sln/users/checkUser';
+			view = '/sln/users/view';
+			confirmUser = '/sln/users/confirmUser';
+		}
+		else
+		{
+			checkUser = '/dsln/users/checkUser';	
+			view = '/dsln/users/view';
+			confirmUser = '/dsln/users/confirmUser';
+		}
+	
     	$(".integer").numeric(false, function() { alert("Integers only"); this.value = ""; this.focus(); });
 
         $('#email').change(function(e) 
         {
             e.preventDefault();
             
-            $.post('/sln/users/checkUser', {"role" : $("#role").val(), "email" : $("#email").val() }, null, "json")
+            $.post(checkUser, {"role" : $("#role").val(), "email" : $("#email").val() }, null, "json")
                 
             .done(function(response) 
             {
@@ -86,13 +100,13 @@
 
                     if (response.data.status == "ACTIVO")
                     {
-                        $.redirect('/sln/users/view', { id : idUser, controller : 'Users', action : 'index', status : 'ACTIVO' }); 
+                        $.redirect(view, { id : idUser, controller : 'Users', action : 'index', status : 'ACTIVO' }); 
                     }
                     else
                     {
                         nameUser = response.data.surname + ' ' + response.data.firstName;
 
-                        $.redirect('/sln/users/confirmUser', { id : idUser, controller : 'Users', action : 'index', name : nameUser }); 
+                        $.redirect(confirmUser, { id : idUser, controller : 'Users', action : 'index', name : nameUser }); 
                     }
                 }        
             })
