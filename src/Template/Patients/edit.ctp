@@ -5,12 +5,21 @@
     {
         display:scroll;
         position:fixed;
-        bottom: 5%;
+        bottom: 10%;
         right: 1%;
         opacity: 0.5;
         text-align: right;
     }
     .menumas 
+    {
+        display:scroll;
+        position:fixed;
+        bottom: 10%;
+        right: 1%;
+        opacity: 0.5;
+        text-align: right;
+    }
+    .recargar 
     {
         display:scroll;
         position:fixed;
@@ -30,26 +39,9 @@
 }
 </style>
 
-<script>
-function mostrarMas()
-{
-	$('#menu-menos-opciones').toggle();
-	$('#menu-mas-opciones').toggle();        
-}
-
-function mostrarMenos()
-{
-	$('#menu-mas-opciones').toggle();
-	$('#menu-menos-opciones').toggle();
-}
-</script>
-
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
     	<div class="page-header">
- 	    <p>
-			<?= $this->Html->link(__(''), ['controller' => 'Patients', 'action' => 'edit', $patient->id, $controller, $action,  $idUser, $idPromoter, $promoter], ['class' => 'glyphicon glyphicon-repeat btn btn-sm btn-default', 'title' => 'Recargar página', 'style' => 'color: #9494b8']) ?>
-        </p>
 		<h2>Por favor actualice estos otros datos:</h2>
         </div>
             <?= $this->Form->create($patient, ['type' => 'file']) ?>
@@ -324,3 +316,19 @@ function mostrarMenos()
 		<button type="button" id="menu-menos" title="Menos opciones" class="glyphicon glyphicon-minus btn btn-danger" onclick="mostrarMenos()"></button>
 	</p>
 </div>
+<div id="recargar" class="recargar">
+	<?= $this->Html->link(__(''), ['controller' => 'Patients', 'action' => 'edit', $patient->id, $controller, $action,  $idUser, $idPromoter, $promoter], ['class' => 'glyphicon glyphicon-repeat btn btn-danger', 'title' => 'Recargar página']) ?>
+</div>
+<script>
+function mostrarMas()
+{
+	$('#menu-menos-opciones').toggle();
+	$('#menu-mas-opciones').toggle();        
+}
+
+function mostrarMenos()
+{
+	$('#menu-mas-opciones').toggle();
+	$('#menu-menos-opciones').toggle();
+}
+</script>
