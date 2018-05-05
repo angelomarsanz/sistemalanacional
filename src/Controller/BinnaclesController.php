@@ -56,6 +56,8 @@ class BinnaclesController extends AppController
      */
     public function add($typeClass = null, $className = null, $methodName = null, $novelty = null)
     {
+		$this->autoRender = false;
+		
         $binnacle = $this->Binnacles->newEntity();
 		
 		$binnacle->type_class = $typeClass;

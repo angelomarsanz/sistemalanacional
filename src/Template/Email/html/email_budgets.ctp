@@ -35,7 +35,8 @@
 	<?= $varItemes ?>
 	<br />
 	<?php if (strtoupper($varCountry) == 'VENEZUELA'): ?>
-		<h3>GRAND TOTAL / TOTAL GENERAL Bs. <?= number_format($varTotal, 2, ",", ".") ?></h3>
+		<h3>GRAND TOTAL / TOTAL GENERAL Bs.F <?= number_format($varTotal, 2, ",", ".") ?></h3>
+		<h3>GRAND TOTAL / TOTAL GENERAL Bs.S <?= number_format(($varTotal/1000), 2, ",", ".") ?></h3>
 	<?php else: ?>
 		<h3>GRAND TOTAL / TOTAL GENERAL $ (USD) <?= number_format($varTotal, 2, ".", ",") ?></h3>		
 	<?php endif; ?>

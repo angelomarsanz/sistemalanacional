@@ -25,7 +25,7 @@ $cakeDescription = 'La Nacional';
     </title>
     <?= $this->Html->meta('icon') ?>
 
-    <?= $this->Html->css(['jquery-ui.min', 'bootstrap.min',  'style2']) ?>
+    <?= $this->Html->css(['jquery-ui.min', 'bootstrap.min', 'style2', 'stylefe']) ?>
     <?= $this->Html->script(['jquery-3.1.1.min', 'jquery-ui.min', 'bootstrap.min', 'jquery.redirect', 'jquery.numeric.min', 'jquery.table2excel.min']) ?>
     
     <?= $this->fetch('meta') ?>

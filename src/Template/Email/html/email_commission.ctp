@@ -31,7 +31,8 @@
 		<p>Nro. de identificación: <?= $varIdentification ?></p>
 
 		<?php if ($varCoin == 'BOLIVAR'): ?>
-			<p>Monto (Bs.) <?= number_format($varAmount, 2, ",", ".") ?></p>
+			<p>Monto (Bs.F) <?= number_format($varAmount, 2, ",", ".") ?></p>
+			<p>Monto (Bs.S) <?= number_format(($varAmount/1000), 2, ",", ".") ?></p>
 		<?php else: ?>
 			<p>Monto ($) <?= number_format($varAmount, 2, ".", ",") ?></p>
 		<?php endif; ?>
