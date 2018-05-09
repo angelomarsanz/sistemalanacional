@@ -64,7 +64,7 @@
 
 <div class="row">
     <div class="col-md-8">
-		<input type="hidden" id="ambiente" value=<?= $system->logo ?>>
+		<input type="hidden" id="ambiente" value=<?= $system->ambient ?>>
     	<div class="page-header">
     	    <p>
     	    <?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'addBasic', 'Users', 'indexPatientUser'], ['class' => 'glyphicon glyphicon-plus btn btn-sm btn-default', 'title' => 'Agregar paciente', 'style' => 'color: #9494b8']) ?>
@@ -130,9 +130,13 @@
 		{
 			$.redirect('/sln/users/indexPatientUser', { id : id, controller : 'Users', action : 'wait', name : promoter, }); 
 		}
-		else
+		else if ($('#ambiente').val() == 'Desarrollo')
 		{
 			$.redirect('/dsln/users/indexPatientUser', { id : id, controller : 'Users', action : 'wait', name : promoter, });
+		}
+		else if ($('#ambiente').val() == 'Prueba')
+		{
+			$.redirect('/psln/users/indexPatientUser', { id : id, controller : 'Users', action : 'wait', name : promoter, });
 		}
     }
     function logPatient(id) 
@@ -141,9 +145,13 @@
 		{
 			$.redirect('/sln/users/viewGlobal', { id : id, controller : 'Users', action : 'indexPatientUser' }); 
 		}
-		else
+		else if ($('#ambiente').val() == 'Desarrollo')
 		{
 			$.redirect('/dsln/users/viewGlobal', { id : id, controller : 'Users', action : 'indexPatientUser' }); 
+		}
+		else if ($('#ambiente').val() == 'Prueba')
+		{
+			$.redirect('/psln/users/viewGlobal', { id : id, controller : 'Users', action : 'indexPatientUser' }); 
 		}
     }
     $(document).ready(function(){ 

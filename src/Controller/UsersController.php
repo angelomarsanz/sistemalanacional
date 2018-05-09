@@ -164,13 +164,17 @@ class UsersController extends AppController
      */
     public function index()
     {
+		$this->loadModel('Systems');
+		$system = $this->Systems->get(2);
+		
         $query = $this->Users->find('all')->where
             ([['Users.id <>' => 1],
             ['Users.role <>' => 'Desarrollador del sistema'],
-            ['Users.role <>' => 'Administrador(a) del sistema'],
+            ['Users.role <>' => 'Administrador del sistema'],
             ['Users.role <>' => 'Titular del sistema'],
             ['Users.role <>' => 'Auditor(a) externo'],
             ['Users.role <>' => 'Auditor(a) interno'],
+            ['Users.role <>' => 'Administrador(a) de la clínica'],
             ['Users.role <>' => 'Paciente'],
             [['OR' => ['Users.deleted_record IS NULL', 'Users.deleted_record' => false]]]])
             ->order(['Users.surname' => 'ASC', 'Users.second_surname' => 'ASC', 'Users.first_name' => 'ASC', 'Users.second_name' => 'ASC']);
@@ -179,8 +183,8 @@ class UsersController extends AppController
         
         $currentView = 'usersIndex';
         
-        $this->set(compact('users', 'currentView'));
-        $this->set('_serialize', ['users', 'currentView']);
+        $this->set(compact('system', 'users', 'currentView'));
+        $this->set('_serialize', ['system', 'users', 'currentView']);
     }
 
     public function indexPatientUser($idPromoter = null, $controller = null, $action = null, $promoter = null)

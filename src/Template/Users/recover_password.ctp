@@ -14,6 +14,7 @@
 					echo $this->Form->input('role', ['label' => 'Rol: *', 'options' => 
 							[null => '',
 							'Administrador del sistema' => 'Administrador del sistema',
+							'Administrador(a) de la clínica' => 'Administrador(a) de la clínica',
 							'Auditor interno' => 'Auditor interno',
 							'Auditor externo' => 'Auditor externo',
 							'Call center' => 'Call center',

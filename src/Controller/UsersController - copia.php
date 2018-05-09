@@ -296,6 +296,10 @@ class UsersController extends AppController
      */
     public function add($controller = null, $action = null)
     {
+		$this->loadModel('Systems');
+
+		$system = $this->Systems->get(2);
+		
         $employee = new EmployeesController;
         	
 		setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
@@ -410,13 +414,15 @@ class UsersController extends AppController
             }
         }
         
-        $this->set(compact('user', 'controller', 'action'));
-        $this->set('_serialize', ['user', 'controller', 'action']);
+        $this->set(compact('system', 'user', 'controller', 'action'));
+        $this->set('_serialize', ['system', 'user', 'controller', 'action']);
     }
 
     public function addWeb()
     {
         $this->autoRender = false;
+		
+		$binnacles = new BinnaclesController;
 
         $jsondata = [];
 		
@@ -429,7 +435,7 @@ class UsersController extends AppController
 
             $currentDate = time::now();
 
-			$swPost = $this->checkData();
+			$swPost = $this->checkData($_POST);
 			
 			if ($swPost == 0)
 			{
@@ -590,6 +596,7 @@ class UsersController extends AppController
 			{
 				$jsondata['success'] = false;
 				$jsondata['data'] = 'Datos recibidos con valores inválidos';
+				$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'Datos recibidos con valores inválidos');				
 			}
             exit(json_encode($jsondata, JSON_FORCE_OBJECT));
         }
@@ -649,61 +656,116 @@ class UsersController extends AppController
         return $result;
     }
 	
-	public function checkData()
-	{			
-		$swPost = 0;
-
-		if (!(isset($_POST['typeOfIdentification']))):
-			$swPost = 1;
-		elseif ($_POST['typeOfIdentification'] == ''):
-			$swPost = 1;
-		endif;
-
-		if (!(isset($_POST['identidyCard']))):
-			$swPost = 1;
-		elseif ($_POST['identidyCard'] == ''):
-			$swPost = 1;
-		elseif ($_POST['identidyCard'] == 0):
-			$swPost = 1;		
-		endif;
-
-		if (!(isset($_POST['firstName']))):
-			$swPost = 1;
-		elseif ($_POST['firstName'] == ''):
-			$swPost = 1;
-		endif;
+	public function checkData($rFields = null)
+	{					
+		$this->autoRender = false;
+	
+		$binnacles = new BinnaclesController;
+	
+		$result = 0;
 		
-		if (!(isset($_POST['surname']))):
-			$swPost = 1;
-		elseif ($_POST['surname'] == ''):
-			$swPost = 1;
-		endif;
+		if (isset($rFields['typeOfIdentification']))
+		{
+			if ($rFields['typeOfIdentification'] == '')
+			{
+				$result = 1;
+			}		
+		}
+		else
+		{
+			$result = 1;
+		}
 		
-		if (!(isset($_POST['sex']))):
-			$swPost = 1;
-		elseif ($_POST['sex'] == ''):
-			$swPost = 1;		
-		endif;
+		if (isset($rFields['identidyCard']))
+		{
+			if ($rFields['identidyCard'] == '')
+			{
+				$result = 1;
+			}
+		}
+		else
+		{
+			$result = 1;
+		}
 		
-		if (!(isset($_POST['cellPhone']))):
-			$swPost = 1;
-		elseif ($_POST['cellPhone'] == ''):
-			$swPost = 1;		
-		endif;
+		if (isset($rFields['firstName']))
+		{
+			if ($rFields['firstName'] == '')
+			{
+				$result = 1;
+			}
+		}
+		else
+		{
+			$result = 1;
+		}
 		
-		if (!(isset($_POST['email']))):
-			$swPost = 1;
-		elseif ($_POST['email'] == ''):
-			$swPost = 1;
-		endif;
+		if (isset($rFields['surname']))
+		{
+			if ($rFields['surname'] == '')
+			{
+				$result = 1;
+			}
+		}
+		else
+		{
+			$result = 1;
+		}
 		
-		return $swPost;
+		if (isset($rFields['sex']))
+		{
+			if ($rFields['sex'] == '')
+			{
+				$result = 1;
+			}
+		}
+		else
+		{
+			$result = 1;
+		}
+				
+		$numberP = '/^([0-9]{1})$/';  
+		
+		if (isset($rFields['cellPhone']))
+		{
+			if (substr($rFields['cellPhone'], 0, 1) == '(')
+			{
+				if (!(preg_match($numberP, substr($rFields['cellPhone'], 1, 1)))) 
+				{
+					$result = 1;
+				}
+			}
+			elseif (!(preg_match($numberP, substr($rFields['cellPhone'], 0, 1)))) 
+			{
+				$result = 1;
+			}
+		}
+		else
+		{
+			$result = 1;
+		}
+		
+		if (isset($rFields['email']))
+		{			
+			$emailTrim = trim($rFields['email']);
+				
+			$email = strtolower($emailTrim);
+	
+			if (!(filter_var($email, FILTER_VALIDATE_EMAIL))) 
+			{
+				$result = 1;
+			}
+		}
+				
+		return $result;		
 	}
 
 // Función creada solo para pruebas de comunicación 
 
     public function addWebF()
     {
+		$binnacles = new BinnaclesController;
+
         $jsondata = [];
 		
         $employee = new EmployeesController;
@@ -715,7 +777,7 @@ class UsersController extends AppController
 
             $currentDate = time::now();
 
-			$swPost = $this->checkData();
+			$swPost = $this->checkData($_POST);
 			
 			if ($swPost == 0)
 			{
@@ -876,6 +938,7 @@ class UsersController extends AppController
 			{
 				$jsondata['success'] = false;
 				$jsondata['data'] = 'Datos recibidos con valores inválidos';
+				$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'Datos recibidos con valores inválidos');				
 			}
             exit(json_encode($jsondata, JSON_FORCE_OBJECT));
         }
@@ -2439,7 +2502,7 @@ class UsersController extends AppController
 	{
 		$binnacles = new BinnaclesController;
 
-		$arrayPromoters = [361, 1296, 1297]; // Escribir el id del promotor a eliminar
+		$arrayPromoters = [1391, 1392]; // Escribir el id del promotor a eliminar
 			
 		foreach ($arrayPromoters as $arrayPromoter)
 		{	
@@ -2731,7 +2794,7 @@ class UsersController extends AppController
 		}
 		else
 		{
-			$arrayPatients = [1389, 1390]; // Escribir los id de los pacientes a eliminar  
+			$arrayPatients = [1391, 1392, 1393, 1394]; // Escribir los id de los pacientes a eliminar  
 		}
 			
 		foreach ($arrayPatients as $arrayPatient)
@@ -2948,9 +3011,7 @@ class UsersController extends AppController
 		{
 			$result = 1;
 		}
-		
-		$binnacles->add('controller', 'Users', 'validateFields', $rFields['birthdate']);
-		
+				
 		if (isset($rFields['birthdate']))
 		{
 			$resultDate = $this->validateDate($rFields['birthdate']);

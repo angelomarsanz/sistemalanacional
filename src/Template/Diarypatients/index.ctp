@@ -9,7 +9,7 @@
 </style>
 <div class="row">
     <div class="col-md-12">
-		<input type="hidden" id="ambiente" value=<?= $system->logo ?>>
+		<input type="hidden" id="ambiente" value=<?= $system->ambient ?>>
     	<div class="page-header">
      	    <h2>Agenda del día: <?= $currentDate->format('d-m-Y') ?></h2>
 			<?php if ($namePromoter != 'General'): ?>
@@ -50,7 +50,7 @@
                                     <td><?= h($diarys->budget->patient->user->cell_phone) . ' ' . h($diarys->budget->patient->user->email) ?></td>
                                     <td class="actions">
                                         <?= $this->Html->link(__(''), ['action' => 'edit', $diarys->id, $promoter[$diarys->id]['namePromoter'], 'index'], ['class' => 'glyphicon glyphicon-ok', 'title' => 'Cerrar actividad']) ?>
-										<?= $this->Form->postLink(__(''), ['controller' => 'budgets', 'action' => 'delete', $diarys->budget->id, 'Diarypatients', 'index', $diarys->budget->patient->user->id, $diarys->budget->patient_id, $diarys->budget->patient->user->parent_user], ['class' => 'glyphicon glyphicon-envelope', 'title' => 'Enviar presupuesto actualizado']) ?>
+										<?= $this->Html->link(__(''), ['controller' => 'budgets', 'action' => 'budget', $diarys->budget->patient->user->id, $diarys->budget->patient_id, $diarys->budget->patient->user->parent_user, 'Diarypatients', 'index', $diarys->budget->id, $diarys->budget->surgery], ['class' => 'glyphicon glyphicon-envelope', 'title' => 'Enviar presupuesto actualizado']) ?>
 										<?php 
 											if ($diarys->budget->initial_budget == null):
 												echo $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'view',
@@ -146,9 +146,13 @@
 		{
 			$.redirect('/sln/Diarypatients/index', { idPromoter : idPromoter, namePromoter : namePromoter }); 
 		}
-		else
+		else if ($('#ambiente').val() == 'Desarrollo')
 		{
 			$.redirect('/dsln/Diarypatients/index', { idPromoter : idPromoter, namePromoter : namePromoter });
+		}
+		else if ($('#ambiente').val() == 'Prueba')
+		{
+			$.redirect('/psln/Diarypatients/index', { idPromoter : idPromoter, namePromoter : namePromoter });
 		}
     }
     $(document).ready(function(){

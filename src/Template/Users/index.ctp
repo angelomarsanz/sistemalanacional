@@ -63,6 +63,7 @@
 
 <div class="row">
     <div class="col-md-9">
+		<input type="hidden" id="ambiente" value=<?= $system->ambient ?>>
     	<div class="page-header">
     	    <p>
     	    <?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'add', 'Users', 'index'], ['class' => 'glyphicon glyphicon-plus btn btn-sm btn-default', 'title' => 'Agregar usuario', 'style' => 'color: #9494b8']) ?>
@@ -137,7 +138,18 @@
 <script>
     function log(id) 
     {
-        $.redirect('/sln/users/view', { id : id, controller : 'Users', action : 'index' }); 
+		if ($('#ambiente').val() == 'Producción')
+		{
+			$.redirect('/sln/users/view', { id : id, controller : 'Users', action : 'index' }); 
+		}
+		else if ($('#ambiente').val() == 'Desarrollo')
+		{
+			$.redirect('/dsln/users/view', { id : id, controller : 'Users', action : 'index' });
+		}
+		else if ($('#ambiente').val() == 'Prueba')
+		{
+			$.redirect('/psln/users/view', { id : id, controller : 'Users', action : 'index' });
+		}
     }
     $(document).ready(function(){ 
         $('#user').autocomplete(
