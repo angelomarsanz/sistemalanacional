@@ -103,6 +103,11 @@
                                     <td class="actions">
                                         <?= $this->Html->link('', ['controller' => 'Users', 'action' => 'view', $user->id, 'Users', 'index'], ['class' => 'glyphicon glyphicon-eye-open btn btn-sm btn-info', 'title' => 'Ver']) ?>
                                         <?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'edit', $user->id, 'Users', 'index'], ['class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Modificar']) ?>
+										<?php if ($user->user_status == 'ACTIVO'): ?>
+											<?= $this->Form->postLink(__(''), ['action' => 'inactivate', $user->id, 'Users', 'index'], ['confirm' => __('Está seguro de que desea inactivar el usuario?'), 'class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Inactivar']) ?>
+										<?php else: ?>
+											<?= $this->Form->postLink(__(''), ['action' => 'activate', $user->id, 'Users', 'index'], ['confirm' => __('Está seguro de que desea activar el usuario?'), 'class' => 'glyphicon glyphicon-edit btn btn-sm btn-primary', 'title' => 'Activar']) ?>
+										<?php endif; ?>
                                         <?= $this->Form->postLink(__(''), ['action' => 'delete', $user->id, 'Users', 'index'], ['confirm' => __('Está seguro de que desea eliminar el usuario?'), 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger', 'title' => 'Eliminar']) ?>
                                     </td>
                                 </tr>

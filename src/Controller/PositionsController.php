@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Event\Event;
 
 /**
  * Positions Controller
@@ -10,7 +11,17 @@ use App\Controller\AppController;
  */
 class PositionsController extends AppController
 {
-
+	public function initialize()
+	{
+		parent::initialize();
+		$this->loadComponent('RequestHandler');
+	}
+	
+	public function beforeFilter(Event $event)
+	{
+		parent::beforeFilter($event);
+		$this->Auth->allow(['index', 'add']);
+	}
     /**
      * Index method
      *
@@ -19,9 +30,11 @@ class PositionsController extends AppController
     public function index()
     {
         $positions = $this->paginate($this->Positions);
-
-        $this->set(compact('positions'));
-        $this->set('_serialize', ['positions']);
+		
+        $this->set([
+			'message' => 'true', 
+			'positions' => $positions,
+			'_serialize' => ['message', 'positions']]);
     }
 
     /**
@@ -47,19 +60,21 @@ class PositionsController extends AppController
      * @return \Cake\Network\Response|null Redirects on successful add, renders view otherwise.
      */
     public function add()
-    {
+    {		
         $position = $this->Positions->newEntity();
-        if ($this->request->is('post')) {
             $position = $this->Positions->patchEntity($position, $this->request->data);
-            if ($this->Positions->save($position)) {
-                $this->Flash->success(__('The position has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+            if ($this->Positions->save($position)) 
+			{
+                $message = "Saved";
             }
-            $this->Flash->error(__('The position could not be saved. Please, try again.'));
-        }
-        $this->set(compact('position'));
-        $this->set('_serialize', ['position']);
+			else
+			{
+				$message = "Error";
+			}
+        $this->set([
+			'message' => $message, 
+			'position' => $position,
+			'_serialize' => ['message', 'position']]);
     }
 
     /**

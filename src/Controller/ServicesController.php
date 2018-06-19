@@ -27,7 +27,7 @@ class ServicesController extends AppController
         {
             if ($user['role'] == 'Auditor(a) externo' || $user['role'] == 'Auditor(a) interno' || $user['role'] == 'Administrador(a) de la clínica' )
             {
-                if(in_array($this->request->action, ['index', 'findServiceCost']))
+                if(in_array($this->request->action, ['add', 'edit', 'index', 'findServiceCost', 'specialIndex']))
                 {
                     return true;
                 }

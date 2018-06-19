@@ -3,6 +3,7 @@
 ?>
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
+		<input type="hidden" id="ambiente" value=<?= $system->ambient ?>>
         <div class="page-header">
             <p><?= $this->Html->link(__('Volver'), ['controller' => 'Diarypatients', 'action' => $origin], ['class' => 'btn btn-sm btn-default']) ?></p>    	   
             <h2>Reasignar paciente a usuario</h2>
@@ -80,9 +81,19 @@
             cleanPager();
             
             $("#header-messages").html("Por favor espere...");
-            
-            $.redirect('/Users/reasignUser', {id1 : idPatient, id2 : $('#patient-user').val()}); 
-
+			
+			if ($('#ambiente').val() == 'Producción')
+			{
+				$.redirect('/sln/users/reasignUser', {id1 : idPatient, id2 : $('#patient-user').val()}); 
+			}
+			else if ($('#ambiente').val() == 'Desarrollo')
+			{
+				$.redirect('/dsln/users/reasignUser', {id1 : idPatient, id2 : $('#patient-user').val()}); 
+			}
+			else if ($('#ambiente').val() == 'Prueba')
+			{
+				$.redirect('/psln/users/reasignUser', {id1 : idPatient, id2 : $('#patient-user').val()}); 
+			}
         });
 
 // Final funciones Jquery

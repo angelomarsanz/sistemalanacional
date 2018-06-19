@@ -600,7 +600,12 @@ class DiarypatientsController extends AppController
     }
     public function reasign($idPatient = null, $origin = null)
     {
-        $this->set(compact('idPatient', 'origin'));
+		$this->loadModel('Systems');
+
+		$system = $this->Systems->get(2);
+		
+        $this->set(compact('system', 'idPatient', 'origin'));
+		$this->set('_serialize', ['system', 'idPatient', 'origin']); 
     }
 	
 	public function EliminateRedundantActivities()

@@ -8,7 +8,8 @@
     }
 </style>
 <div class="container">
-    <div class="page-header">    
+    <div class="page-header">
+		<input type="hidden" id="ambiente" value=<?= $system->ambient ?>
  	    <p>
             <?php if (isset($controller)): ?>
     	        <?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>
@@ -48,7 +49,11 @@
                     <b>Lugar de nacimiento:&nbsp;</b><?= h($user->employees[0]['place_of_birth']) ?>
                 <br />
                 <br />
-                    <b>Fecha de nacimiento:&nbsp;</b><?= h($user->employees[0]['birthdate']->format('d-m-Y')) ?>
+					<?php if ($user->employees[0]['birthdate'] == null): ?>
+						<b>Fecha de nacimiento:&nbsp;</b><?= h($user->employees[0]['birthdate']) ?>
+					<?php else: ?>
+						<b>Fecha de nacimiento:&nbsp;</b><?= h($user->employees[0]['birthdate']->format('d-m-Y')) ?>
+					<?php endif; ?>
                 <br />
                 <br />
                     <b>Número de teléfono fijo:&nbsp;</b><?= h($user->employees[0]['landline']) ?>
@@ -164,8 +169,15 @@
 <script>
     function log(id) 
     {
-        $.redirect('/users/view', { id : id, controller : 'Users', action : 'index' }); 
-    }
+		if ($('#ambiente').val() == 'Producción')
+		{
+			$.redirect('/sln/users/view', { id : id, controller : 'Users', action : 'index' }); 
+		}
+		else
+		{
+			$.redirect('/dsln/users/view', { id : id, controller : 'Users', action : 'index' }); 
+		}
+	}
     $(document).ready(function(){ 
         $('#user').autocomplete(
         {

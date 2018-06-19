@@ -123,7 +123,15 @@ class UsersController extends AppController
 
                 if ($system->system_switch == true)
                 {
-                    return $this->redirect($this->Auth->redirectUrl());
+					if ($this->Auth->user('user_status') == "INACTIVO" || $this->Auth->user('deleted_record') == 1)
+					{
+						$this->Flash->error(__("Acceso restringido"));
+						$this->logout();
+					}
+					else
+					{
+						return $this->redirect($this->Auth->redirectUrl());
+					}
                 }
                 else
                 {
@@ -167,18 +175,32 @@ class UsersController extends AppController
 		$this->loadModel('Systems');
 		$system = $this->Systems->get(2);
 		
-        $query = $this->Users->find('all')->where
-            ([['Users.id <>' => 1],
-            ['Users.role <>' => 'Desarrollador del sistema'],
-            ['Users.role <>' => 'Administrador del sistema'],
-            ['Users.role <>' => 'Titular del sistema'],
-            ['Users.role <>' => 'Auditor(a) externo'],
-            ['Users.role <>' => 'Auditor(a) interno'],
-            ['Users.role <>' => 'Administrador(a) de la clínica'],
-            ['Users.role <>' => 'Paciente'],
-            [['OR' => ['Users.deleted_record IS NULL', 'Users.deleted_record' => false]]]])
-            ->order(['Users.surname' => 'ASC', 'Users.second_surname' => 'ASC', 'Users.first_name' => 'ASC', 'Users.second_name' => 'ASC']);
-
+		if ($this->Auth->user('role') == "Desarrollador del sistema" || $this->Auth->user('role') == "Administrador del sistema" || $this->Auth->user('role') == "Titular del sistema")
+		{
+			$query = $this->Users->find('all')->where
+				([['Users.id <>' => 1],
+				['Users.role <>' => 'Desarrollador del sistema'],
+				['Users.role <>' => 'Administrador del sistema'],
+				['Users.role <>' => 'Titular del sistema'],
+				['Users.role <>' => 'Paciente'],
+				[['OR' => ['Users.deleted_record IS NULL', 'Users.deleted_record' => false]]]])
+				->order(['Users.surname' => 'ASC', 'Users.second_surname' => 'ASC', 'Users.first_name' => 'ASC', 'Users.second_name' => 'ASC']);			
+		}	
+		else
+		{
+			$query = $this->Users->find('all')->where
+				([['Users.id <>' => 1],
+				['Users.role <>' => 'Desarrollador del sistema'],
+				['Users.role <>' => 'Administrador del sistema'],
+				['Users.role <>' => 'Titular del sistema'],
+				['Users.role <>' => 'Auditor(a) externo'],
+				['Users.role <>' => 'Auditor(a) interno'],
+				['Users.role <>' => 'Administrador(a) de la clínica'],
+				['Users.role <>' => 'Paciente'],
+				[['OR' => ['Users.deleted_record IS NULL', 'Users.deleted_record' => false]]]])
+				->order(['Users.surname' => 'ASC', 'Users.second_surname' => 'ASC', 'Users.first_name' => 'ASC', 'Users.second_name' => 'ASC']);
+		}
+				
         $this->set('users', $this->paginate($query));
         
         $currentView = 'usersIndex';
@@ -252,6 +274,10 @@ class UsersController extends AppController
      */
     public function view($id = null, $controller = null, $action = null)
     {
+        $this->loadModel('Systems');
+
+        $system = $this->Systems->get(2);
+
         if ($this->request->is('post')) 
         {
             $id = $_POST['id'];
@@ -272,8 +298,8 @@ class UsersController extends AppController
         $currentView = 'usersView';
         
         $this->set('user', $user);
-        $this->set('_serialize', ['user', 'controller', 'action', 'currentView']);
-        $this->set(compact('controller', 'action', 'query', 'currentView'));
+        $this->set('_serialize', ['system', 'user', 'controller', 'action', 'currentView']);
+        $this->set(compact('system', 'controller', 'action', 'query', 'currentView'));
     }
     
     public function viewBasic($id = null, $controller = null, $action = null, $idUser = null)
@@ -1900,7 +1926,7 @@ class UsersController extends AppController
     {
         $employee = new EmployeesController;
               
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['post']);
         
         $user = $this->Users->get($id, [
             'contain' => ['Employees', 'Patients']]);
@@ -2158,7 +2184,7 @@ class UsersController extends AppController
             
             $name = $this->request->query['term'];
             $results = $this->Users->find('all', [
-                'conditions' => [['Users.surname LIKE' => $name . '%'], ['OR' => [['role' => 'Clinica'], ['role' => 'Coordinador(a)'], ['role' => 'Promotor(a)'], ['role' => 'Promotor(a) independiente'], ['role' => 'Call center']]], ['OR' => [['Users.deleted_record IS NULL'], ['Users.deleted_record' => false]]]]]);
+                'conditions' => [['Users.surname LIKE' => $name . '%'], ['OR' => [['role' => 'Clinica'], ['role' => 'Administrador(a) de la clínica'], ['role' => 'Coordinador(a)'], ['role' => 'Promotor(a)'], ['role' => 'Promotor(a) independiente'], ['role' => 'Call center']]], ['OR' => [['Users.deleted_record IS NULL'], ['Users.deleted_record' => false]]]]]);
             $resultsArr = [];
             foreach ($results as $result) 
             {
@@ -3134,4 +3160,44 @@ class UsersController extends AppController
 		}
 		return 1;
 	}
+    public function inactivate($id = null, $controller = null, $action = null)
+    {             
+        $this->autoRender = false;
+		
+        $this->request->allowMethod(['post']);
+        
+        $user = $this->Users->get($id);
+
+		$user->user_status = 'INACTIVO';
+		
+		if ($this->Users->save($user)) 
+		{
+			$this->Flash->success(__('El usuario se inactivo exitosamente'));
+		} 
+		else 
+		{
+			$this->Flash->error(__('El usuario no pudo ser inactivado, intente nuevamente'));
+		}      
+		return $this->redirect(['controller' => $controller, 'action' => $action]);		
+    }
+    public function activate($id = null, $controller = null, $action = null)
+    {             
+        $this->autoRender = false;
+		
+        $this->request->allowMethod(['post']);
+        
+        $user = $this->Users->get($id);
+
+		$user->user_status = 'ACTIVO';
+		
+		if ($this->Users->save($user)) 
+		{
+			$this->Flash->success(__('El usuario se inactivo exitosamente'));
+		} 
+		else 
+		{
+			$this->Flash->error(__('El usuario no pudo ser inactivado, intente nuevamente'));
+		}      
+		return $this->redirect(['controller' => $controller, 'action' => $action]);		
+    }
 }

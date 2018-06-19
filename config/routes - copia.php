@@ -43,17 +43,6 @@ use Cake\Routing\Route\DashedRoute;
  */
 Router::defaultRouteClass(DashedRoute::class);
 
-Router::scope('/api', function ($routes)
-	{
-		$routes->extensions(['json']);
-		$routes->resources('Positions', ['map' =>
-												['add' => 
-													['action' => 'add', 'method' => 'POST'],
-												 'index' =>
-													['action' => 'index', 'method' => 'GET']
-												]]);
-	});
-
 Router::scope('/', function (RouteBuilder $routes) {
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',
