@@ -2,6 +2,9 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+
+use App\Controller\BinnaclesController;
+
 use Cake\Event\Event;
 
 /**
@@ -20,6 +23,7 @@ class PositionsController extends AppController
 	public function beforeFilter(Event $event)
 	{
 		parent::beforeFilter($event);
+        $this->response->header('Access-Control-Allow-Origin','*');
 		$this->Auth->allow(['index', 'add']);
 	}
     /**
@@ -61,16 +65,23 @@ class PositionsController extends AppController
      */
     public function add()
     {		
+		$binnacles = new BinnaclesController;
+
+        $binnacles->add('controller', 'Positions', 'add', 'Se ejecutó la acción add');
+		
         $position = $this->Positions->newEntity();
-            $position = $this->Positions->patchEntity($position, $this->request->data);
-            if ($this->Positions->save($position)) 
-			{
-                $message = "Saved";
-            }
-			else
-			{
-				$message = "Error";
-			}
+        $position = $this->Positions->patchEntity($position, $this->request->data);
+		
+		$binnacles->add('controller', 'Positions', 'add', $position);
+		
+		if ($this->Positions->save($position)) 
+		{
+			$message = "Posición registrada exitosamente";
+		}
+		else
+		{
+			$message = "Error al registrar posición";
+		}
         $this->set([
 			'message' => $message, 
 			'position' => $position,

@@ -1,0 +1,32 @@
+{
+	"folders":
+	[
+		{
+			"path": "/opt/lampp/htdocs/curso-backfront"
+		},
+		{
+			"path": "/opt/lampp/htdocs/cakephp-angular"
+		},
+		{
+			"path": "/opt/lampp/htdocs/angular4cli"
+		},
+		{
+			"path": "/opt/lampp/htdocs/wordpress-app"
+		},
+		{
+			"path": "/opt/lampp/htdocs/tutorts"
+		},
+		{
+			"path": "/opt/lampp/htdocs/tutorjs"
+		},
+		{
+			"path": "/opt/lampp/htdocs/tutorxm"
+		},
+		{
+			"path": "/opt/lampp/htdocs/cms"
+		},
+		{
+			"path": "."
+		}
+	]
+}

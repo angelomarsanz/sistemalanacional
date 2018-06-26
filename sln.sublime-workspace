@@ -1,0 +1,293 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"po",
+				"positions"
+			],
+			[
+				"_",
+				"_positionService"
+			],
+			[
+				"wi",
+				"width\tproperty"
+			],
+			[
+				"de",
+				"default_index"
+			],
+			[
+				"S",
+				"Symfony"
+			],
+			[
+				"i",
+				"InnoDB"
+			],
+			[
+				"P",
+				"pk_users"
+			],
+			[
+				"cre",
+				"create_at"
+			],
+			[
+				"n",
+				"null"
+			],
+			[
+				"crea",
+				"CREATE"
+			],
+			[
+				"ap",
+				"appRoutingProviders"
+			],
+			[
+				"a",
+				"appRoutes"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/opt/lampp/htdocs/cakephp-angular",
+		"/opt/lampp/htdocs/cakephp-angular/angular",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/services",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/views"
+	],
+	"file_history":
+	[
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/services/position.service.ts",
+		"/home/angelsanz/Escritorio/PositionsController.php",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/services/rposition.service.ts",
+		"/media/angelsanz/96B8A9D8B8A9B6E1/xampp/htdocs/sln/src/Controller/UsersController.php",
+		"/media/angelsanz/96B8A9D8B8A9B6E1/xampp/htdocs/sln/src/Controller/PositionsController.php",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/services/global.ts",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/components/add.component.ts",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/app.component.html",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/views/add.html",
+		"/opt/lampp/htdocs/cms/src/Model/Table/ArticlesTable.php",
+		"/opt/lampp/htdocs/cms/config/app.php",
+		"/opt/lampp/htdocs/tutorxm/ejercicio1.xml",
+		"/opt/lampp/htdocs/tutorxm/ejercicio3.xslt",
+		"/opt/lampp/htdocs/tutorjs/ejercicio1.html",
+		"/opt/lampp/htdocs/tutorts/greeter.js",
+		"/opt/lampp/htdocs/tutorts/greeter.ts",
+		"/opt/lampp/htdocs/cakephp-angular/angular/package.json",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/Services/position.service.ts",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/Services/add.service.ts",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/Services/global.ts",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/app.component.css",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/app.component.spec.ts",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/app.component.ts",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/app.module.ts",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/app.routing.ts",
+		"/opt/lampp/htdocs/cakephp-angular/cakephp-angular.sublime-project",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/environments/environment.prod.ts",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/environments/environment.ts",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/assets/css/styles.css",
+		"/opt/lampp/htdocs/curso-backfront/symfony/src/BackendBundle/Repository/PostRepository.php",
+		"/opt/lampp/htdocs/curso-backfront/symfony/src/BackendBundle/Entity/Post.php",
+		"/home/angelsanz/Escritorio/ejercicio1.xml",
+		"/opt/lampp/htdocs/curso-backfront/symfony/composer.json",
+		"/opt/lampp/htdocs/curso-backfront/symfony/src/BackendBundle/Resources/config/doctrine/Task.orm.yml",
+		"/opt/lampp/htdocs/curso-backfront/symfony/src/BackendBundle/Resources/config/doctrine/User.orm.yml",
+		"/opt/lampp/htdocs/curso-backfront/symfony/src/BackendBundle/Resources/config/services.yml",
+		"/opt/lampp/htdocs/curso-backfront/symfony/src/BackendBundle/Resources/config/routing.yml",
+		"/home/angelsanz/blend4web_ce/deploy/apps/test3/index.html",
+		"/home/angelsanz/blend4web_ce/deploy/apps/test3/example.js",
+		"/home/angelsanz/blend4web_ce/deploy/apps/ejercicios_json/indexLogorede5Json.html",
+		"/opt/lampp/htdocs/curso-backfront/symfony/app/config/routing.yml",
+		"/opt/lampp/htdocs/curso-backfront/symfony/src/AppBundle/Resources/config/routing.yml",
+		"/opt/lampp/htdocs/curso-backfront/symfony/src/AppBundle/Controller/DefaultController.php",
+		"/opt/lampp/htdocs/curso-backfront/symfony/src/AppBundle/Resources/config/routing/default.yml",
+		"/opt/lampp/htdocs/curso-backfront/symfony/src/AppBundle/Resources/routing.yml",
+		"/opt/lampp/htdocs/curso-backfront/symfony/src/AppBundle/Resources/Routing/default.yml",
+		"/opt/lampp/htdocs/curso-backfront/symfony/src/AppBundle/Resources/Routing/routing.yml",
+		"/opt/lampp/htdocs/curso-backfront/symfony/app/config/parameters.yml",
+		"/opt/lampp/htdocs/curso-backfront/bbdd/base_de_datos.sql",
+		"/opt/lampp/htdocs/curso-backfront/curso-backfront.sublime-project",
+		"/home/angelsanz/wordpress-app/www/index.html",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/components/add.component2.ts",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/views/add2.html",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/index.html",
+		"/opt/lampp/htdocs/cakephp-angular/angular/node_modules/jquery/dist/jquery.min.js",
+		"/opt/lampp/htdocs/cakephp-angular/angular/src/app/components/add.componet.ts",
+		"/opt/lampp/htdocs/angular4cli/src/app/app.module.ts",
+		"/opt/lampp/htdocs/angular4cli/src/app/app.component.spec.ts",
+		"/opt/lampp/htdocs/angular4cli/src/app/app.component.ts",
+		"/opt/lampp/htdocs/angular4cli/src/app/app.component.html",
+		"/opt/lampp/htdocs/angular4cli/src/app/app.component.css",
+		"/opt/lampp/htdocs/angular4cli/src/styles.css",
+		"/opt/lampp/htdocs/angular4cli/src/polyfills.ts",
+		"/opt/lampp/htdocs/angular4cli/src/karma.conf.js",
+		"/opt/lampp/htdocs/angular4cli/src/environments/environment.ts",
+		"/opt/lampp/htdocs/angular4cli/src/environments/environment.prod.ts",
+		"/opt/lampp/htdocs/angular4cli/src/app/services/user.service.ts",
+		"/opt/lampp/htdocs/angular4cli/src/app/models/user.ts",
+		"/opt/lampp/htdocs/angular4cli/src/app/model/user.ts"
+	],
+	"find":
+	{
+		"height": 38.0
+	},
+	"find_in_files":
+	{
+		"height": 98.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"$_POST",
+			"try",
+			"make"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 22.0
+	},
+	"input":
+	{
+		"height": 34.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "sln.sublime-project",
+	"replace":
+	{
+		"height": 40.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 265.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
