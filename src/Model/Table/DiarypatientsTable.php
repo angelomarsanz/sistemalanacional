@@ -188,7 +188,9 @@ class DiarypatientsTable extends Table
         $query->contain(['Budgets' => ['Patients' => ['Users']]])
             ->order(['Users.surname' => 'ASC', 'Users.second_surname' => 'ASC', 'Users.first_name' => 'ASC', 'Users.second_name' => 'ASC']);
     
-        if ($query)
+		$count = $query->count();
+	
+        if ($count > 0)
         {
             $arrayResult['indicator'] = 0;
             $arrayResult['searchRequired'] = $query;

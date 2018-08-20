@@ -31,16 +31,34 @@
                     echo $this->Form->input('identidy_card', ['label' => 'Por favor escriba el número de cédula de identidad (sin puntos): *', 'class' => 'integer']);  
 					if ($current_user['id'] == $user->id):
 						echo $this->Form->input('role', ['label' => 'Rol: *', 'value' => $user->role, 'disabled' => 'disabled']);	
-                    elseif ($current_user['role'] == 'Promotor(a)' || $current_user['role'] == 'Promotor(a) independiente'):
+					elseif ($current_user['role'] === 'Desarrollador del sistema' ||
+						$current_user['role'] === 'Administrador del sistema' ||
+						$current_user['role'] === 'Titular del sistema'):
                         echo $this->Form->input('role', ['label' => 'Rol: *', 'options' => 
                         [null => '',
+						'Administrador(a) de la clínica' => 'Administrador(a) de la clínica',
+						'Auditor externo(a)' => 'Auditor externo(a)',
+						'Auditor interno(a)' => 'Auditor interno(a)',
+                        'Call center' => 'Call center',
+                        'Coordinador(a)' => 'Coordinador(a)',
+                        'Promotor(a)' => 'Promotor(a)',
                         'Promotor(a) independiente' => 'Promotor(a) independiente']]);
-                    else: 
+                    elseif ($current_user['role'] == 'Administrador(a) de la clínica'): 
                         echo $this->Form->input('role', ['label' => 'Rol: *', 'options' => 
                         [null => '',
                         'Call center' => 'Call center',
                         'Coordinador(a)' => 'Coordinador(a)',
                         'Promotor(a)' => 'Promotor(a)',
+                        'Promotor(a) independiente' => 'Promotor(a) independiente']]);
+                    elseif ($current_user['role'] == 'Coordinador(a)'): 
+                        echo $this->Form->input('role', ['label' => 'Rol: *', 'options' => 
+                        [null => '',
+                        'Call center' => 'Call center',
+                        'Promotor(a)' => 'Promotor(a)',
+                        'Promotor(a) independiente' => 'Promotor(a) independiente']]);
+                    elseif ($current_user['role'] == 'Promotor(a)' || $current_user['role'] == 'Promotor(a) independiente'):
+                        echo $this->Form->input('role', ['label' => 'Rol: *', 'options' => 
+                        [null => '',
                         'Promotor(a) independiente' => 'Promotor(a) independiente']]);
                     endif;
                     echo $this->Form->input('first_name', ['label' => 'Primer nombre: *']);

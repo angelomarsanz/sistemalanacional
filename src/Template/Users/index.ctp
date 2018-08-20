@@ -143,23 +143,12 @@
 <script>
     function log(id) 
     {
-		if ($('#ambiente').val() == 'Producción')
-		{
-			$.redirect('/sln/users/view', { id : id, controller : 'Users', action : 'index' }); 
-		}
-		else if ($('#ambiente').val() == 'Desarrollo')
-		{
-			$.redirect('/dsln/users/view', { id : id, controller : 'Users', action : 'index' });
-		}
-		else if ($('#ambiente').val() == 'Prueba')
-		{
-			$.redirect('/psln/users/view', { id : id, controller : 'Users', action : 'index' });
-		}
+		$.redirect('<?php echo Router::url(["controller" => "Users", "action" => "view"]); ?>', { id : id, controller : 'Users', action : 'index' }); 
     }
     $(document).ready(function(){ 
         $('#user').autocomplete(
         {
-            source:'<?php echo Router::url(array("controller" => "Users", "action" => "findUser")); ?>',
+            source:'<?php echo Router::url(["controller" => "Users", "action" => "findUser"]); ?>',
             minLength: 3,             
             select: function( event, ui ) {
                 log(ui.item.id);

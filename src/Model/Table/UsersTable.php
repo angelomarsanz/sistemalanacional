@@ -199,7 +199,7 @@ class UsersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->isUnique(['username']));
-
+	
         return $rules;
     }
 
@@ -217,11 +217,14 @@ class UsersTable extends Table
         $arrayResult = [];
 
         $query->where(['username like' => $options['firstname_surname'] . '%']);
+		
+		$count = $query->count();
     
-        if ($query)
+        if ($count > 0)
         {
             $arrayResult['indicator'] = 0;
-            $arrayResult['searchRequired'] = $query->count();
+            $arrayResult['count'] = $query->count();
+			$arrayResult['query'] = $query; 
         }
         else
         {

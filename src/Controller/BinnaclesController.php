@@ -54,10 +54,15 @@ class BinnaclesController extends AppController
      *
      * @return \Cake\Network\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add($typeClass = null, $className = null, $methodName = null, $novelty = null)
+    public function add($typeClass = null, $className = null, $methodName = null, $novelty = null, $arrayExtra = null)
     {
 		$this->autoRender = false;
 		
+		$arrayResult = [];
+		$arrayResult['indicador'] = 0;
+		$arrayResult['message'] = "Registro grabado exitosamente";
+		$arrayResult['id'] = 0;
+				
         $binnacle = $this->Binnacles->newEntity();
 		
 		$binnacle->type_class = $typeClass;
@@ -68,14 +73,88 @@ class BinnaclesController extends AppController
 		
 		$binnacle->novelty = $novelty;
 		
-		$result = 0;
-		
-        if (!($this->Binnacles->save($binnacle)))
+		if (isset($arrayExtra))
 		{
-			$result = 1;
+			$accountArray = 1;
+			
+			foreach ($arrayExtra as $arrayExtras)
+			{
+				if ($accountArray == 1)
+				{
+					$binnacle->extra_column1 = $arrayExtras;
+				}
+				
+				if ($accountArray == 2)
+				{
+					$binnacle->extra_column2 = $arrayExtras;
+				}
+
+				if ($accountArray == 3)
+				{
+					$binnacle->extra_column3 = $arrayExtras;
+				}
+				
+				if ($accountArray == 4)
+				{
+					$binnacle->extra_column4 = $arrayExtras;
+				}
+				
+				if ($accountArray == 5)
+				{
+					$binnacle->extra_column5 = $arrayExtras;
+				}
+				
+				if ($accountArray == 6)
+				{
+					$binnacle->extra_column6 = $arrayExtras;
+				}
+				
+				if ($accountArray == 7)
+				{
+					$binnacle->extra_column7 = $arrayExtras;
+				}
+				
+				if ($accountArray == 8)
+				{
+					$binnacle->extra_column8 = $arrayExtras;
+				}
+				
+				if ($accountArray == 9)
+				{
+					$binnacle->extra_column9 = $arrayExtras;
+				}
+				
+				if ($accountArray == 10)
+				{
+					$binnacle->extra_column10 = $arrayExtras;
+				}
+				
+				$accountArray++;
+			}
 		}
 		
-		return $result;
+		$binnacle->responsible_user = $this->Auth->user('username');
+				
+        if ($this->Binnacles->save($binnacle))
+		{
+			$lastRecord = $this->Binnacles->find('all')
+				->where(['responsible_user' => $this->Auth->user('username')])
+				->order(['created' => 'DESC']);
+				
+			$row = $lastRecord->first();
+			
+			if ($row)
+			{
+				$arrayResult['id'] = $row->id;
+			}
+		}
+		else
+		{
+			$arrayResult['indicador'] = 1;
+			$arrayResult['message'] = "No se pudo grabar el registro";
+		}
+		
+		return $arrayResult;
     }
 
     /**

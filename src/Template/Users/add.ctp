@@ -86,7 +86,7 @@
 	
     	$(".integer").numeric(false, function() { alert("Integers only"); this.value = ""; this.focus(); });
 
-        $('#email').change(function(e) 
+        $('#email').blur(function(e) 
         {
             e.preventDefault();
             
@@ -106,7 +106,7 @@
                     {
                         nameUser = response.data.surname + ' ' + response.data.firstName;
 
-                        $.redirect(confirmUser, { id : idUser, controller : 'Users', action : 'index', name : nameUser }); 
+                        $.redirect(confirmUser, { id : idUser, controller : 'Users', action : 'index', name : nameUser, email : $("#email").val() }); 
                     }
                 }        
             })

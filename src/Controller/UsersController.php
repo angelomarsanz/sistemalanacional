@@ -363,18 +363,13 @@ class UsersController extends AppController
 			
 			if ($arrayResult['indicator'] == 0)
 			{
-				$consecutive = $arrayResult['searchRequired'] + 1;  
-				
-				$username = $firstNameSurname . $consecutive;
-				
-				$user->username = $username;
+				$username = $this->consecutiveUser($firstNameSurname, $arrayResult);
 			}
 			else 
 			{
-				$username = $firstNameSurname . '1';
-				
-				$user->username = $username;
+				$username = $firstNameSurname . '1';		
 			}
+			$user->username = $username;
 
 			$password = substr($firstName, 0, 1) . substr($surname, 0, 1) . $currentDate->second . $currentDate->minute . '$';
 
@@ -539,18 +534,13 @@ class UsersController extends AppController
 					
 					if ($arrayResult['indicator'] == 0)
 					{
-						$consecutive = $arrayResult['searchRequired'] + 1;  
-						
-						$username = $firstNameSurname . $consecutive;
-						
-						$user->username = $username;
+						$username = $this->consecutiveUser($firstNameSurname, $arrayResult);
 					}
 					else 
 					{
-						$username = $firstNameSurname . '1';
-						
-						$user->username = $username;
+						$username = $firstNameSurname . '1';		
 					}
+					$user->username = $username;
 
 					$password = substr($firstName, 0, 1) . substr($surname, 0, 1) . $currentDate->second . $currentDate->minute . '$';
 					
@@ -881,18 +871,13 @@ class UsersController extends AppController
 					
 					if ($arrayResult['indicator'] == 0)
 					{
-						$consecutive = $arrayResult['searchRequired'] + 1;  
-						
-						$username = $firstNameSurname . $consecutive;
-						
-						$user->username = $username;
+						$username = $this->consecutiveUser($firstNameSurname, $arrayResult);
 					}
 					else 
 					{
-						$username = $firstNameSurname . '1';
-						
-						$user->username = $username;
+						$username = $firstNameSurname . '1';		
 					}
+					$user->username = $username;
 
 					$password = substr($firstName, 0, 1) . substr($surname, 0, 1) . $currentDate->second . $currentDate->minute . '$';
 					
@@ -976,6 +961,10 @@ class UsersController extends AppController
 	
     public function addBasic($controller = null, $action = null)
     {
+		$this->loadModel('Systems');
+
+		$system = $this->Systems->get(2);
+		
         $patient = new PatientsController;
         
         $budget = new BudgetsController;
@@ -1017,20 +1006,18 @@ class UsersController extends AppController
             
             $arrayResult = $users->find('username', ['firstname_surname' => $firstNameSurname]);
             
-            if ($arrayResult['indicator'] == 0)
-            {
-                $consecutive = $arrayResult['searchRequired'] + 1;  
-                
-                $username = $firstNameSurname . $consecutive;
-            }
-            else 
-            {
-                $username = $firstNameSurname . '1';
-            }
+			if ($arrayResult['indicator'] == 0)
+			{
+				$username = $this->consecutiveUser($firstNameSurname, $arrayResult);
+			}
+			else 
+			{
+				$username = $firstNameSurname . '1';		
+			}
+			$user->username = $username;
             
             $password = substr($firstName, 0, 1) . substr($surname, 0, 1) . $currentDate->second . $currentDate->minute . '$';
 			
-			$user->username = $username;
 			$user->password = $password;
 			$user->type_of_identification = $_POST['type_of_identification'];
 			$user->identidy_card = $_POST['identidy_card'];
@@ -1167,7 +1154,7 @@ class UsersController extends AppController
 		
 		$services = $this->Services->find('list', ['limit' => 200, 'conditions' => [['Services.registration_status' => 'ACTIVO'], ['OR' => [['Services.cost_bolivars >' => 0], ['Services.cost_dollars >' => 0]]]], 'order' => ['Services.service_description' => 'ASC']]);
 	
-        $this->set(compact('controller', 'action', 'services'));
+        $this->set(compact('system', 'controller', 'action', 'services'));
     }
 
     public function addWebBasic()
@@ -1215,13 +1202,11 @@ class UsersController extends AppController
 				
 				if ($arrayResult['indicator'] == 0)
 				{
-					$consecutive = $arrayResult['searchRequired'] + 1;  
-					
-					$username = $firstNameSurname . $consecutive;
+					$username = $this->consecutiveUser($firstNameSurname, $arrayResult);
 				}
 				else 
 				{
-					$username = $firstNameSurname . '1';
+					$username = $firstNameSurname . '1';		
 				}
 				
 				$password = substr($firstName, 0, 1) . substr($surname, 0, 1) . $currentDate->second . $currentDate->minute . '$';
@@ -1518,13 +1503,11 @@ class UsersController extends AppController
 				
 				if ($arrayResult['indicator'] == 0)
 				{
-					$consecutive = $arrayResult['searchRequired'] + 1;  
-					
-					$username = $firstNameSurname . $consecutive;
+					$username = $this->consecutiveUser($firstNameSurname, $arrayResult);
 				}
 				else 
 				{
-					$username = $firstNameSurname . '1';
+					$username = $firstNameSurname . '1';		
 				}
 				
 				$password = substr($firstName, 0, 1) . substr($surname, 0, 1) . $currentDate->second . $currentDate->minute . '$';
@@ -1924,6 +1907,11 @@ class UsersController extends AppController
      */
     public function delete($id = null, $controller = null, $action = null)
     {
+        setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+        date_default_timezone_set('America/Caracas');
+
+        $currentDate = time::now();
+		
         $employee = new EmployeesController;
               
         $this->request->allowMethod(['post']);
@@ -1940,6 +1928,14 @@ class UsersController extends AppController
         
 		if ($result == 0)
         {
+			$user->user_status = 'ELIMINADO';
+			
+			$user->reason_status = 'ACCIÓN REQUERIDA';
+			
+			$user->date_status = $currentDate;
+			
+			$user->responsible_user = $this->Auth->user('username');
+			
             $user->deleted_record = true;
             
             if ($this->Users->save($user)) 
@@ -1961,13 +1957,26 @@ class UsersController extends AppController
     
     public function deleteBasic($id = null, $controller = null, $action = null)
     {
+        setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+        date_default_timezone_set('America/Caracas');
+
+        $currentDate = time::now();
+		
         $patient = new PatientsController;        
         
         $this->request->allowMethod(['post', 'delete']);
         
         $user = $this->Users->get($id, [
             'contain' => ['Patients']]);
-
+			
+		$user->user_status = 'ELIMINADO';
+		
+		$user->reason_status = 'ACCIÓN REQUERIDA';
+		
+		$user->date_status = $currentDate;
+		
+		$user->responsible_user = $this->Auth->user('username');
+		
         $user->deleted_record = true;
             
         if ($this->Users->save($user)) 
@@ -2164,12 +2173,11 @@ class UsersController extends AppController
             $results = $this->Users->find('all', [
                 'conditions' => [['Users.surname LIKE' => $name . '%'], ['OR' => [['Users.deleted_record IS NULL'], ['Users.deleted_record' => false]]]]]);
             $resultsArr = [];
+			$account = 1;
             foreach ($results as $result) 
             {
-                 $resultsArr[] = ['label' => $result['surname'] . ' ' . $result['second_surname'] . ' ' . $result['first_name'] . ' ' . $result['second_name'] . ' - ' . $result['role'], 'value' => $result['surname'] . ' ' . $result['second_surname'] . ' ' . $result['first_name'] . ' ' . $result['second_name'] . ' - ' . $result['role'], 'id' => $result['id']];
-
+                 $resultsArr[] = ['label' => $result->surname . ' ' . $result->second_surname . ' ' . $result->first_name . ' ' . $result->second_name . ' - ' . $result->role, 'value' => $result->surname . ' ' . $result->second_surname . ' ' . $result->first_name . ' ' . $result->second_name . ' - ' . $result->role, 'id' => $result->id];
             }
-
             exit(json_encode($resultsArr, JSON_FORCE_OBJECT));
         }
     }
@@ -2250,16 +2258,20 @@ class UsersController extends AppController
     public function checkUser()
     {
         $this->autoRender = false;
+		
+		$binnacles = new BinnaclesController;
          
         if ($this->request->is('json'))
-        {
-            $jsondata = [];
+        {            
+			$jsondata = [];
 
             if (isset($_POST['role']) && isset($_POST['email']))
             {               
                 $emailTrim = trim($_POST['email']);
 		
 				$email = strtolower($emailTrim);
+				
+				$result = $binnacles->add('controller', 'Users', 'checkUser', 'role: ' . $_POST['role'] . ' email: ' . $email);
                 
                 $lastRecord = $this->Users->find('all', ['conditions' => [['Users.role' => $_POST['role']], ['Users.email' => $email]], 
                     'order' => ['Users.created' => 'DESC']]);
@@ -2342,10 +2354,11 @@ class UsersController extends AppController
             $controller = $_POST['controller'];
             $action = $_POST['action'];
             $namePatient = $_POST['name'];
+			$email = $_POST['email'];
             $currentView = 'usersConfirmPatient';
             
-        $this->set(compact('id', 'controller', 'action', 'currentView', 'namePatient'));
-        $this->set('_serialize', ['id', 'controller', 'action', 'currentView', 'namePatient']);
+        $this->set(compact('id', 'controller', 'action', 'currentView', 'namePatient', 'email'));
+        $this->set('_serialize', ['id', 'controller', 'action', 'currentView', 'namePatient', 'email']);
         }
     }
 
@@ -2357,10 +2370,11 @@ class UsersController extends AppController
             $controller = $_POST['controller'];
             $action = $_POST['action'];
             $nameUser = $_POST['name'];
+			$email = $_POST['email'];
             $currentView = 'usersConfirmUser';
             
-        $this->set(compact('id', 'controller', 'action', 'currentView', 'nameUser'));
-        $this->set('_serialize', ['id', 'controller', 'action', 'currentView', 'nameUser']);
+        $this->set(compact('id', 'controller', 'action', 'currentView', 'nameUser', 'email'));
+        $this->set('_serialize', ['id', 'controller', 'action', 'currentView', 'nameUser', 'email']);
         }
     }
     
@@ -2824,7 +2838,7 @@ class UsersController extends AppController
 		}
 		else
 		{
-			$arrayPatients = [1391, 1392, 1393, 1394]; // Escribir los id de los pacientes a eliminar  
+			$arrayPatients = [1761]; // Escribir los id de los pacientes a eliminar  
 		}
 			
 		foreach ($arrayPatients as $arrayPatient)
@@ -3200,4 +3214,31 @@ class UsersController extends AppController
 		}      
 		return $this->redirect(['controller' => $controller, 'action' => $action]);		
     }
+	public function consecutiveUser($firstNameSurname = null, $arrayResult = null)
+	{
+		$this->autoRender = false;
+		
+		$consecutive = $arrayResult['count'] + 1;
+				
+		for ($i = $consecutive; ; $i++) 
+		{
+			$username = $firstNameSurname . $i;
+			
+			$swFound = 0;
+			
+			foreach ($arrayResult['query'] as $querys)
+			{
+				if ($querys->username == $username)
+				{
+					$swFound = 1;
+					break;
+				}
+			}
+			if ($swFound == 0)
+			{
+				break;
+			}
+		}
+		return $username;
+	}
 }

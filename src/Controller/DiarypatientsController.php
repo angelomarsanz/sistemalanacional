@@ -30,7 +30,7 @@ class DiarypatientsController extends AppController
         {
             if ($user['role'] === 'Auditor(a) externo' || $user['role'] === 'Auditor(a) interno' || $user['role'] === 'Administrador(a) de la clínica' )
             {
-                if(in_array($this->request->action, ['index', 'edit', 'indexMonth', 'restore', 'reasign', 'reportDiary', 'markColumns']))
+                if(in_array($this->request->action, ['index', 'edit', 'indexMonth', 'restore', 'reasign', 'reportDiary', 'markColumns', 'reportExcel']))
                 {
                     return true;
                 }
@@ -830,8 +830,46 @@ class DiarypatientsController extends AppController
 		return;
 	}
 	public function reportDiary()
+	{			
+		$binnacles = new BinnaclesController;	
+	    
+		if ($this->request->is('post')) 
+        {
+			$columnsReport = null;
+			
+			if (isset($_POST['columnsReport']))
+			{
+				$columnsReport = json_encode($_POST['columnsReport'], JSON_FORCE_OBJECT);				
+			}
+
+			$arrayResult = $binnacles->add('controller', 'Diarypatients', 'reportDiary', $columnsReport);
+			
+			if ($arrayResult == 0)
+			{
+				return $this->redirect(['controller' => 'Diarypatients', 'action' => 'reportExcel', $arrayResult['id']]);
+			}
+			else
+			{
+				$this->Flash->error(__('No se pudo generar el reporte'));
+			}
+		}
+		else
+		{
+			$this->loadModel('Systems');
+			$system = $this->Systems->get(2);
+			
+			$this->set(compact('system'));
+			$this->set('_serialize', ['system']); 
+		}
+	}
+		
+	public function reportExcel($id = null)
 	{					
 		$this->loadModel('Systems');
+		
+		$this->loadModel('Binnacles');
+		
+		$binnacles = new BinnaclesController;
 
 		$system = $this->Systems->get(2);
 		
@@ -844,154 +882,139 @@ class DiarypatientsController extends AppController
 		->minute(59)
 		->second(59);
 		
-		$binnacles = new BinnaclesController;
-
-	    if ($this->request->is('post')) 
-        {		
-			$this->budgetsWithoutActivity();
-
-			if (isset($_POST['columnsReport']))
-			{
-				$columnsReport = $_POST['columnsReport'];
-			}
-			else
-			{
-				$columnsReport = [];
-			}
-			
-			$arrayMark = $this->markColumns($columnsReport); 
-						
-			$diarypatients = TableRegistry::get('Diarypatients');
+		$this->budgetsWithoutActivity();
 		
-			$arrayResult = $diarypatients->find('report', ['conditions' => 
-				[['Diarypatients.id >' => 1],
-				['OR' => ['Diarypatients.deleted_record IS NULL', 'Diarypatients.deleted_record' => false]],
-				['OR' => ['Diarypatients.status IS NULL', 
-					'Diarypatients.status' => false, 
-					'Diarypatients.activity_next' => 'Cerrar (ya se practicó la cirugía o se ejecutó el servicio)',
-					'Diarypatients.activity_next' => 'Cerrar (el paciente ya no está interesado)'
-					]]]]);
-											
-			if ($arrayResult['indicator'] == 0)
+		$binnacle = $this->Binnacles->get($id);
+		
+		$columnsReport = json_decode($binnacle->novelty);
+		
+		debug($columnsReport);
+		
+		$arrayMark = $this->markColumns($columnsReport); 
+					
+		$diarypatients = TableRegistry::get('Diarypatients');
+	
+		$arrayResult = $diarypatients->find('report', ['conditions' => 
+			[['Diarypatients.id >' => 1],
+			['OR' => ['Diarypatients.deleted_record IS NULL', 'Diarypatients.deleted_record' => false]],
+			['OR' => ['Diarypatients.status IS NULL', 
+				'Diarypatients.status' => false, 
+				'Diarypatients.activity_next' => 'Cerrar (ya se practicó la cirugía o se ejecutó el servicio)',
+				'Diarypatients.activity_next' => 'Cerrar (el paciente ya no está interesado)'
+				]]]]);
+										
+		if ($arrayResult['indicator'] == 0)
+		{
+			$diary = $arrayResult['searchRequired'];
+			
+			$accountBudgets = $diary->count();
+					
+			$additional = [];
+			$counter = [];
+			$counter['billedBudgets'] = 0;
+			$counter['closedBudgets'] = 0;
+			$counter['overdueBudgets'] = 0;
+			$counter['currentBudgets'] = 0;
+			$counter['notSend'] = 0;
+			$counter['closedActivities'] = 0;
+			$counter['pendingActivities'] = 0;
+			$counter['delayedActivities'] = 0;
+			$counter['bolivaresBudget'] = 0;
+			$counter['AmountBolivares'] = 0;
+			$counter['dollarsBudget'] = 0;
+			$counter['AmountDollars'] = 0;
+
+			foreach ($diary as $diarys)
 			{
-				$diary = $arrayResult['searchRequired'];
+				$idPromoter = $diarys->budget->patient->user->parent_user;
 				
-				$accountBudgets = $diary->count();
-						
-				$additional = [];
-				$counter = [];
-				$counter['billedBudgets'] = 0;
-				$counter['closedBudgets'] = 0;
-				$counter['overdueBudgets'] = 0;
-				$counter['currentBudgets'] = 0;
-				$counter['notSend'] = 0;
-				$counter['closedActivities'] = 0;
-				$counter['pendingActivities'] = 0;
-				$counter['delayedActivities'] = 0;
-				$counter['bolivaresBudget'] = 0;
-				$counter['AmountBolivares'] = 0;
-				$counter['dollarsBudget'] = 0;
-				$counter['AmountDollars'] = 0;
+				$userPromoter = $this->Diarypatients->Budgets->Patients->Users->get($idPromoter);
+				
+				$additional[$diarys->id]['namePromoter'] = $userPromoter->full_name;
 
-				foreach ($diary as $diarys)
+				$additional[$diarys->id]['cellPromoter'] = $userPromoter->cell_phone;
+
+				$additional[$diarys->id]['emailPromoter'] = $userPromoter->email;
+				
+				if ($diarys->budget->number_bill != null && $diarys->budget->amount_bill > 0)
 				{
-					$idPromoter = $diarys->budget->patient->user->parent_user;
-					
-					$userPromoter = $this->Diarypatients->Budgets->Patients->Users->get($idPromoter);
-					
-					$additional[$diarys->id]['namePromoter'] = $userPromoter->full_name;
-
-					$additional[$diarys->id]['cellPromoter'] = $userPromoter->cell_phone;
-
-					$additional[$diarys->id]['emailPromoter'] = $userPromoter->email;
-					
-					if ($diarys->budget->number_bill != null && $diarys->budget->amount_bill > 0)
+					$additional[$diarys->id]['budgetStatus'] = "Facturado";
+					$counter['billedBudgets']++;
+				}
+				else
+				{
+					if ($diarys->budget->activity_result == 'Cerrado')
 					{
-						$additional[$diarys->id]['budgetStatus'] = "Facturado";
-						$counter['billedBudgets']++;
+							$additional[$diarys->id]['budgetStatus'] = "Cerrado";
+							$counter['closedBudgets']++;
+					}
+					elseif ($diarys->budget->number_budget == null)
+					{
+						$additional[$diarys->id]['budgetStatus'] = "No enviado";
+						$counter['notSend']++;							
 					}
 					else
 					{
-						if ($diarys->budget->activity_result == 'Cerrado')
+						$diferentBudget = $diarys->budget->application_date->diff($currentDate)->d;
+ 
+						if ($diferentBudget > 3)
 						{
-								$additional[$diarys->id]['budgetStatus'] = "Cerrado";
-								$counter['closedBudgets']++;
-						}
-						elseif ($diarys->budget->number_budget == null)
-						{
-							$additional[$diarys->id]['budgetStatus'] = "No enviado";
-							$counter['notSend']++;							
+							$additional[$diarys->id]['budgetStatus'] = "Vencido";
+							$counter['overdueBudgets']++;
 						}
 						else
 						{
-							$diferentBudget = $diarys->budget->application_date->diff($currentDate)->d;
-	 
-							if ($diferentBudget > 3)
-							{
-								$additional[$diarys->id]['budgetStatus'] = "Vencido";
-								$counter['overdueBudgets']++;
-							}
-							else
-							{
-								$additional[$diarys->id]['budgetStatus'] = "Vigente";
-								$counter['currentBudgets']++;
-							}
-						}
-					}
-					if ($diarys->budget->coin == 'BOLIVAR')
-					{
-						$counter['bolivaresBudget']++;
-						$counter['AmountBolivares']+= $diarys->budget->amount_budget;
-					}
-					else
-					{
-						$counter['dollarsBudget']++;
-						$counter['AmountDollars']+= $diarys->budget->amount_budget;
-					}
-					if ($diarys->activity_next == 'Cerrar (ya se practicó la cirugía o se ejecutó el servicio)' ||
-						$diarys->activity_next == 'Cerrar (el paciente ya no está interesado)')
-					{
-						$additional[$diarys->id]['statusActivity'] = "Cerrada";
-						$counter['closedActivities']++;
-					}
-					else
-					{
-						$diferent = $diarys->activity_date->diff($currentDate)->d;
-			 
-						if ($diferent > 0)
-						{
-							$additional[$diarys->id]['statusActivity'] = "Atrasada";
-							$counter['delayedActivities']++;
-							
-						}
-						else
-						{
-							$additional[$diarys->id]['statusActivity'] = "Pendiente";
-							$counter['pendingActivities']++;
+							$additional[$diarys->id]['budgetStatus'] = "Vigente";
+							$counter['currentBudgets']++;
 						}
 					}
 				}
+				if ($diarys->budget->coin == 'BOLIVAR')
+				{
+					$counter['bolivaresBudget']++;
+					$counter['AmountBolivares']+= $diarys->budget->amount_budget;
+				}
+				else
+				{
+					$counter['dollarsBudget']++;
+					$counter['AmountDollars']+= $diarys->budget->amount_budget;
+				}
+				if ($diarys->activity_next == 'Cerrar (ya se practicó la cirugía o se ejecutó el servicio)' ||
+					$diarys->activity_next == 'Cerrar (el paciente ya no está interesado)')
+				{
+					$additional[$diarys->id]['statusActivity'] = "Cerrada";
+					$counter['closedActivities']++;
+				}
+				else
+				{
+					$diferent = $diarys->activity_date->diff($currentDate)->d;
+		 
+					if ($diferent > 0)
+					{
+						$additional[$diarys->id]['statusActivity'] = "Atrasada";
+						$counter['delayedActivities']++;
+						
+					}
+					else
+					{
+						$additional[$diarys->id]['statusActivity'] = "Pendiente";
+						$counter['pendingActivities']++;
+					}
+				}
 			}
-			else
-			{
-				$this->Flash->error(__('No se encontraron actividades'));
-				return $this->redirect(['controller' => 'Users', 'action' => 'wait']);
-			}
-			
-			$swImpresion = 1;
-							
-			$this->set(compact('system', 'swImpresion', 'diary', 'additional', 'currentDate', 'counter', 'arrayMark'));
-			$this->set('_serialize', ['system', 'swImpresion', 'diary', 'additional', 'currentDate', 'counter', 'arrayMark']); 
 		}
 		else
 		{
-			$swImpresion = 0;
-			$this->set(compact('system', 'swImpresion'));
-			$this->set('_serialize', ['system', 'swImpresion']); 
-		} 
+			$this->Flash->error(__('No se encontraron actividades'));
+			return $this->redirect(['controller' => 'Users', 'action' => 'wait']);
+		}
+					
+		$this->set(compact('system', 'diary', 'additional', 'currentDate', 'counter', 'arrayMark'));
+		$this->set('_serialize', ['system', 'diary', 'additional', 'currentDate', 'counter', 'arrayMark']); 
 	}
+	
 	public function markColumns($columnsReport = null)
-	{
+	{		
 		$arrayMark = [];
 		
 		isset($columnsReport['Users.full_name']) ? $arrayMark['Users.full_name'] = 'siExl' : $arrayMark['Users.full_name'] = 'noExl';

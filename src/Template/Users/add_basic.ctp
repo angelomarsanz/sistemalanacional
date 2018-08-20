@@ -17,6 +17,7 @@
     <p class="message"></p>
     <div class="col-md-6 col-md-offset-3">
         <div class="page-header">
+			<input type="hidden" id="ambiente" value=<?= $system->ambient ?>>
             <p>
             <?php if (isset($controller)): ?>
                 <?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action], ['class' => 'glyphicon glyphicon-chevron-left btn btn-sm btn-default', 'title' => 'Volver', 'style' => 'color: #9494b8']) ?>
@@ -266,13 +267,26 @@
 <script>
     $(document).ready(function() 
     {	
+		if ($('#ambiente').val() == 'Producción')
+		{
+			checkUser = '/sln/users/checkUser';
+			viewGlobal = '/sln/users/viewGlobal';
+			confirmPatient = '/sln/users/confirmPatient';
+		}
+		else
+		{
+			checkUser = '/dsln/users/checkUser';	
+			viewGlobal = '/dsln/users/viewGlobal';
+			confirmPatient = '/dsln/users/confirmPatient';
+		}
+	
     	$(".positive-integer").numeric({ decimal: false, negative: false }, function() { alert("Positive integers only"); this.value = ""; this.focus(); });
    
-        $('#email').change(function(e) 
+        $('#email').blur(function(e) 
         {
             e.preventDefault();
             
-            $.post('/sln/users/checkUser', {"role" : $("#role").val(), "email" : $("#email").val() }, null, "json")
+            $.post(checkUser, {"role" : $("#role").val(), "email" : $("#email").val() }, null, "json")
                 
             .done(function(response) 
             {
@@ -282,13 +296,13 @@
 
                     if (response.data.status == "ACTIVO")
                     {
-                        $.redirect('/sln/users/viewGlobal', { id : idUserPatient, controller : 'Users', action : 'indexPatientUser', status : 'ACTIVO' }); 
+                        $.redirect(viewGlobal, { id : idUserPatient, controller : 'Users', action : 'indexPatientUser', status : 'ACTIVO' }); 
                     }
                     else
                     {
                         namePatient = response.data.surname + ' ' + response.data.firstName;
 
-                        $.redirect('/sln/users/confirmPatient', { id : idUserPatient, controller : 'Users', action : 'indexPatientUser', name : namePatient }); 
+                        $.redirect(confirmPatient, { id : idUserPatient, controller : 'Users', action : 'indexPatientUser', name : namePatient, email : $("#email").val() }); 
                     }
                 }        
             })
