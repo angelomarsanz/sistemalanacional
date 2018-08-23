@@ -832,6 +832,8 @@ class DiarypatientsController extends AppController
 	public function reportDiary()
 	{			
 		$binnacles = new BinnaclesController;	
+		
+		$arrayResult = [];
 	    
 		if ($this->request->is('post')) 
         {
@@ -844,7 +846,7 @@ class DiarypatientsController extends AppController
 
 			$arrayResult = $binnacles->add('controller', 'Diarypatients', 'reportDiary', $columnsReport);
 			
-			if ($arrayResult == 0)
+			if ($arrayResult['indicator'] == 0)
 			{
 				return $this->redirect(['controller' => 'Diarypatients', 'action' => 'reportExcel', $arrayResult['id']]);
 			}
@@ -886,11 +888,11 @@ class DiarypatientsController extends AppController
 		
 		$binnacle = $this->Binnacles->get($id);
 		
-		$columnsReport = json_decode($binnacle->novelty);
+		$objetColumnsReport = json_decode($binnacle->novelty);
+						
+		$arrayColumnsReport = (array) $objetColumnsReport;
 		
-		debug($columnsReport);
-		
-		$arrayMark = $this->markColumns($columnsReport); 
+		$arrayMark = $this->markColumns($arrayColumnsReport); 
 					
 		$diarypatients = TableRegistry::get('Diarypatients');
 	
@@ -1014,7 +1016,7 @@ class DiarypatientsController extends AppController
 	}
 	
 	public function markColumns($columnsReport = null)
-	{		
+	{			
 		$arrayMark = [];
 		
 		isset($columnsReport['Users.full_name']) ? $arrayMark['Users.full_name'] = 'siExl' : $arrayMark['Users.full_name'] = 'noExl';

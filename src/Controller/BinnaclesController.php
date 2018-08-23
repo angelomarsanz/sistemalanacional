@@ -59,7 +59,7 @@ class BinnaclesController extends AppController
 		$this->autoRender = false;
 		
 		$arrayResult = [];
-		$arrayResult['indicador'] = 0;
+		$arrayResult['indicator'] = 0;
 		$arrayResult['message'] = "Registro grabado exitosamente";
 		$arrayResult['id'] = 0;
 				
@@ -150,7 +150,7 @@ class BinnaclesController extends AppController
 		}
 		else
 		{
-			$arrayResult['indicador'] = 1;
+			$arrayResult['indicator'] = 1;
 			$arrayResult['message'] = "No se pudo grabar el registro";
 		}
 		
