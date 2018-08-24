@@ -158,10 +158,10 @@
 						<th scope="col" class=<?= $arrayMark['Users.full_name'] ?>><b>Nombre del paciente</b></th>
 						<th scope="col"><b>Cirugía</b></th>							
 						<th scope="col" class=<?= $arrayMark['Users.cell_phone'] ?>><b>Celular</b></th>
-						<th scope="col" class=<?= $arrayMark['Users.email'] ?>><b>Email</b></th>
-						<th scope="col"><b>Estatus del presupuesto</b></th>
-						<th scope="col"><b>Fecha de solicitud</b></th>							
+						<th scope="col" class=<?= $arrayMark['Users.email'] ?>><b>Email</b></th>	
 						<th scope="col"><b>Nro. presupuesto</b></th>
+						<th scope="col"><b>Fecha de solicitud</b></th>
+						<th scope="col"><b>Estatus del presupuesto</b></th>
 						<th scope="col" class=<?= $arrayMark['Budgets.coin'] ?>><b>Moneda</b></th>
 						<th scope="col" class=<?= $arrayMark['Budgets.amount_budget'] ?>><b>Monto presupuesto</b></th>
 						<th scope="col" class=<?= $arrayMark['Budgets.number_bill'] ?>><b>Nro. Factura</b></th>
@@ -181,9 +181,9 @@
 						<td scope="col"><?= $diarys->budget->surgery ?></td>
 						<td scope="col" class=<?= $arrayMark['Users.cell_phone'] ?>><?= $diarys->budget->patient->user->cell_phone ?></td>
 						<td scope="col" class=<?= $arrayMark['Users.email'] ?>><?= $diarys->budget->patient->user->email?></td>							
-						<td scope="col"><?= $additional[$diarys->id]['budgetStatus'] ?></td>
-						<td scope="col"><?= $diarys->budget->application_date->format('d-m-Y') ?></td>							
 						<td scope="col"><?= $diarys->budget->number_budget ?></td>
+						<td scope="col"><?= $diarys->budget->application_date->format('d-m-Y') ?></td>
+						<td scope="col"><?= $additional[$diarys->id]['budgetStatus'] ?></td>
 						<td scope="col" class=<?= $arrayMark['Budgets.coin'] ?>><?= $diarys->budget->coin ?></td>
 						<td scope="col" class=<?= $arrayMark['Budgets.amount_budget'] ?>><?= number_format($diarys->budget->amount_budget, 2, ",", ".") ?></td>
 						<td scope="col" class=<?= $arrayMark['Budgets.number_bill'] ?>><?= $diarys->budget->number_bill ?></td>
@@ -202,9 +202,9 @@
 				<td scope="col"><?= $diarys->budget->surgery ?></td>
 				<td scope="col" class=<?= $arrayMark['Users.cell_phone'] ?>><?= $diarys->budget->patient->user->cell_phone ?></td>
 				<td scope="col" class=<?= $arrayMark['Users.email'] ?>><?= $diarys->budget->patient->user->email?></td>							
-				<td scope="col"><?= $additional[$diarys->id]['budgetStatus'] ?></td>
-				<td scope="col"><?= $diarys->budget->application_date->format('d-m-Y') ?></td>							
 				<td scope="col"><?= $diarys->budget->number_budget ?></td>
+				<td scope="col"><?= $diarys->budget->application_date->format('d-m-Y') ?></td>							
+				<td scope="col"><?= $additional[$diarys->id]['budgetStatus'] ?></td>
 				<td scope="col" class=<?= $arrayMark['Budgets.coin'] ?>><?= $diarys->budget->coin ?></td>
 				<td scope="col" class=<?= $arrayMark['Budgets.amount_budget'] ?>><?= number_format($diarys->budget->amount_budget, 2, ",", ".") ?></td>
 				<td scope="col" class=<?= $arrayMark['Budgets.number_bill'] ?>><?= $diarys->budget->number_bill ?></td>
@@ -230,13 +230,9 @@
 </div>
 <div id="menu-mas" style="display:none;" class="menumas nover">
 	<p>
-		<?php if ($system->ambient == 'Producción'): ?>
-			<a href="/sln/budgets/mainBudget" id="volver" title="Volver" class='glyphicon glyphicon-chevron-left btn btn-danger'></a>
-			<a href="/sln/users/wait" id="cerrar" title="Cerrar vista" class='glyphicon glyphicon-remove btn btn-danger'></a>
-		<?php else: ?>
-			<a href="/dsln/budgets/mainBudget" id="volver" title="Volver" class='glyphicon glyphicon-chevron-left btn btn-danger'></a>
-			<a href="/dsln/users/wait" id="cerrar" title="Cerrar vista" class='glyphicon glyphicon-remove btn btn-danger'></a>
-		<?php endif; ?>
+		<?= $this->Html->link(__(''), ['controller' => 'Diarypatients', 'action' => 'reportDiary'], ['id' => 'volver', 'class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
+		<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['id' => 'cerrar', 'class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'cerrar vista']) ?>
+
 		<a href='#' id="menos" title="Menos opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
 	</p>
 </div>
