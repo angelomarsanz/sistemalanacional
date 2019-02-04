@@ -86,16 +86,18 @@ class UsersController extends AppController
 
     public function testFunction()
     {
-		$prueba = 'angelito';
-		
-		if (strtoupper($prueba) == 'ANGELITO')
+		/* if (substr($_SERVER['REQUEST_URI'], 1 , 3) == 'sln') 
 		{
-			$this->Flash->success(__('strtoupper($prueba) contiene ANGELITO'));
+			echo 'El error es en la aplicación: ' . substr($_SERVER['REQUEST_URI'], 1 , 3);
+		}
+		elseif (substr($_SERVER['REQUEST_URI'], 1 , 4) == 'dsln')
+		{
+			echo 'El error es en la aplicación: ' . substr($_SERVER['REQUEST_URI'], 1 , 4);
 		}
 		else
 		{
-			$this->Flash->success(__('strtoupper($prueba) no contiene ANGELITO'));	
-		}	
+			echo 'El Error no es en la aplicación';
+		} */
     }
 
     public function testComunicationSend()

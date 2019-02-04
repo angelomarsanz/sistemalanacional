@@ -50,7 +50,7 @@
                                     <td><?= h($diarys->budget->patient->user->cell_phone) . ' ' . h($diarys->budget->patient->user->email) ?></td>
                                     <td class="actions">
                                         <?= $this->Html->link(__(''), ['action' => 'edit', $diarys->id, $promoter[$diarys->id]['namePromoter'], 'index'], ['class' => 'glyphicon glyphicon-ok', 'title' => 'Cerrar actividad']) ?>
-										<?= $this->Html->link(__(''), ['controller' => 'budgets', 'action' => 'budget', $diarys->budget->patient->user->id, $diarys->budget->patient_id, $diarys->budget->patient->user->parent_user, 'Diarypatients', 'index', $diarys->budget->id, $diarys->budget->surgery], ['class' => 'glyphicon glyphicon-envelope', 'title' => 'Enviar presupuesto actualizado']) ?>
+										<?= $this->Html->link(__(''), ['controller' => 'budgets', 'action' => 'budget', $diarys->budget->id, $diarys->budget->patient->user->id, $diarys->budget->patient_id, $diarys->budget->patient->user->parent_user, 'Diarypatients', 'index', $diarys->budget->id, $diarys->budget->surgery], ['class' => 'glyphicon glyphicon-envelope', 'title' => 'Enviar presupuesto actualizado']) ?>
 										<?php 
 											if ($diarys->budget->initial_budget == null):
 												echo $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'view',
@@ -100,7 +100,7 @@
                                 <td class="actions">
                                     <?= $this->Html->link(__(''), ['action' => 'edit', $diarys->id, $promoter[$diarys->id]['namePromoter'], 'index'], ['class' => 'glyphicon glyphicon-ok', 'title' => 'Cerrar actividad']) ?>
                                     <?= $this->Html->link(__(''), ['action' => 'reasign', $diarys->budget->patient->user->id, 'index'], ['class' => 'glyphicon glyphicon-user', 'title' => 'Reasignar promotor']) ?>
-									<?= $this->Html->link(__(''), ['controller' => 'budgets', 'action' => 'budget', $diarys->budget->patient->user->id, $diarys->budget->patient_id, $diarys->budget->patient->user->parent_user, 'Diarypatients', 'index', $diarys->budget->id, $diarys->budget->surgery], ['class' => 'glyphicon glyphicon-envelope', 'title' => 'Enviar presupuesto actualizado']) ?>
+									<?= $this->Html->link(__(''), ['controller' => 'budgets', 'action' => 'budget', $diarys->budget->id, $diarys->budget->patient->user->id, $diarys->budget->patient_id, $diarys->budget->patient->user->parent_user, 'Diarypatients', 'index', $diarys->budget->id, $diarys->budget->surgery], ['class' => 'glyphicon glyphicon-envelope', 'title' => 'Enviar presupuesto actualizado']) ?>
                                     <?php 
                                         if ($diarys->budget->initial_budget == null):
                                             echo $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'view',

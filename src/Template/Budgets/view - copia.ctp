@@ -1,14 +1,44 @@
+<?php
+    use Cake\I18n\Time;
+    use Cake\Routing\Router; 
+?>
+
+<style>
+@media screen
+{
+    .menumenos
+    {
+        display:scroll;
+        position:fixed;
+        bottom: 5%;
+        right: 1%;
+        opacity: 0.5;
+        text-align: right;
+    }
+    .menumas 
+    {
+        display:scroll;
+        position:fixed;
+        bottom: 5%;
+        right: 1%;
+        opacity: 0.5;
+        text-align: right;
+    }
+    .botonMenu
+    {
+        margin-bottom: 5 px;
+    }
+    .ui-autocomplete 
+    {
+        z-index: 2000;
+    }
+}
+</style>
+
+
 <div class="container">
     <div class="page-header">    
-        <?php if ($controller == null): ?>
-     	    <p><?= $this->Html->link(__('Volver'), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'btn btn-sm btn-default']) ?></p>
-        <?php elseif ($controller == 'Users' && $action == 'viewGlobal'): ?>
-			<p><?= $this->Html->link(__('Volver'), ['controller' => $controller, 'action' => $action, $idUser, 'Users', 'indexPatientUser', $idPromoter], ['class' => 'btn btn-sm btn-default']) ?></p>
-		<?php elseif ($controller == 'Budgets' && $action == 'bill'): ?>
- 	       <p><?= $this->Html->link(__('Volver'), ['controller' => $controller, 'action' => $action, $budget->id, $budget->surgery], ['class' => 'btn btn-sm btn-default']) ?></p>
-		<?php else: ?>
-			<p><?= $this->Html->link(__('Volver'), ['controller' => $controller, 'action' => $action], ['class' => 'btn btn-sm btn-default']) ?></p>
-        <?php endif; ?>
+
         <h2>Presupuesto enviado al paciente: <?= $namePatient ?></h2>
     </div>
     <div class="row">
@@ -59,3 +89,45 @@
 		</div>
     </div>
 </div>
+<div id="menu-menos-budget" class="menumenos">
+	<p>
+	<a href="#" id="menu-mas" title="Más opciones" class='glyphicon glyphicon-plus btn btn-danger'></a>
+	</p>
+</div>
+<div id="menu-mas-budget" style="display:none;" class="menumas">
+	<p>
+		<?php if ($controller == null): ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'Cerrar']) ?>
+		<?php elseif ($controller == 'Users' && $action == 'viewGlobal'): ?>
+			<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $idUser, 'Users', 'indexPatientUser', $idPromoter], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'Cerrar']) ?>
+		<?php elseif ($controller == 'Budgets' && $action == 'bill'): ?>
+			<?php $budgetSurgery = $budget->number_budget . ' - ' . $budget->surgery; ?>
+			<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action, $budget->id, $budgetSurgery], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'Cerrar']) ?>
+		<?php elseif ($controller == 'Budgets' && $action == 'mainBudget'): ?>
+			<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger', 'title' => 'Volver']) ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Users', 'action' => 'wait'], ['class' => 'glyphicon glyphicon-remove btn btn-danger', 'title' => 'Cerrar']) ?>
+			<?= $this->Html->link(__(''), ['controller' => 'Budgets', 'action' => 'budget', $idUser, $budget->patient->id, $idPromoter, 'Budgets', 'mainBudget', $budget->id, $budget->surgery], ['class' => 'glyphicon glyphicon-edit btn btn-danger', 'title' => 'Modificar presupuesto']) ?> 
+			<?= $this->Form->postLink(__(''), ['controller' => 'Budgets', 'action' => 'delete', $budget->id, 'Budgets', 'mainBudget'], ['confirm' => __('Está seguro de que desea eliminar el presupuesto?'), 'class' => 'glyphicon glyphicon-trash btn btn-danger', 'title' => 'Eliminar']) ?>
+			<?php else: ?>
+			<?= $this->Html->link(__(''), ['controller' => $controller, 'action' => $action], ['class' => 'glyphicon glyphicon-chevron-left btn btn-danger']) ?>
+		<?php endif; ?>
+		<a href="#" id="menu-menos" title="Cerrar opciones" class='glyphicon glyphicon-minus btn btn-danger'></a>
+	</p>
+</div>
+<script>
+$(document).ready(function(){ 
+    $('#menu-mas').on('click',function()
+    {
+        $('#menu-menos-budget').hide();
+        $('#menu-mas-budget').show();
+    });
+    $('#menu-menos').on('click',function()
+    {
+        $('#menu-mas-budget').hide();
+        $('#menu-menos-budget').show();
+    });
+});
+</script>

@@ -486,7 +486,7 @@ class BudgetsController extends AppController
         return $result;
     }
 
-    public function budget($idUser = null, $idPatient = null, $idPromoter = null, $controller = null, $action = null, $idBudget = null, $previousSurgery = null)
+    public function budget($id = null, $idUser = null, $idPatient = null, $idPromoter = null, $controller = null, $action = null, $idBudget = null, $previousSurgery = null)
     {   
 		$this->loadModel('Systems');
 
@@ -500,11 +500,47 @@ class BudgetsController extends AppController
 		
 		$this->loadModel('Services');		
 		
-		$services = $this->Services->find('list', ['limit' => 200, 'conditions' => [['Services.registration_status' => 'ACTIVO'], ['OR' => [['Services.cost_bolivars >' => 0], ['Services.cost_dollars >' => 0]]]], 'order' => ['Services.service_description' => 'ASC']]);
-              
-        $this->set(compact('system', 'patient', 'user', 'promoter', 'controller', 'action', 'services', 'idBudget', 'previousSurgery', 'idPromoter'));
-        $this->set('_serialize', ['system', 'patient', 'user', 'promoter', 'controller', 'action', 'services', 'idBudget', 'previousSurgery', 'idPromoter']);
+		$services = $this->Services->find('list', ['limit' => 1000, 'conditions' => [['Services.registration_status' => 'ACTIVO'], ['OR' => [['Services.cost_bolivars >' => 0], ['Services.cost_dollars >' => 0]]]], 'order' => ['Services.service_description' => 'ASC']]);
+
+        $budgetI = $this->Budgets->get($id, [
+            'contain' => ['Itemes']
+        ]);
+		
+		if ($budgetI->itemes)
+		{
+			$itemes = nl2br(htmlentities($budgetI->itemes[0]->itemes));    
+		}
+		else
+		{
+			$itemes = '';
+		}
+		
+        $budgets = TableRegistry::get('Budgets');
+        
+        $arrayResult = $budgets->find('budget', ['id' => $id]);
+        
+        if ($arrayResult['indicator'] == 0)
+        {
+            $budget = $arrayResult['searchRequired'];
+		}
+		else
+		{
+			$this->Flash->error(__('No se encontró el presupuesto'));
+		}
+		
+        $this->set(compact('system', 'patient', 'user', 'promoter', 'controller', 'action', 'services', 'idBudget', 'previousSurgery', 'idPromoter', 'budget' , 'itemes'));
+        $this->set('_serialize', ['system', 'patient', 'user', 'promoter', 'controller', 'action', 'services', 'idBudget', 'previousSurgery', 'idPromoter', 'budget' , 'itemes']);
     }
+	
+/* Borrar al terminar el cambio
+    public function view($namePatient = null, $namePromoter = null, $cellPromoter = null, $emailPromoter = null, $controller = null, $action = null, $idUser = null, $idPromoter = null)
+    {
+
+        $this->set('budget', $budget);
+        $this->set('_serialize', ['budget']);
+        $this->set(compact('namePatient', 'namePromoter', 'cellPromoter', 'emailPromoter', 'controller', 'action', 'itemes', 'idUser', 'idPromoter'));
+    } */
+	
     public function correo()
     {
         $email = new Email('default');
@@ -686,7 +722,7 @@ class BudgetsController extends AppController
 		foreach ($vCommissions as $vCommission)
 		{
 			$keyArray = 'u' . $vCommission->user_id . 'b' . $vCommission->budget_id;
-			$arrayCommissions[$keyArray] = $vCommission->status_commission;
+			$arrayCommissions[$keyArray] = $vCommission->amount;
 		}	
 			
         $users = TableRegistry::get('Users');
@@ -724,7 +760,7 @@ class BudgetsController extends AppController
 		$this->loadModel('Systems');
 
 		$system = $this->Systems->get(2);
-		
+				
 		$commissions = new CommissionsController;
 		
 		$binnacles = new BinnaclesController;

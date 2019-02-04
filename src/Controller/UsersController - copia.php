@@ -86,16 +86,18 @@ class UsersController extends AppController
 
     public function testFunction()
     {
-		$prueba = 'angelito';
-		
-		if (strtoupper($prueba) == 'ANGELITO')
+		/* if (substr($_SERVER['REQUEST_URI'], 1 , 3) == 'sln') 
 		{
-			$this->Flash->success(__('strtoupper($prueba) contiene ANGELITO'));
+			echo 'El error es en la aplicación: ' . substr($_SERVER['REQUEST_URI'], 1 , 3);
+		}
+		elseif (substr($_SERVER['REQUEST_URI'], 1 , 4) == 'dsln')
+		{
+			echo 'El error es en la aplicación: ' . substr($_SERVER['REQUEST_URI'], 1 , 4);
 		}
 		else
 		{
-			$this->Flash->success(__('strtoupper($prueba) no contiene ANGELITO'));	
-		}	
+			echo 'El Error no es en la aplicación';
+		} */
     }
 
     public function testComunicationSend()
@@ -2173,12 +2175,11 @@ class UsersController extends AppController
             $results = $this->Users->find('all', [
                 'conditions' => [['Users.surname LIKE' => $name . '%'], ['OR' => [['Users.deleted_record IS NULL'], ['Users.deleted_record' => false]]]]]);
             $resultsArr = [];
+			$account = 1;
             foreach ($results as $result) 
             {
-                 $resultsArr[] = ['label' => $result['surname'] . ' ' . $result['second_surname'] . ' ' . $result['first_name'] . ' ' . $result['second_name'] . ' - ' . $result['role'], 'value' => $result['surname'] . ' ' . $result['second_surname'] . ' ' . $result['first_name'] . ' ' . $result['second_name'] . ' - ' . $result['role'], 'id' => $result['id']];
-
+                 $resultsArr[] = ['label' => $result->surname . ' ' . $result->second_surname . ' ' . $result->first_name . ' ' . $result->second_name . ' - ' . $result->role, 'value' => $result->surname . ' ' . $result->second_surname . ' ' . $result->first_name . ' ' . $result->second_name . ' - ' . $result->role, 'id' => $result->id];
             }
-
             exit(json_encode($resultsArr, JSON_FORCE_OBJECT));
         }
     }

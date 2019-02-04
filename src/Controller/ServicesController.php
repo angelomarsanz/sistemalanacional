@@ -376,4 +376,26 @@ class ServicesController extends AppController
 
         return $arrayResult;
     }
+    public function ajaxService()
+    {
+		setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+        date_default_timezone_set('America/Caracas');
+			
+		if ($this->request->is('json')) 
+        {
+			$service = $this->Services->get($_POST['id']);
+			
+            $jsondata["success"] = true;
+            $jsondata["data"]["message"] = "Se encontró el servicio";
+            $jsondata["data"]['serviceDescription'] = $service->service_description;
+            $jsondata["data"]['costBolivars'] = $service->cost_bolivars;;
+            $jsondata["data"]['costDollars'] = $service->cost_dollars;
+            $jsondata["data"]['itemes'] = nl2br($service->itemes);
+			$jsondata["data"]['dateBudget'] = Time::now();
+			$expirationDate = Time::now();
+			$jsondata["data"]['expirationDate'] = $expirationDate->addDays(3);
+			
+		exit(json_encode($jsondata, JSON_FORCE_OBJECT));
+		}
+    }
 }
