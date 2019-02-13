@@ -137,22 +137,11 @@
 			}
 			else
 			{
-				if ($('#ambiente').val() == 'Producción')
-				{
-					$.redirect('/sln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
-						firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
-						emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
-						surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
-						coin : $('#coin').val(), controller : $('#controller').val(), action : $('#action').val(), idPromoter : $('#id-promoter').val(), idBudget : $('#id-budget').val() });
-				}
-				else
-				{
-					$.redirect('/dsln/budgets/addBudget', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
-						firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
-						emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
-						surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
-						coin : $('#coin').val(), controller : $('#controller').val(), action : $('#action').val(), idPromoter : $('#id-promoter').val(), idBudget : $('#id-budget').val() });			
-				}
+				$.redirect('<?= Router::url(["controller" => "Budgets", "action" => "addBudget"]); ?>', { idUser : $('#id-user').val(), idPatient : $('#id-patient').val(), service : $('#surgery').val(), 
+					firstName : $('#first-name').val(), surname : $('#surname').val(), identificationPatient : $('#identification-patient').val(), cellPatient : $('#cell-patient').val(),
+					emailPatient : $('#email-patient').val(), addressPatient : $('#address-patient').val(), countryPatient : $('#country-patient').val(),   
+					surnamePromoter : $('#surname-promoter').val(), namePromoter : $('#name-promoter').val(), cellPromoter : $('#cell-promoter').val(), emailPromoter : $('#email-promoter').val(),
+					coin : $('#coin').val(), controller : $('#controller').val(), action : $('#action').val(), idPromoter : $('#id-promoter').val(), idBudget : $('#id-budget').val() });
 			}
 		});
         $('#surgery').change(function(e) 

@@ -1181,13 +1181,13 @@ class UsersController extends AppController
             date_default_timezone_set('America/Caracas');
 
             $currentDate = time::now();
-
+			
             $jsondata = [];
 			
 			$result = $this->validateFields($_POST);
 			
 			if ($result == 0)
-            {
+            {				
 				$firstNameTrim = trim($_POST['firstName']);
 				
 				$firstName = strtoupper($firstNameTrim);
@@ -1197,6 +1197,8 @@ class UsersController extends AppController
 				$surname = strtoupper($surnameTrim);
 				
 				$firstNameSurname = strtolower($firstName) . strtolower($surname);
+				
+				$result = $binnacles->add('controller', 'Users', 'addWebBasic', 'Presupuesto solicitado: ' . $firstNameSurname . ' ' . $_POST['surgery']);
 				
 				$users = TableRegistry::get('Users');
 				
