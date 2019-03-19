@@ -2255,6 +2255,47 @@ class UsersController extends AppController
         }
         return $this->redirect(['controller' => 'Diarypatients', 'action' => 'index']);
     }
+
+	/*
+	Proceso: Reasignar promotor a paciente
+	LLamado por: 
+		- Diarypatients/index.ctp
+	*/
+    public function reasignarPromotor()
+    {
+		$this->autoRender = false;
+		
+		$jsondata = [];
+		
+        if ($this->request->is('post')) 
+        {
+            $idUsuarioPaciente = $_POST['idUsuarioPaciente'];
+            $idNuevoPromotor = $_POST['idNuevoPromotor'];
+		}
+		
+		/*
+		Asignar variables para pruebas
+		$idUsuarioPaciente = 1716;
+		$idNuevoPromotor = 126;
+		*/
+		
+        $user = $this->Users->get($idUsuarioPaciente);
+        
+        $user->parent_user = $idNuevoPromotor;
+        
+        if ($this->Users->save($user)) 
+        {
+			$jsondata["satisfactorio"] = true;
+			$jsondata["mensaje"] = "El promotor se reasignó exitosamente !!!";
+        }
+        else
+        {
+			$jsondata["satisfactorio"] = false;
+			$jsondata["mensaje"] = "El promotor no se pudo reasignar";
+        }
+		exit(json_encode($jsondata, JSON_FORCE_OBJECT));
+    }
+	
     public function formComunication()
     {
         

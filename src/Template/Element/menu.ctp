@@ -33,6 +33,7 @@
                 <ul class="nav navbar-nav">
                     <li><?=  $this->Html->link('', ['controller' => 'Users', 'action' => 'home'], ['class' => "glyphicon glyphicon-home iconoMenu", 'title' => 'Inicio']) ?></li>
 					<li><?=  $this->Html->link('', ['controller' => 'Users', 'action' => 'edit', $current_user['id']], ['class' => "glyphicon glyphicon-user iconoMenu", 'title' => 'Modificar mi perfil']) ?></li>
+					<li><?=  $this->Html->link('', [''], ['id' => 'imprimir-pantalla', 'class' => "glyphicon glyphicon-print iconoMenu", 'title' => 'Imprimir pantalla']) ?></li>
 					
                     <?php if($current_user['role'] == 'Desarrollador del sistema'): ?>
                         <li><?=  $this->Html->link('Usuarios', ['controller' => 'Users', 'action' => 'index']) ?></li>
@@ -268,4 +269,13 @@
             <?php endif; ?>
         </div>
     </div>
-</nav>                        
+</nav>      
+<script>
+    $(document).ready(function()
+    {
+		$('#imprimir-pantalla').click(function(){
+			window.print();
+			return false;
+		});
+	});
+</script>                  

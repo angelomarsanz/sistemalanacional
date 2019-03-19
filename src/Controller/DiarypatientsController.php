@@ -136,6 +136,8 @@ class DiarypatientsController extends AppController
 				
 				$userPromoter = $this->Diarypatients->Budgets->Patients->Users->get($idPromoter);
 				
+				$promoter[$diarys->id]['idPromoter'] = $idPromoter;
+				
 				$promoter[$diarys->id]['namePromoter'] = $userPromoter->full_name;
 
 				$promoter[$diarys->id]['cellPromoter'] = $userPromoter->cell_phone;
@@ -161,9 +163,19 @@ class DiarypatientsController extends AppController
 		}
 		       
 		$currentView = 'DiarypatientsIndex';
-		       
-        $this->set(compact('system', 'diary', 'currentDate', 'promoter', 'currentView', 'namePromoter'));
-        $this->set('_serialize', ['system', 'diary', 'currentDate', 'promoter', 'currentView', 'namePromoter']);
+
+		$this->loadModel('Users');
+		
+		$searchPromoters = $this->Users->find('all', [
+			'conditions' => [['OR' => [['role' => 'Administrador(a) de la clínica'], ['role' => 'Coordinador(a)'], ['role' => 'Promotor(a)'], ['role' => 'Promotor(a) independiente']]], ['OR' => [['Users.deleted_record IS NULL'], ['Users.deleted_record' => false]]]]]);
+		$arrayPromoters = [];
+		foreach ($searchPromoters as $searchPromoter) 
+		{
+			 $arrayPromoters[] = ['label' => $searchPromoter['surname'] . ' ' . $searchPromoter['second_surname'] . ' ' . $searchPromoter['first_name'] . ' ' . $searchPromoter['second_name'] . ' - ' . $searchPromoter['role'], 'value' => $searchPromoter['surname'] . ' ' . $searchPromoter['second_surname'] . ' ' . $searchPromoter['first_name'] . ' ' . $searchPromoter['second_name'] . ' - ' . $searchPromoter['role'], 'id' => $searchPromoter['id']];
+		}
+	
+        $this->set(compact('system', 'diary', 'currentDate', 'promoter', 'currentView', 'namePromoter', 'arrayPromoters'));
+        $this->set('_serialize', ['system', 'diary', 'currentDate', 'promoter', 'currentView', 'namePromoter', 'arrayPromoters']);
     }
     public function indexMonth()
     {
