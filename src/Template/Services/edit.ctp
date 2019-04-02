@@ -16,7 +16,6 @@
                 <div class="row">
                     <div class="col-md-4">
                         <?php
-                            echo $this->Form->input('service_code', ['label' => 'Código del servicio: *']);
                             echo $this->Form->input('service_description', ['label' => 'Servicio médico: *']);
                             echo $this->Form->input('registration_status', ['label' => 'Estatus del servicio: *', 'options' => 
                                 [null => " ",
@@ -24,20 +23,18 @@
                                  'INACTIVO' => 'INACTIVO',
                                  'ELIMINADO' => 'ELIMINADO']]);
                         ?>    
-                        
-                        <label class="control-label" for="cost-bolivars">Precio en bolívares: </label>
-                        <input  id='cost-bolivars' name='cost_bolivars' style='text-align: right;' class='alternative-decimal-separator form-control' step='any' value=<?= number_format($service->cost_bolivars, 2, ",", ".") ?>>
-                        <br />
-                        
-                        <label class="control-label" for="cost-dollars">Precio en dólares: </label>
+                                                
+                        <label class="control-label" for="cost-dollars">Precio en dólares internacional: </label>
                         <input  id='cost-dollars' name='cost_dollars' style='text-align: right;' class='alternative-decimal-separator form-control' step='any' value=<?= number_format($service->cost_dollars, 2, ",", ".") ?>>
                         <br />
 
-                    </div>
+                        <label class="control-label" for="national-dollar-cost">Precio en dólares nacional: </label>
+                        <input  id='national-dollar-cost' name='cost_dollars' style='text-align: right;' class='alternative-decimal-separator form-control' step='any' value=<?= number_format(0, 2, ",", ".") ?>>
+                        <br />
+						
+					</div>
                 </div>
                 
-                
-
                 <div class="row">
                     <div class="col-md-12">
                     

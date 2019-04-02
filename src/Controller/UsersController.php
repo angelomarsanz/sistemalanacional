@@ -61,7 +61,7 @@ class UsersController extends AppController
             elseif ($user['role'] == 'Coordinador(a)')
             {
                 if(in_array($this->request->action, ['home', 'addBasic', 'editBasic', 'indexPatientUser', 'view', 'viewBasic', 'editBasic', 'delete', 'deleteBasic', 'logout', 'checkUser', 'viewGlobal', 'confirmPatient', 'restore', 'wait', 'findPatient', 'index', 'add', 'edit', 'confirmUser', 'restoreUser', 'previousUser', 'findUser', 'findPromoter', 'indexBasic', 'reasignUser', 
-                       'arrayErrors']))
+                       'arrayErrors', 'reasignarPromotor']))
                 {
                     return true;
                 }

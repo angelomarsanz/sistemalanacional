@@ -188,7 +188,7 @@
                         "<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>" +
                         "<strong>" + response.mensaje + "</strong>" +
                     "</div>";
-                // $(idMensaje).html(mensajesUsuario);
+                $(idMensaje).html(mensajesUsuario);
             } 
             else 
             {

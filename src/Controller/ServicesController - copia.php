@@ -25,13 +25,27 @@ class ServicesController extends AppController
     {
         if(isset($user['role']))
         {
-            if ($user['role'] == 'Auditor(a) externo' || $user['role'] == 'Auditor(a) interno' || $user['role'] == 'Coordinador(a)' )
+            if ($user['role'] == 'Auditor(a) externo' || $user['role'] == 'Auditor(a) interno' || $user['role'] == 'Administrador(a) de la clínica' )
             {
-                if(in_array($this->request->action, ['index']))
+                if(in_array($this->request->action, ['add', 'edit', 'index', 'findServiceCost', 'specialIndex']))
                 {
                     return true;
                 }
-            }  
+            }
+            if ($user['role'] == 'Coordinador(a)' )
+            {
+                if(in_array($this->request->action, ['index', 'findServiceCost']))
+                {
+                    return true;
+                }
+            }			
+            elseif ($user['role'] === 'Promotor(a)' || $user['role'] === 'Promotor(a) independiente')
+            {
+                if(in_array($this->request->action, ['findServiceCost']))
+                {
+                    return true;
+                }
+            }
 		}
 		return parent::isAuthorized($user);
 	}
@@ -355,10 +369,33 @@ class ServicesController extends AppController
             
         $arrayResult = [];
             
+		$arrayResult['serviceDescription'] = $service->service_description;
 		$arrayResult['costBolivars'] = $service->cost_bolivars;
 		$arrayResult['costDollars'] = $service->cost_dollars;
 		$arrayResult['itemes'] = $service->itemes;
 
         return $arrayResult;
+    }
+    public function ajaxService()
+    {
+		setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
+        date_default_timezone_set('America/Caracas');
+			
+		if ($this->request->is('json')) 
+        {
+			$service = $this->Services->get($_POST['id']);
+			
+            $jsondata["success"] = true;
+            $jsondata["data"]["message"] = "Se encontró el servicio";
+            $jsondata["data"]['serviceDescription'] = $service->service_description;
+            $jsondata["data"]['costBolivars'] = $service->cost_bolivars;;
+            $jsondata["data"]['costDollars'] = $service->cost_dollars;
+            $jsondata["data"]['itemes'] = nl2br($service->itemes);
+			$jsondata["data"]['dateBudget'] = Time::now();
+			$expirationDate = Time::now();
+			$jsondata["data"]['expirationDate'] = $expirationDate->addDays(3);
+			
+		exit(json_encode($jsondata, JSON_FORCE_OBJECT));
+		}
     }
 }

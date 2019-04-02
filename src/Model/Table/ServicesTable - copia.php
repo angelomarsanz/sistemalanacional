@@ -35,7 +35,7 @@ class ServicesTable extends Table
         parent::initialize($config);
 
         $this->table('services');
-        $this->displayField('id');
+        $this->displayField('service_description');
         $this->primaryKey('id');
 
         $this->addBehavior('Timestamp');
