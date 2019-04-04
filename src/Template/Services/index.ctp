@@ -58,7 +58,7 @@
 				<div class="col-md-3">
 					<div class="form-group">
 					  <label for="tasa-dolar">Tarifa</label>
-					  <input type="number" class="alternative-decimal-separator form-control" id="tasa-dolar">
+					  <input class="alternative-decimal-separator form-control" id="tasa-dolar" value=<?= number_format($tasaDolarActual, 2, ",", ".") ?>>
 					</div>
 					<button id="actualizar-tasa-dolar" class="btn btn-success">Actualizar</button>	
 					<div id="mensajesTarifa"></div>
@@ -66,8 +66,8 @@
 				
 				<div class="col-md-3">
 					<div class="form-group">
-					  <label for="descuento-recargo">Descuento o recargo</label>
-					  <input type="number" class="alternative-decimal-separator form-control" id="descuento-recargo">
+					  <label for="descuento-recargo">Descuento o recargo (%)</label>
+					  <input class="alternative-decimal-separator form-control" id="descuento-recargo" value=<?= number_format(0, 2, ",", ".") ?>>
 					</div>
 					<button id="aplicar-descuento-recargo" class="btn btn-success">Aplicar</button>	
 					<div id="mensajesDescuentoRecargo"></div>					
@@ -89,7 +89,7 @@
                                         <th scope="col">Servicio&nbsp;médico</th>
                                         <th scope="col">Precio&nbsp;en&nbsp;dólares&nbsp;internacional</th>
 										<th scope="col">Precio&nbsp;en&nbsp;dólares&nbsp;nacional</th>
-                                        <!-- <th scope="col">Precio&nbsp;en&nbsp;bolívares</th> -->
+                                        <th scope="col">Precio&nbsp;en&nbsp;Bolívares</th>
 									</tr>
                                 </thead>
                                 <tbody>
@@ -109,9 +109,9 @@
                                             
                                             <td><input style='text-align: right;' class='alternative-decimal-separator form-control' name="service[<?= $accountArray ?>][cost_dollars]" title='Precio en dólares internacional' step='any' value=<?= number_format($service->cost_dollars, 2, ",", ".") ?>></td>
 
-                                            <td><input style='text-align: right;' class='alternative-decimal-separator form-control' name="service[<?= $accountArray ?>][cost_dollars]" title='Precio en dólares nacional' step='any' value=<?= number_format($service->national_dollar_cost, 2, ",", ".") ?>></td>
+                                            <td><input style='text-align: right;' class='alternative-decimal-separator form-control' name="service[<?= $accountArray ?>][service_code]" title='Precio en dólares nacional' step='any' value=<?= number_format($service->service_code, 2, ",", ".") ?>></td>
 											
-                                            <!-- <td><input style='text-align: right;' class='alternative-decimal-separator form-control' name="service[<?= $accountArray ?>][cost_bolivars]" title='Precio en bolívares' step='any' value=<?= number_format($service->cost_bolivars, 2, ",", ".") ?> disabled></td> -->
+                                            <td><input style='text-align: right;' class='alternative-decimal-separator form-control' name="service[<?= $accountArray ?>][cost_bolivars]" title='Precio en bolívares' step='any' value=<?= number_format($service->cost_bolivars, 2, ",", ".") ?> disabled></td>
                                         </tr>
                                     <?php 
                                         $accountArray++; 
@@ -155,114 +155,6 @@ function log(id)
 
 // Funciones Jquery
 
-function actualizarTasaDolar(tasaDolar)
-{
-	var mensajesUsuario = 
-		"<div class='alert alert-info alert-dismissible'>" +
-			"<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>" +
-			"<strong>Por favor espere mientras se actualiza la tarifa</strong>" +
-		"</div>";
-		
-	idMensaje = "#mensajesTarifa";
-
-	$(idMensaje).html(mensajesUsuario);
-
-	var jsonDatos = 
-	{
-		"tasaDolar" : tasaDolar,
-	}
-
-	$.post("<?php echo Router::url(array("controller" => "Services", "action" => "updateRate")); ?>", 
-		jsonDatos, null, "json")          
-	.done(function(response) 
-	{
-		if (response.satisfactorio) 
-		{
-			mensajesUsuario =
-				"<div class='alert alert-success alert-dismissible'>" +
-					"<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>" +
-					"<strong>" + response.mensaje + "</strong>" +
-				"</div>";
-				
-			$(idMensaje).html(mensajesUsuario);
-		} 
-		else 
-		{
-			mensajesUsuario =
-			"<div class='alert alert-danger alert-dismissible'>" +
-				"<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>" +
-				"<strong>" + response.mensaje + "</strong>" +
-			"</div>"; 
-
-			$(idMensaje).html(mensajesUsuario);
-		}
-	})
-	.fail(function(jqXHR, textStatus, errorThrown) 
-	{
-		mensajesUsuario =
-			"<div class='alert alert-danger alert-dismissible'>" +
-				"<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>" +
-				"<strong>¡ Ocurrió un error en el servidor. Los datos no se pudieron guardar !</strong>" +
-			"</div>"; 
-
-		$(idMensaje).html(mensajesUsuario);
-	});
-}
-
-function aplicarDescuentoRecargo(descuentoRecargo)
-{
-	var mensajesUsuario = 
-		"<div class='alert alert-info alert-dismissible'>" +
-			"<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>" +
-			"<strong>Por favor espere mientras se aplica el descuento/recargo</strong>" +
-		"</div>";
-		
-	idMensaje = "#mensajesDescuentoRecargo";
-
-	$(idMensaje).html(mensajesUsuario);
-
-	var jsonDatos = 
-	{
-		"descuentoRecargo" : descuentoRecargo,
-	}
-
-	$.post("<?php echo Router::url(array("controller" => "Services", "action" => "discountSurcharge")); ?>", 
-		jsonDatos, null, "json")          
-	.done(function(response) 
-	{
-		if (response.satisfactorio) 
-		{
-			mensajesUsuario =
-				"<div class='alert alert-success alert-dismissible'>" +
-					"<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>" +
-					"<strong>" + response.mensaje + "</strong>" +
-				"</div>";
-			
-			$(idMensaje).html(mensajesUsuario);
-		} 
-		else 
-		{
-			mensajesUsuario =
-			"<div class='alert alert-danger alert-dismissible'>" +
-				"<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>" +
-				"<strong>" + response.mensaje + "</strong>" +
-			"</div>"; 
-
-			$(idMensaje).html(mensajesUsuario);
-		}
-	})
-	.fail(function(jqXHR, textStatus, errorThrown) 
-	{
-		mensajesUsuario =
-			"<div class='alert alert-danger alert-dismissible'>" +
-				"<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>" +
-				"<strong>¡ Ocurrió un error en el servidor. Los datos no se pudieron guardar !</strong>" +
-			"</div>"; 
-
-		$(idMensaje).html(mensajesUsuario);
-	});
-}
-
 $(document).ready(function()
 { 
 	$(".alternative-decimal-separator").numeric({ altDecimal: "," });
@@ -290,14 +182,24 @@ $(document).ready(function()
 	
     $('#actualizar-tasa-dolar').click(function()
     {
+		var r = confirm("Desea actualizar la tarifa a $ : " + $("#tasa-dolar").val());
+		if (r == false)
+		{
+			return false;
+		}
 		tasaDolar = $("#tasa-dolar").val();
-        actualizarTasaDolar(tasaDolar);
+		$.redirect('<?php echo Router::url(["controller" => "Services", "action" => "updateRate"]); ?>', {"tasaDolar" : tasaDolar}); 
     });
 
     $('#aplicar-descuento-recargo').click(function()
     {
+		var r = confirm("Desea aplicar el descuento/recargo de : " + $("#descuento-recargo").val() + "%");
+		if (r == false)
+		{
+			return false;
+		}		
 		descuentoRecargo = $("#descuento-recargo").val();
-        aplicarDescuentoRecargo(descuentoRecargo);
+		$.redirect('<?php echo Router::url(["controller" => "Services", "action" => "discountSurcharge"]); ?>', {"descuentoRecargo" : descuentoRecargo}); 
     });
 	
 });

@@ -18,7 +18,7 @@ class ServicesController extends AppController
     {
         parent::beforeFilter($event);
         
-        $this->Auth->allow(['searchService']);
+        $this->Auth->allow(['searchService', 'modifyColumns']);
     }
 	
     public function isAuthorized($user)
@@ -27,14 +27,14 @@ class ServicesController extends AppController
         {
             if ($user['role'] == 'Auditor(a) externo' || $user['role'] == 'Auditor(a) interno' || $user['role'] == 'Administrador(a) de la clínica' )
             {
-                if(in_array($this->request->action, ['add', 'edit', 'index', 'findServiceCost', 'specialIndex']))
+                if(in_array($this->request->action, ['add', 'edit', 'index', 'findServiceCost', 'specialIndex', 'updateRate', 'discountSurcharge']))
                 {
                     return true;
                 }
             }
             if ($user['role'] == 'Coordinador(a)' )
             {
-                if(in_array($this->request->action, ['index', 'findServiceCost']))
+                if(in_array($this->request->action, ['index', 'findServiceCost', 'updateRate', 'discountSurcharge']))
                 {
                     return true;
                 }
@@ -87,28 +87,25 @@ class ServicesController extends AppController
                     $service->cost_dollars = $servicePost['cost_dollars'];
                 }
 				
-                if (substr($servicePost['national_dollar_cost'], -3, 1) == ',')
+                if (substr($servicePost['service_code'], -3, 1) == ',')
                 {
-                    $replace1= str_replace('.', '', $servicePost['national_dollar_cost']);
+                    $replace1= str_replace('.', '', $servicePost['service_code']);
                     $replace2 = str_replace(',', '.', $replace1);
-                    $service->national_dollar_cost = $replace2;
+                    $service->service_code = $replace2;
                 }
                 else
                 {
-                    $service->national_dollar_cost = $servicePost['national_dollar_cost'];
+                    $service->service_code = $servicePost['service_code'];
                 }
-				/*
-                if (substr($servicePost['cost_bolivars'], -3, 1) == ',')
-                {
-                    $replace1= str_replace('.', '', $servicePost['cost_bolivars']);
-                    $replace2 = str_replace(',', '.', $replace1);
-                    $service->cost_bolivars = $replace2;
-                }
-                else
-                {
-                    $service->cost_bolivars = $servicePost['cost_bolivars'];
-                }
-				*/
+				
+				$this->loadModel('Systems');
+			
+				$system = $this->Systems->get(2);
+				
+				$tasaDolar = $system->extra_column1;
+
+				$service->cost_bolivars = $service->service_code * $tasaDolar;
+				
                 if (!($this->Services->save($service))) 
                 {
                     $this->Flash->error(__('No se pudo actualizar el presupuesto identificado con el id: ' . $servicePost['id']));
@@ -131,8 +128,14 @@ class ServicesController extends AppController
         
         $currentView = 'servicesIndex'; 
         
-        $this->set(compact('services', 'currentView'));
-        $this->set('_serialize', ['services', 'currentView']);
+		$this->loadModel('Systems');
+	
+		$system = $this->Systems->get(2);
+		
+		$tasaDolarActual = $system->extra_column1;		
+		
+        $this->set(compact('services', 'currentView', 'tasaDolarActual'));
+        $this->set('_serialize', ['services', 'currentView', 'tasaDolarActual']);
     }
     
     public function specialIndex()
@@ -151,7 +154,7 @@ class ServicesController extends AppController
         }
         
         $currentView = 'servicesIndex'; 
-        
+		
         $this->set(compact('services', 'currentView'));
         $this->set('_serialize', ['services', 'currentView']);
     }
@@ -210,22 +213,20 @@ class ServicesController extends AppController
                 $service->cost_dollars = $replace2;
             }
 			
-            if (substr($_POST['national_dollar_cost'], -3, 1) == ',')
+            if (substr($_POST['service_code'], -3, 1) == ',')
             {
-                $replace1= str_replace('.', '', $_POST['national_dollar_cost']);
+                $replace1= str_replace('.', '', $_POST['service_code']);
                 $replace2 = str_replace(',', '.', $replace1);
-                $service->national_dollar_cost = $replace2;
+                $service->service_code = $replace2;
             }
             
 			$this->loadModel('Systems');
 			
 			$system = $this->Systems->get(2);
 			
-			$tasaDolar = $system->dollar_rate;
+			$tasaDolar = $system->extra_column1;
 
-			$service->cost_bolivars = $service->national_dollar_cost * $tasaDolar;
-
-			$service->service_code = "";
+			$service->cost_bolivars = $service->service_code * $tasaDolar;
 			
             $service->registration_status = 'ACTIVO';
 
@@ -278,20 +279,20 @@ class ServicesController extends AppController
                 $service->cost_dollars = $replace2;
             }
 			
-            if (substr($_POST['national_dollar_cost'], -3, 1) == ',')
+            if (substr($_POST['service_code'], -3, 1) == ',')
             {
-                $replace1= str_replace('.', '', $_POST['national_dollar_cost']);
+                $replace1= str_replace('.', '', $_POST['service_code']);
                 $replace2 = str_replace(',', '.', $replace1);
-                $service->national_dollar_cost = $replace2;
+                $service->service_code = $replace2;
             }
 			
 			$this->loadModel('Systems');
 			
 			$system = $this->Systems->get(2);
 			
-			$tasaDolar = $system->dollar_rate;
+			$tasaDolar = $system->extra_column1;
 
-			$service->cost_bolivars = $service->national_dollar_cost * $tasaDolar;
+			$service->cost_bolivars = $service->service_code * $tasaDolar;
     
             $service->reason_status = 'REQUERIMIENTO DEL USUARIO';
 
@@ -392,6 +393,7 @@ class ServicesController extends AppController
         }
         return $arrayResult;
     }
+
     public function getService($id = null)
     {
 		$service = $this->Services->get($id);
@@ -405,143 +407,7 @@ class ServicesController extends AppController
 
         return $arrayResult;
     }
-    public function ajaxService()
-    {
-		setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
-        date_default_timezone_set('America/Caracas');
-			
-		if ($this->request->is('json')) 
-        {
-			$service = $this->Services->get($_POST['id']);
-			
-            $jsondata["success"] = true;
-            $jsondata["data"]["message"] = "Se encontró el servicio";
-            $jsondata["data"]['serviceDescription'] = $service->service_description;
-            $jsondata["data"]['costBolivars'] = $service->cost_bolivars;;
-            $jsondata["data"]['costDollars'] = $service->cost_dollars;
-            $jsondata["data"]['itemes'] = nl2br($service->itemes);
-			$jsondata["data"]['dateBudget'] = Time::now();
-			$expirationDate = Time::now();
-			$jsondata["data"]['expirationDate'] = $expirationDate->addDays(3);
-			
-		exit(json_encode($jsondata, JSON_FORCE_OBJECT));
-		}
-    }
-    public function updateRate()
-    {			
-        $this->autoRender = false;
-		
-		// Descomentar solo para pruebas
-			$_POST['tasaDolar'] = 337.34
-		//
-		
-		if (isset($_POST['tasaDolar']))
-		{
-			$jsondata = [];
-			
-			if (substr($_POST['tasaDolar'], -3, 1) == ',')
-			{
-				$replace1= str_replace('.', '', $_POST['tasa_dolar']);
-				$replace2 = str_replace(',', '.', $replace1);
-				$tasaDolar = $replace2;
-			}
-			else
-			{
-				$tasaDolar = $_POST['tasaDolar'];
-			}
-			
-			$this->loadModel('Systems');
-			
-			$system = $this->Systems->get(2);
-			
-			$system->dollar_rate = $tasaDolar;
-					
-			if ($this->Systems->save($system)) 
-			{
-				$clinicalServices = TableRegistry::get('Services');
-				
-				$arrayResult = $clinicalServices->find('services');
-				
-				if ($arrayResult['indicator'] == 0)
-				{
-					$services = $arrayResult['searchRequired'];
 
-					$errorIndicator = 0;
-					
-					foreach ($services as $service)
-					{
-						$service->cost_bolivars = $service->national_dollar_cost * $tasaDolar;
-						
-						if (!($this->Services->save($service))) 
-						{
-							$errorIndicator = 1;
-							$jsondata["success"] = false;
-							$jsondata["data"]["message"] = "Error actualizando el servicio ID: " . $service->id;
-							break;
-						}
-					}
-					if ($errorIndicator == 0)
-					{
-						$jsondata["success"] = false;
-						$jsondata["data"]["message"] = "La tarifa se actualizó satisfactoriamente. No se encontraron servicios";		
-					}
-				}
-				else
-				{
-					$jsondata["success"] = false;
-					$jsondata["data"]["message"] = "No se pudo actualizar la tarifa";
-				}
-			}
-			else
-			{
-				$jsondata["success"] = false;
-				$jsondata["data"]["message"] = "No se pudo actualizar la tarifa";
-			}
-		}
-		else
-		{
-			$jsondata["success"] = false;
-			$jsondata["data"]["message"] = "No se pudo actualizar la tarifa";
-		}
-		exit(json_encode($jsondata, JSON_FORCE_OBJECT));
-    }
-    public function searchService($surgery = null)
-    {
-        $clinicalServices = TableRegistry::get('Services');
-   
-        $arrayResult = $clinicalServices->find('only', ['conditions' => [['service_description' => $surgery], ['registration_status' => 'ACTIVO']]]);
-     
-        if ($arrayResult['indicator'] == 0)
-        {
-            $service = $arrayResult['searchRequired'];
-            
-            $arrayResult = [];
-            
-            $arrayResult['indicator'] = 0;
-            $arrayResult['costBolivars'] = $service->cost_bolivars;
-            $arrayResult['costDollars'] = $service->cost_dollars;
-            $arrayResult['itemes'] = $service->itemes;
-        }
-        else
-        {
-            $arrayResult = [];
-            $arrayResult['indicator'] = 1;
-        }
-        return $arrayResult;
-    }
-    public function getService($id = null)
-    {
-		$service = $this->Services->get($id);
-            
-        $arrayResult = [];
-            
-		$arrayResult['serviceDescription'] = $service->service_description;
-		$arrayResult['costBolivars'] = $service->cost_bolivars;
-		$arrayResult['costDollars'] = $service->cost_dollars;
-		$arrayResult['itemes'] = $service->itemes;
-
-        return $arrayResult;
-    }
     public function ajaxService()
     {
 		setlocale(LC_TIME, 'es_VE', 'es_VE.utf-8', 'es_VE.utf8'); 
@@ -565,34 +431,28 @@ class ServicesController extends AppController
 		}
     }
 
-    public function updateRate()
+    public function updateRate($tasaDolar)
     {			
-        $this->autoRender = false;
+		$this->autoRender = false;
 		
-		// Descomentar solo para pruebas
-			$_POST['tasa_dolar'] = 337.34;
-		//
-		
-		if (isset($_POST['tasaDolar']))
+		if (isset($_POST["tasaDolar"]))
 		{
-			$jsondata = [];
-			
-			if (substr($_POST['tasaDolar'], -3, 1) == ',')
+			if (substr($_POST["tasaDolar"], -3, 1) == ',')
 			{
-				$replace1= str_replace('.', '', $_POST['tasaDolar']);
+				$replace1= str_replace('.', '', $_POST["tasaDolar"]);
 				$replace2 = str_replace(',', '.', $replace1);
 				$dollarRate = $replace2;
 			}
 			else
 			{
-				$dollarRate = $_POST['tasaDolar'];
+				$dollarRate = $_POST["tasaDolar"];
 			}
 			
 			$this->loadModel('Systems');
 			
 			$system = $this->Systems->get(2);
 			
-			$system->dollar_rate = $dollarRate;
+			$system->extra_column1 = $dollarRate;
 					
 			if ($this->Systems->save($system)) 
 			{
@@ -608,80 +468,70 @@ class ServicesController extends AppController
 					
 					foreach ($services as $service)
 					{					
-						$service->cost_bolivars = $service->national_dollar_cost * $dollarRate;
+						$service->cost_bolivars = $service->service_code * $dollarRate;
 						
 						if (!($this->Services->save($service))) 
 						{
 							$errorIndicator = 1;
-							$jsondata["success"] = false;
-							$jsondata["data"]["message"] = "Error actualizando el servicio ID: " . $service->id;
+							$this->Flash->error(__('Error actualizando el servicio ID: ' . $service->id));						
 							break;
 						}
 					}
 					if ($errorIndicator == 0)
 					{
-						$jsondata["success"] = false;
-						$jsondata["data"]["message"] = "La tarifa se actualizó satisfactoriamente";		
+						$this->Flash->success(__('La tarifa se actualizó satisfactoriamente'));
 					}
 				}
 				else
 				{
-					$jsondata["success"] = false;
-					$jsondata["data"]["message"] = "No se pudo actualizar la tarifa. No se encontraron servicios";
+					$this->Flash->error(__('No se pudo actualizar la tarifa. No se encontraron servicios'));						
 				}
 			}
 			else
 			{
-				$jsondata["success"] = false;
-				$jsondata["data"]["message"] = "No se pudo actualizar la tarifa";
+				$this->Flash->error(__('No se pudo actualizar la tarifa'));
 			}
 		}
 		else
 		{
-			$jsondata["success"] = false;
-			$jsondata["data"]["message"] = "No se pudo actualizar la tarifa";
+			$this->Flash->error(__('No se pudo actualizar la tarifa'));
 		}
-		exit(json_encode($jsondata, JSON_FORCE_OBJECT));
+		return $this->redirect(['controller' => 'Services', 'action' => 'index']);
     }
 	
-    public function discountSurcharge()
+    public function discountSurcharge($descuentoRecargo)
     {			
-        $this->autoRender = false;
+		$this->autoRender = false;
 		
-		// Descomentar solo para pruebas
-			$_POST['descuentoRecargo'] = -30;
-		//
-		
-		if (isset($_POST['descuentoRecargo']))
-		{
-			$jsondata = [];
-			
-			if (substr($_POST['descuentoRecargo'], -3, 1) == ',')
+		if (isset($_POST["descuentoRecargo"]))
+		{			
+			if (substr($_POST["descuentoRecargo"], -3, 1) == ',')
 			{
-				$replace1= str_replace('.', '', $_POST['descuentoRecargo']);
+				$replace1= str_replace('.', '', $_POST["descuentoRecargo"]);
 				$replace2 = str_replace(',', '.', $replace1);
 				$discountSurcharge = $replace2;
 			}
 			else
 			{
-				$discountSurcharge = $_POST['descuentoRecargo'];
+				$discountSurcharge = $_POST["descuentoRecargo"];
 			}
 			
-			if ($descuentoRecargo < 0)
+			if ($discountSurcharge < 0)
 			{
 				$operationType = "Descuento";
-				$discountSurcharge = $discountSurcharge * -1;
+				$discountSurcharge = ($discountSurcharge * -1)/100;
 			}
 			else
 			{
 				$operationType = "Recargo";
+				$discountSurcharge = $discountSurcharge/100;
 			}
-			
+						
 			$this->loadModel('Systems');
 			
 			$system = $this->Systems->get(2);
 			
-			$dollarRate = $system->dollar_rate;
+			$dollarRate = $system->extra_column1;
 					
 			$clinicalServices = TableRegistry::get('Services');
 				
@@ -695,44 +545,83 @@ class ServicesController extends AppController
 				
 				foreach ($services as $service)
 				{
-					$discountAmountSurcharge = $service->national_dollar_cost * $discountSurcharge;
+					$discountAmountSurcharge = $service->service_code * $discountSurcharge;
 					
 					if ($operationType == "Descuento")
 					{
-						$service->national_dollar_cost = $service->national_dollar_cost - $discountAmountSurcharge;
+						$service->service_code = $service->service_code - $discountAmountSurcharge;
 					}
 					else
 					{
-						$service->national_dollar_cost = $service->national_dollar_cost + $discountAmountSurcharge;
+						$service->service_code = $service->service_code + $discountAmountSurcharge;
 					}
 					
-					$service->cost_bolivars = $service->national_dollar_cost * $dollarRate;
+					$service->cost_bolivars = $service->service_code * $dollarRate;
 					
 					if (!($this->Services->save($service))) 
 					{
 						$errorIndicator = 1;
-						$jsondata["success"] = false;
-						$jsondata["data"]["message"] = "Error actualizando el servicio ID: " . $service->id;
+						$this->Flash->error(__('Error actualizando el servicio ID: ' . $service->id));						
 						break;
 					}
 				}
 				if ($errorIndicator == 0)
 				{
-					$jsondata["success"] = false;
-					$jsondata["data"]["message"] = "La tarifa se actualizó satisfactoriamente";		
+					$this->Flash->success(__('El descuento/recargo se aplicó satisfactoriamente'));
 				}
 			}
 			else
 			{
-				$jsondata["success"] = false;
-				$jsondata["data"]["message"] = "No se pudo aplicar el descuent/recargo. No se encontraron servicios";
+				$this->Flash->error(__('No se pudo aplicar el descuent/recargo. No se encontraron servicios'));	
 			}
 		}
 		else
 		{
-			$jsondata["success"] = false;
-			$jsondata["data"]["message"] = "No se pudo actualizar la tarifa";
+			$this->Flash->error(__('No se pudo actualizar la tarifa'));
 		}
-		exit(json_encode($jsondata, JSON_FORCE_OBJECT));
+		return $this->redirect(['controller' => 'Services', 'action' => 'index']);
+    }
+    public function modifyColumns()
+    {			
+        $this->autoRender = false;
+						
+		$this->loadModel('Systems');
+		
+		$system = $this->Systems->get(2);
+		
+		$dollarRate = $system->extra_column1;
+				
+		$clinicalServices = TableRegistry::get('Services');
+			
+		$arrayResult = $clinicalServices->find('services');
+			
+		if ($arrayResult['indicator'] == 0)
+		{
+			$services = $arrayResult['searchRequired'];
+
+			$errorIndicator = 0;
+			
+			foreach ($services as $service)
+			{
+				$serviceGet = $this->Services->get($service->id);
+				
+				$serviceGet->service_code = $service->cost_bolivars / $dollarRate;
+							
+				if (!($this->Services->save($serviceGet)))
+				{
+					$errorIndicator = 1;
+					echo "<p>Error al hacer la conversión de precio del servicio ID: " . $service->id . "</p>";
+					break;
+				}
+			}
+			if ($errorIndicator == 0)
+			{
+				echo "<p>La conversión de los precios se realizó exitosamente</p>";		
+			}
+		}
+		else
+		{
+			echo "<p>No se pudo hacer la conversión de los precios</p>";
+		}
     }
 }

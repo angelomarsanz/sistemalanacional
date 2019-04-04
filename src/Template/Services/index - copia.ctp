@@ -54,6 +54,28 @@
                 <h2>Presupuestos de Servicios Médicos</h2>
             </div>
 
+        	<div class="row">
+				<div class="col-md-3">
+					<div class="form-group">
+					  <label for="tasa-dolar">Tarifa</label>
+					  <input class="alternative-decimal-separator form-control" id="tasa-dolar" value=<?= number_format($tasaDolarActual, 2, ",", ".") ?>>
+					</div>
+					<button id="actualizar-tasa-dolar" class="btn btn-success">Actualizar</button>	
+					<div id="mensajesTarifa"></div>
+				</div>
+				
+				<div class="col-md-3">
+					<div class="form-group">
+					  <label for="descuento-recargo">Descuento o recargo (%)</label>
+					  <input class="alternative-decimal-separator form-control" id="descuento-recargo" value=<?= number_format(0, 2, ",", ".") ?>>
+					</div>
+					<button id="aplicar-descuento-recargo" class="btn btn-success">Aplicar</button>	
+					<div id="mensajesDescuentoRecargo"></div>					
+				</div>
+            </div>
+			
+			<br />
+			<br />
         	<div>
                 <?= $this->Form->create() ?>
                     <fieldset>
@@ -65,9 +87,10 @@
                                         <th scope="col"></th>
                                         <th scope="col">Nro.</th>
                                         <th scope="col">Servicio&nbsp;médico</th>
-                                        <th scope="col">Precio&nbsp;en&nbsp;bolívares</th>
-                                        <th scope="col">Precio&nbsp;en&nbsp;dólares</th>
-                                    </tr>
+                                        <th scope="col">Precio&nbsp;en&nbsp;dólares&nbsp;internacional</th>
+										<th scope="col">Precio&nbsp;en&nbsp;dólares&nbsp;nacional</th>
+                                        <th scope="col">Precio&nbsp;en&nbsp;Bolívares</th>
+									</tr>
                                 </thead>
                                 <tbody>
                                     <?php 
@@ -84,10 +107,11 @@
                                             
                                             <td><?= $service->service_description ?></td>
                                             
-                                            <td><input style='text-align: right;' class='alternative-decimal-separator form-control' name="service[<?= $accountArray ?>][cost_bolivars]" title='Precio en bolívares' step='any' value=<?= number_format($service->cost_bolivars, 2, ",", ".") ?>></td>
-                                            
-                                            <td><input style='text-align: right;' class='alternative-decimal-separator form-control' name="service[<?= $accountArray ?>][cost_dollars]" title='Precio en dólares' step='any' value=<?= number_format($service->cost_dollars, 2, ",", ".") ?>></td>
+                                            <td><input style='text-align: right;' class='alternative-decimal-separator form-control' name="service[<?= $accountArray ?>][cost_dollars]" title='Precio en dólares internacional' step='any' value=<?= number_format($service->cost_dollars, 2, ",", ".") ?>></td>
 
+                                            <td><input style='text-align: right;' class='alternative-decimal-separator form-control' name="service[<?= $accountArray ?>][service_code]" title='Precio en dólares nacional' step='any' value=<?= number_format($service->service_code, 2, ",", ".") ?>></td>
+											
+                                            <td><input style='text-align: right;' class='alternative-decimal-separator form-control' name="service[<?= $accountArray ?>][cost_bolivars]" title='Precio en bolívares' step='any' value=<?= number_format($service->cost_bolivars, 2, ",", ".") ?> disabled></td>
                                         </tr>
                                     <?php 
                                         $accountArray++; 
@@ -122,14 +146,14 @@
 <script>
 // Variables
 
-// Funciones
+// Funciones Javascript
 
 function log(id) 
 {
     $.redirect('/sln/services/view', { id : id, controller : 'Services', action : 'index' }); 
 }
 
-// Documento
+// Funciones Jquery
 
 $(document).ready(function()
 { 
@@ -155,6 +179,28 @@ $(document).ready(function()
             log(ui.item.id);
           }
     });
+	
+    $('#actualizar-tasa-dolar').click(function()
+    {
+		var r = confirm("Desea actualizar la tarifa a $ : " + $("#tasa-dolar").val());
+		if (r == false)
+		{
+			return false;
+		}
+		tasaDolar = $("#tasa-dolar").val();
+		window.location="<?php echo Router::url(array("controller" => "Services", "action" => "updateRate")); ?>" + "/" + tasaDolar;
+    });
 
+    $('#aplicar-descuento-recargo').click(function()
+    {
+		var r = confirm("Desea aplicar el descuento/recargo de : " + $("#descuento-recargo").val() + "%");
+		if (r == false)
+		{
+			return false;
+		}		
+		descuentoRecargo = $("#descuento-recargo").val();
+		window.location="<?php echo Router::url(array("controller" => "Services", "action" => "discountSurcharge")); ?>" + "/" + descuentoRecargo;
+    });
+	
 });
 </script>

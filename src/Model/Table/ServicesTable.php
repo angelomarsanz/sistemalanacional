@@ -70,10 +70,6 @@ class ServicesTable extends Table
         $validator
             ->numeric('cost_bolivars')
             ->allowEmpty('cost_bolivars');
-
-        $validator
-            ->numeric('national_dollar_cost')
-            ->allowEmpty('national_dollar_cost');
 			
         $validator
             ->numeric('national_dollar_cost')
@@ -91,47 +87,12 @@ class ServicesTable extends Table
 
         $validator
             ->allowEmpty('responsible_user');
-
-        $validator
-            ->notEmpty('extra_column1');
-			
-        $validator
-            ->notEmpty('extra_column2');
-
-        $validator
-            ->notEmpty('extra_column3');
-
-        $validator
-            ->notEmpty('extra_column4');
-			
-        $validator
-            ->notEmpty('extra_column5');			
-			
-        $validator
-            ->notEmpty('extra_column6');
-
-        $validator
-            ->notEmpty('extra_column7');
-
-        $validator
-            ->notEmpty('extra_column8');			
-
-        $validator
-            ->notEmpty('extra_column9');						
-			
-        $validator
-            ->notEmpty('extra_column10');			
 			
         return $validator;
     }
     
     public function buildRules(RulesChecker $rules)
-    {
-        $rules->add($rules->isUnique(
-            ['service_code'],
-            'Este código ya está asignado a otro servicio'
-        ));
-        
+    {       
         $rules->add($rules->isUnique(
             ['service_description'],
             'Este servicio ya está registrado'

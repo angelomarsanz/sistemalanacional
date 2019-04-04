@@ -29,7 +29,7 @@
                         <br />
 
                         <label class="control-label" for="national-dollar-cost">Precio en dólares nacional: </label>
-                        <input  id='national-dollar-cost' name='cost_dollars' style='text-align: right;' class='alternative-decimal-separator form-control' step='any' value=<?= number_format(0, 2, ",", ".") ?>>
+                        <input  id='national-dollar-cost' name='service_code' style='text-align: right;' class='alternative-decimal-separator form-control' step='any' value=<?= number_format($service->service_code, 2, ",", ".") ?>>
                         <br />
 						
 					</div>
